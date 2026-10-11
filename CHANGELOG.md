@@ -2,6 +2,8 @@
 
 ## 0.2.6 — política de CPU da interface
 
+- Atualização a pedido do operador: período nominal de 1 ms (1000 Hz); limites de falha, watchdog e heartbeat preservados. Medição física pendente.
+
 - Versão incrementada antes da separação do auxiliar de clock da interface e do auxiliar de permissões do driver.
 - Interface controla `t3d_cpu_policy`, sem inicializar o driver; fechamento da interface restaura o ajuste.
 - Binários e auxiliares instalados por versão; 0.2.5 preservada para comparação.

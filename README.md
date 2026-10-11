@@ -308,9 +308,9 @@ aceleração limita a **trajetória**, enquanto a correção PID mantém autorid
 corrigir o seguimento. O drive continua fechando suas malhas internas de velocidade
 e corrente. Não se envia alvo de posição ao T3D.
 
-## Temporização da versão 0.2.5
+## Temporização da versão 0.2.6
 
-A execução usa uma grade absoluta de 2 ms, com diagnóstico da variação entre
+A execução usa uma grade absoluta de 1 ms (1000 Hz), com diagnóstico da variação entre
 ciclos e dos tempos de leitura, cálculo e escrita. O backend tenta prioridade
 SCHED_FIFO, afinidade de CPU e bloqueio da memória atual, e informa no diagnóstico
 o que o sistema permitiu. Ganhos PID e limites de falha permanecem os mesmos.
@@ -334,7 +334,7 @@ Pinagem esperada no J1 da 7i33TA, numeração física do flat de 50 vias:
 | 2 | 31 | 29 | 35 | 39 | 43 | 47 |
 | 3 | 27 | 25 | 33 | 37 | 41 | 45 |
 
-O processo solicita ciclo de **2 ms** e rejeita intervalos/processamento acima de
+O processo solicita ciclo de **1 ms** e rejeita intervalos/processamento acima de
 **20 ms**. Um heartbeat da interface deve chegar em até **500 ms**. Só o ciclo
 que lê feedback e atualiza saídas alimenta o watchdog da Mesa de **100 ms**.
 Timeout, erro de quadratura, salto impossível de contagem, erro de seguimento
@@ -466,7 +466,8 @@ O ensaio não mede diretamente a estabilização da tensão.
 
 ## Otimizações locais 0.2.5
 
-O período permanece em 2 ms. Temporizador absoluto, estatísticas com janela fixa
+Na 0.2.5 o período era 2 ms; a 0.2.6 foi atualizada para 1 ms a pedido do operador.
+Temporizador absoluto, estatísticas com janela fixa
 e planejamento de rampas assimétricas usam C++ em `native/`; o restante do backend
 continua em extensões Cython. O gráfico e o protocolo de telemetria foram preservados.
 Não há ganho de jitter declarado antes de uma nova medição física.

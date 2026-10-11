@@ -64,7 +64,7 @@ aplicativo não cronometra o ensaio; ela apenas recebe os resultados.
 
 O valor inclui envio pela rede, processamento da placa, saída ENA, filtro TTL,
 espera pela próxima leitura, retorno pela rede e escalonamento do computador.
-O ciclo nominal de leitura é 2 ms: um cronômetro com resolução de nanossegundos
+O ciclo nominal atual de leitura da 0.2.6 é 1 ms: um cronômetro com resolução de nanossegundos
 não torna a detecção do nível igualmente precisa. Não é possível separar
 atrasos de ida e volta nem medir apenas o tempo da FPGA com este ensaio.
 
@@ -116,7 +116,7 @@ os níveis reais com osciloscópio antes de conectar à entrada; não use comand
 de movimento nem troque para o controle normal com esse fio instalado.
 
 O resultado é o tempo até o cruzamento do limiar digital, incluindo o filtro
-analógico, a entrada TTL, rede e ciclo de leitura de 2 ms. Não mede o tempo
+analógico, a entrada TTL, rede e ciclo de leitura de 1 ms. Não mede o tempo
 até a tensão se estabilizar em +4 V. No modo sign-magnitude usado aqui,
 +4 V corresponde a 40% de magnitude; zero corresponde a magnitude zero.
 A exportação JSON identifica o modo analógico separadamente do digital.

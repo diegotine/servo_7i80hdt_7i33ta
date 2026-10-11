@@ -1,5 +1,11 @@
 # 0.2.6 — política de CPU pertencente à interface
 
+Atualização posterior: período nominal reduzido de 2 ms para 1 ms a pedido do
+operador. Recompilação concluída; sete testes de temporização e GUI smoke
+passaram. Importação dos módulos compilados confirmou Session.period=0.001,
+métricas nominal_ms=1 e limite de falha 0.020. A instância aberta não foi
+reiniciada e não foi acionada a placa. Medição física a 1 ms pendente.
+
 A interface Qt controla a sessão de clock pelo auxiliar nativo `t3d_cpu_policy`.
 O fechamento da interface encerra seu canal, disparando a restauração no
 auxiliar. Nenhum código de clock é compilado no `t3d_runtime_limiter` ou nos

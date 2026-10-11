@@ -1,7 +1,8 @@
 # Temporização — 0.2.6
 
-O período nominal da 0.2.3 é **2 ms (500 Hz)**; na referência 0.2.2 era 5 ms. O PID usa o intervalo real
-entre inícios de ciclos, não uma constante de 2 ms nem a média do loopback.
+O período nominal atual da 0.2.6 é **1 ms (1000 Hz)**. Da 0.2.3 até a primeira
+compilação da 0.2.6 era 2 ms; na referência 0.2.2 era 5 ms. O PID usa o intervalo
+real entre inícios de ciclos, não uma constante de 1 ms nem a média do loopback.
 Limite de ciclo/processamento: 20 ms; watchdog da HDT: 100 ms;
 heartbeat da interface: 500 ms. Esses limites não foram relaxados.
 
@@ -9,7 +10,7 @@ heartbeat da interface: 500 ms. Esses limites não foram relaxados.
 
 - Espera nativa com `clock_nanosleep(CLOCK_MONOTONIC, TIMER_ABSTIME)` via
   biblioteca C do Linux. Cada início pertence à mesma grade temporal, em vez
-  de somar 2 ms ao instante efetivo do último ciclo. Interrupção por sinal
+  de somar 1 ms ao instante efetivo do último ciclo. Interrupção por sinal
   retoma a espera pelo mesmo instante absoluto.
 - Horários já vencidos são descartados; não há uma sequência de ciclos
   imediatos para compensar atrasos. O intervalo real continua sujeito ao
@@ -39,7 +40,7 @@ inclui `timing` e `runtime` com detalhes adicionais e os ajustes efetivos.
 
 Mínimos, máximos, médias e desvios são acumulados na sessão; P95 usa somente
 as últimas 256 amostras de cada grandeza. As métricas reiniciam ao rearmar. O contador `work_overruns` conta ciclos
-cuja leitura + cálculo + escrita ultrapassaram 2 ms; isso não muda o limite
+cuja leitura + cálculo + escrita ultrapassaram o período nominal (agora 1 ms); isso não muda o limite
 de falha de 20 ms. Custos de telemetria também podem causar horários pulados,
 mesmo que o trabalho de I/O esteja abaixo do período.
 O tempo de trabalho inclui leitura, cálculo e escrita; não inclui a montagem

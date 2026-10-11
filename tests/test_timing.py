@@ -37,15 +37,15 @@ class TimingTests(unittest.TestCase):
         self.assertEqual(targets, [5_000_000, 20_000_000])
         self.assertEqual(timer.skipped, 2)
 
-    def test_default_period_is_two_milliseconds(self):
+    def test_default_period_is_one_millisecond(self):
         targets = []
         timer = CycleTimer(clock=lambda: 0, sleeper=targets.append)
         timer.wait()
-        self.assertEqual(targets, [2_000_000])
+        self.assertEqual(targets, [1_000_000])
         metrics = CycleMetrics()
-        for work in (1_000_000, 2_000_000, 2_000_001):
+        for work in (500_000, 1_000_000, 1_000_001):
             metrics.add(work=work)
-        self.assertEqual(metrics.report()['nominal_ms'], 2)
+        self.assertEqual(metrics.report()['nominal_ms'], 1)
         self.assertEqual(metrics.report()['work_overruns'], 1)
 
     def test_interrupted_absolute_sleep_reuses_the_same_deadline(self):

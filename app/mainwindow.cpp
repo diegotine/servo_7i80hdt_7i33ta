@@ -467,7 +467,7 @@ void MainWindow::updateStatus(const QJsonObject &message)
         .arg(message.value("cycle_ms").toDouble(), 0, 'f', 2)
         .arg(diagnostic.value("max_cycle_ms").toDouble(), 0, 'f', 2)
         .arg(diagnostic.value("cycles").toDouble(), 0, 'f', 0)
-        .arg(diagnostic.value("timing").toObject().value("nominal_ms").toDouble(2), 0, 'f', 0));
+        .arg(diagnostic.value("timing").toObject().value("nominal_ms").toDouble(1), 0, 'f', 0));
     const auto timing = diagnostic.value("timing").toObject();
     if (!timing.isEmpty()) {
         const auto interval = timing.value("interval").toObject();
@@ -489,7 +489,7 @@ void MainWindow::updateStatus(const QJsonObject &message)
                 .arg(write.value("mean_ms").toDouble(), 0, 'f', 3)
             + QString("\nTrabalho máximo: %1 ms | Execuções acima de %2 ms: %3")
                 .arg(work.value("max_ms").toDouble(), 0, 'f', 3)
-                .arg(timing.value("nominal_ms").toDouble(2), 0, 'f', 0)
+                .arg(timing.value("nominal_ms").toDouble(1), 0, 'f', 0)
                 .arg(timing.value("work_overruns").toDouble(), 0, 'f', 0));
     }
     m_diagWatchdog->setText(diagnostic.value("watchdog_ok").toBool()
@@ -775,7 +775,7 @@ void MainWindow::updateLoopback(const QJsonObject &message)
         };
         m_loopbackDetails->setText(describe("ON", on) + "\n" + describe("OFF", off)
             + QString("\nTempos observados pelo computador, incluindo a espera pela leitura de %1 ms. PID permanece inalterado.")
-                .arg(message.value("timing").toObject().value("nominal_ms").toDouble(2), 0, 'f', 0));
+                .arg(message.value("timing").toObject().value("nominal_ms").toDouble(1), 0, 'f', 0));
         logDiagnostic("Loopback concluído: ON " + m_loopbackOn->text() + " ms; OFF " + m_loopbackOff->text() + " ms.");
         const QString directory = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/loopback";
         QDir().mkpath(directory);
@@ -786,7 +786,7 @@ void MainWindow::updateLoopback(const QJsonObject &message)
         record["measurement"] = message.value("mode").toString() == "analog"
             ? "analog_0_4v_to_encoder_a_ttl_host_observed"
             : "digital_ena_to_encoder_a_ttl_host_observed";
-        record["nominal_poll_ms"] = message.value("timing").toObject().value("nominal_ms").toDouble(2);
+        record["nominal_poll_ms"] = message.value("timing").toObject().value("nominal_ms").toDouble(1);
         if (writeJson(path, record)) {
             m_loopbackDetails->setText(m_loopbackDetails->text() + "\nResultado salvo: " + path);
             logDiagnostic("Amostras do loopback salvas em " + path);

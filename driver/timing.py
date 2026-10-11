@@ -13,7 +13,7 @@ try:
 except ImportError:
     NativeSamples = native_sleep = None  # Source-only mathematical checks.
 
-NOMINAL_PERIOD_NS = 2_000_000
+NOMINAL_PERIOD_NS = 1_000_000
 
 
 class Timespec(ctypes.Structure):

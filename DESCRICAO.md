@@ -29,7 +29,7 @@ os encoders e envia referências analógicas de velocidade ao drive.
 - Aba de diagnóstico da HDT, com identificação, contadores, estados e histórico
   de falhas; após uma falha, mantém a comunicação disponível para diagnóstico
   quando a placa responde.
-- Temporização absoluta de 2 ms, métricas do ciclo e ajustes de prioridade/CPU com diagnóstico do resultado efetivo.
+- Temporização absoluta de 1 ms, métricas do ciclo e ajustes de prioridade/CPU com diagnóstico do resultado efetivo.
 - Configurações por motor que podem ser salvas e carregadas.
 - Interface separada em arquivos `.ui`, editáveis no Qt Designer.
 
@@ -45,7 +45,7 @@ Qt 6.4 ou superior, Python 3.10 ou superior com cabeçalhos e Cython 3.2 ou supe
 do projeto. As instruções detalhadas estão em [README.md](README.md), e a
 pinagem em [PINOUT.md](PINOUT.md).
 
-Os padrões de aceleração e desaceleração são 350 e 600 RPM/s. O ciclo é de 2 ms.
+Os padrões de aceleração e desaceleração são 350 e 600 RPM/s. O ciclo atual da 0.2.6 é de 1 ms.
 O auxiliar de CPU pertence à interface: solicita limites de 4200 MHz mesmo com
 TuneD ativo, preservando os demais ajustes do perfil. O diagnóstico identifica
 a versão do núcleo. O auxiliar do driver concede somente FIFO/memória.

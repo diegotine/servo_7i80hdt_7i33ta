@@ -239,3 +239,16 @@ Atalho novo Iniciar T3D v0.2.2.desktop criado; anteriores preservados.
 - A investigação de clock foi adiada pelo operador; foco passa a cabo e testes
   físicos. Nenhuma configuração de rede ou sistema foi alterada ao copiar e
   documentar este relatório.
+
+## 0.2.6 atualizada para 1 ms
+
+- Operador pediu reduzir o período nominal da 0.2.6 de 2 ms para 1 ms, sem subir
+  a versão. Constante NOMINAL_PERIOD_NS alterada para 1000000; Session, timer,
+  métricas, diagnóstico e JSON do loopback usam essa constante.
+- Grade absoluta mantida, alvo 1000 ciclos/s para os quatro eixos; PID usa dt real.
+  Falha 20 ms, watchdog 100 ms, heartbeat 500 ms e dwell do loopback 50 ms mantidos.
+- Não foi alterada política de clock nem iniciada sessão física; instância
+  existente deve ser reaberta para carregar o novo módulo compilado.
+- Recompilação e sete testes de temporização passaram; GUI smoke passou.
+  Importação do módulo nativo confirmou Session.period=0.001, nominal_ms=1,
+  limite 0.020 e versão 0.2.6. Resultado físico ainda depende do ensaio do operador.
