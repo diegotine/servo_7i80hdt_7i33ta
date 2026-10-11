@@ -13,3 +13,6 @@ reference/*.pdf
 
 # Atalhos locais com caminhos específicos desta instalação.
 *.desktop
+
+# Builds históricos isolados para comparação de bancada.
+.versions/

@@ -110,6 +110,8 @@ void MainWindow::setupInterface()
     m_panels[0].jogRpm = ui.jogRpm0;
     m_panels[0].acceleration = ui.acceleration0;
     m_panels[0].accelerationControl = ui.accelerationControl0;
+    m_panels[0].deceleration = ui.deceleration0;
+    m_panels[0].decelerationControl = ui.decelerationControl0;
     m_panels[0].outputTest = ui.outputTest0;
     m_panels[0].plot = ui.plot0;
     m_panels[0].enable = ui.enable0;
@@ -126,6 +128,8 @@ void MainWindow::setupInterface()
     connect(ui.jogRpm0Minus, &QPushButton::clicked, ui.jogRpm0, &QDoubleSpinBox::stepDown);
     connect(ui.acceleration0Plus, &QPushButton::clicked, ui.acceleration0, &QDoubleSpinBox::stepUp);
     connect(ui.acceleration0Minus, &QPushButton::clicked, ui.acceleration0, &QDoubleSpinBox::stepDown);
+    connect(ui.deceleration0Plus, &QPushButton::clicked, ui.deceleration0, &QDoubleSpinBox::stepUp);
+    connect(ui.deceleration0Minus, &QPushButton::clicked, ui.deceleration0, &QDoubleSpinBox::stepDown);
     m_panels[1].position = ui.position1;
     m_panels[1].rpm = ui.rpm1;
     m_panels[1].error = ui.error1;
@@ -136,6 +140,8 @@ void MainWindow::setupInterface()
     m_panels[1].jogRpm = ui.jogRpm1;
     m_panels[1].acceleration = ui.acceleration1;
     m_panels[1].accelerationControl = ui.accelerationControl1;
+    m_panels[1].deceleration = ui.deceleration1;
+    m_panels[1].decelerationControl = ui.decelerationControl1;
     m_panels[1].outputTest = ui.outputTest1;
     m_panels[1].plot = ui.plot1;
     m_panels[1].enable = ui.enable1;
@@ -152,6 +158,8 @@ void MainWindow::setupInterface()
     connect(ui.jogRpm1Minus, &QPushButton::clicked, ui.jogRpm1, &QDoubleSpinBox::stepDown);
     connect(ui.acceleration1Plus, &QPushButton::clicked, ui.acceleration1, &QDoubleSpinBox::stepUp);
     connect(ui.acceleration1Minus, &QPushButton::clicked, ui.acceleration1, &QDoubleSpinBox::stepDown);
+    connect(ui.deceleration1Plus, &QPushButton::clicked, ui.deceleration1, &QDoubleSpinBox::stepUp);
+    connect(ui.deceleration1Minus, &QPushButton::clicked, ui.deceleration1, &QDoubleSpinBox::stepDown);
     m_panels[2].position = ui.position2;
     m_panels[2].rpm = ui.rpm2;
     m_panels[2].error = ui.error2;
@@ -162,6 +170,8 @@ void MainWindow::setupInterface()
     m_panels[2].jogRpm = ui.jogRpm2;
     m_panels[2].acceleration = ui.acceleration2;
     m_panels[2].accelerationControl = ui.accelerationControl2;
+    m_panels[2].deceleration = ui.deceleration2;
+    m_panels[2].decelerationControl = ui.decelerationControl2;
     m_panels[2].outputTest = ui.outputTest2;
     m_panels[2].plot = ui.plot2;
     m_panels[2].enable = ui.enable2;
@@ -178,6 +188,8 @@ void MainWindow::setupInterface()
     connect(ui.jogRpm2Minus, &QPushButton::clicked, ui.jogRpm2, &QDoubleSpinBox::stepDown);
     connect(ui.acceleration2Plus, &QPushButton::clicked, ui.acceleration2, &QDoubleSpinBox::stepUp);
     connect(ui.acceleration2Minus, &QPushButton::clicked, ui.acceleration2, &QDoubleSpinBox::stepDown);
+    connect(ui.deceleration2Plus, &QPushButton::clicked, ui.deceleration2, &QDoubleSpinBox::stepUp);
+    connect(ui.deceleration2Minus, &QPushButton::clicked, ui.deceleration2, &QDoubleSpinBox::stepDown);
     m_panels[3].position = ui.position3;
     m_panels[3].rpm = ui.rpm3;
     m_panels[3].error = ui.error3;
@@ -188,6 +200,8 @@ void MainWindow::setupInterface()
     m_panels[3].jogRpm = ui.jogRpm3;
     m_panels[3].acceleration = ui.acceleration3;
     m_panels[3].accelerationControl = ui.accelerationControl3;
+    m_panels[3].deceleration = ui.deceleration3;
+    m_panels[3].decelerationControl = ui.decelerationControl3;
     m_panels[3].outputTest = ui.outputTest3;
     m_panels[3].plot = ui.plot3;
     m_panels[3].enable = ui.enable3;
@@ -204,6 +218,8 @@ void MainWindow::setupInterface()
     connect(ui.jogRpm3Minus, &QPushButton::clicked, ui.jogRpm3, &QDoubleSpinBox::stepDown);
     connect(ui.acceleration3Plus, &QPushButton::clicked, ui.acceleration3, &QDoubleSpinBox::stepUp);
     connect(ui.acceleration3Minus, &QPushButton::clicked, ui.acceleration3, &QDoubleSpinBox::stepDown);
+    connect(ui.deceleration3Plus, &QPushButton::clicked, ui.deceleration3, &QDoubleSpinBox::stepUp);
+    connect(ui.deceleration3Minus, &QPushButton::clicked, ui.deceleration3, &QDoubleSpinBox::stepDown);
     m_inputs[0][0] = ui.input0_0;
     m_outputs[0][0] = ui.output0_0;
     m_inputs[0][1] = ui.input0_1;
@@ -259,6 +275,8 @@ void MainWindow::setupInterface()
             for (int column = 0; column < 5; ++column) grid->setColumnStretch(column, 1);
         connect(p.acceleration, qOverload<double>(&QDoubleSpinBox::valueChanged), this,
                 [this, index](double value) { applyAcceleration(index, value); });
+        connect(p.deceleration, qOverload<double>(&QDoubleSpinBox::valueChanged), this,
+                [this, index](double value) { applyAcceleration(index, value, true); });
         connect(p.outputTest, &QPushButton::toggled, this, [this, index](bool checked) {
             for (auto *label : m_panels[index].testLabels) label->setText(checked ? "MODO TESTE" : "");
             if ((m_ready || m_diagnosticMode) && !m_stopping)

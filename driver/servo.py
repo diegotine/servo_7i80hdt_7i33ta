@@ -5,6 +5,7 @@ PID + FF1 structure follows LinuxCNC pid(9). This is not a hard realtime runtime
 """
 from dataclasses import dataclass, fields, replace
 import math
+from _rtcore import plan_trajectory, ramp_velocity
 
 
 class ServoFault(Exception):
@@ -21,8 +22,9 @@ class AxisConfig:
     rpm_at_10v: float = 3000
     encoder_sign: int = 1
     output_sign: int = 1
-    max_rpm: float = 3000
-    acceleration_rpm_s: float = 120
+    max_rpm: float = 1000
+    acceleration_rpm_s: float = 350
+    deceleration_rpm_s: float = 600
     kp: float = 50
     ki: float = 0
     kd: float = 0
@@ -46,7 +48,7 @@ class AxisConfig:
             raise ValueError('Directions must be -1 or +1')
         if not 1 <= self.counts_per_rev <= 10_000_000 or not 1 <= self.rpm_at_10v <= 30000:
             raise ValueError('Invalid encoder/analog scale')
-        if not 0 < self.max_rpm <= self.rpm_at_10v or self.acceleration_rpm_s <= 0:
+        if not 0 < self.max_rpm <= self.rpm_at_10v or self.acceleration_rpm_s <= 0 or self.deceleration_rpm_s <= 0:
             raise ValueError('Invalid velocity/acceleration')
         if self.kp <= 0 or min(self.ki, self.kd, self.ff1) < 0:
             raise ValueError('Invalid PID limits')
@@ -62,6 +64,10 @@ class AxisConfig:
     @property
     def accel(self):
         return self.acceleration_rpm_s / 60
+
+    @property
+    def decel(self):
+        return self.deceleration_rpm_s / 60
 
 
 class Encoder:
@@ -92,42 +98,10 @@ class Encoder:
 
 class Trajectory:
     """Constant-acceleration segments with continuous position and velocity."""
-    def __init__(self, start, target, vmax, accel, initial_velocity=0.0):
+    def __init__(self, start, target, vmax, accel, initial_velocity=0.0, decel=None):
         self.start, self.target = start, target
-        self.segments = []
-        self.duration = 0.0
-        self.minimum = self.maximum = start
-        position, velocity = start, initial_velocity
-
-        def segment(duration, acceleration):
-            nonlocal position, velocity
-            if duration <= 0:
-                return
-            self.segments.append((duration, position, velocity, acceleration))
-            position += velocity * duration + 0.5 * acceleration * duration * duration
-            velocity += acceleration * duration
-            self.duration += duration
-            self.minimum = min(self.minimum, position)
-            self.maximum = max(self.maximum, position)
-
-        distance = target - position
-        direction = 1 if distance >= 0 else -1
-        # If the new deceleration cannot stop before the target, brake to zero
-        # first and return to the target; never jump position or velocity.
-        if velocity * direction < 0 or velocity * velocity / (2 * accel) > abs(distance):
-            if velocity:
-                segment(abs(velocity) / accel, -math.copysign(accel, velocity))
-                velocity = 0.0
-            distance = target - position
-            direction = 1 if distance >= 0 else -1
-        speed = velocity * direction
-        peak = min(vmax, math.sqrt(max(0.0, accel * abs(distance) + speed * speed / 2)))
-        ramp = max(0.0, (peak - speed) / accel)
-        braking = peak / accel
-        cruise_distance = max(0.0, abs(distance) - (peak * peak - speed * speed) / (2 * accel) - peak * peak / (2 * accel))
-        segment(ramp, direction * accel)
-        segment(cruise_distance / peak if peak else 0.0, 0.0)
-        segment(braking, -direction * accel)
+        self.segments, self.duration, self.minimum, self.maximum = plan_trajectory(
+            start, target, vmax, accel, initial_velocity, accel if decel is None else decel)
 
     def sample(self, t):
         t = max(0, t)
@@ -237,19 +211,19 @@ class Axis:
         self._reset_response_monitor()
 
     def stop_motion(self):
-        """Brake the reference with configured acceleration, retaining position hold."""
+        """Brake the reference with configured deceleration, retaining position hold."""
         if self.enabled and self.mode in ('move', 'jog', 'stopping'):
             self.trajectory = None
             self.mode, self.jog_velocity = 'stopping', 0.0
             self.in_position, self.settled_time = False, 0.0
 
-    def set_acceleration(self, rpm_s):
+    def set_acceleration(self, rpm_s, deceleration=False):
         if isinstance(rpm_s, bool) or not isinstance(rpm_s, (int, float)) or not math.isfinite(rpm_s) or not 0.1 <= rpm_s <= 100000:
             raise ValueError('Aceleração deve estar entre 0,1 e 100000 RPM/s')
-        updated = replace(self.c, acceleration_rpm_s=rpm_s)
+        updated = replace(self.c, **{('deceleration_rpm_s' if deceleration else 'acceleration_rpm_s'): rpm_s})
         if self.mode == 'move':
             trajectory = Trajectory(self.reference, self.trajectory.target, updated.vmax,
-                                    updated.accel, self.reference_velocity)
+                                    updated.accel, self.reference_velocity, updated.decel)
             if trajectory.minimum < updated.min_rev or trajectory.maximum > updated.max_rev:
                 raise ValueError('A nova aceleração ultrapassaria os limites de posição durante a frenagem')
             self.trajectory = trajectory
@@ -266,7 +240,7 @@ class Axis:
         trajectory = None
         if self.mode == 'move' and not geometry_changed:
             trajectory = Trajectory(self.reference, self.trajectory.target, updated.vmax,
-                                    updated.accel, self.reference_velocity)
+                                    updated.accel, self.reference_velocity, updated.decel)
             if trajectory.minimum < updated.min_rev or trajectory.maximum > updated.max_rev:
                 raise ValueError('Trajetória fora dos novos limites de posição')
         if geometry_changed:
@@ -297,7 +271,7 @@ class Axis:
         if not self.enabled or self.mode != 'hold' or not self.in_position:
             raise ValueError('Wait for enabled, settled position hold before moving')
         start = self.virtual_position if self.output_test else self.reference
-        self.trajectory = Trajectory(start, target, self.c.vmax, self.c.accel)
+        self.trajectory = Trajectory(start, target, self.c.vmax, self.c.accel, decel=self.c.decel)
         self.elapsed, self.settled_time = 0.0, 0.0
         self.in_position, self.mode = False, 'move'
 
@@ -341,8 +315,8 @@ class Axis:
             else:
                 target = clamp(self.jog_velocity, self.c.vmax) if self.mode == 'jog' else 0.0
                 old_velocity = self.output_velocity
-                self.output_velocity += clamp(target - old_velocity, self.c.accel * dt)
-                self.virtual_position += 0.5 * (old_velocity + self.output_velocity) * dt
+                self.output_velocity, travel = ramp_velocity(old_velocity, target, self.c.accel, self.c.decel, dt)
+                self.virtual_position += travel
             self.reference = self.virtual_position
             self.reference_velocity = self.output_velocity
             self.error = self.virtual_position - self.position
@@ -359,10 +333,10 @@ class Axis:
                 self.mode = 'hold'
         elif self.mode in ('jog', 'stopping'):
             old_velocity = self.reference_velocity
-            self.reference_velocity += clamp(self.jog_velocity - old_velocity, self.c.accel * dt)
-            next_reference = self.reference + 0.5 * (old_velocity + self.reference_velocity) * dt
+            self.reference_velocity, travel = ramp_velocity(old_velocity, self.jog_velocity, self.c.accel, self.c.decel, dt)
+            next_reference = self.reference + travel
             # Begin braking before a jog reaches a soft limit.
-            stopping_distance = self.reference_velocity ** 2 / (2 * self.c.accel)
+            stopping_distance = self.reference_velocity ** 2 / (2 * self.c.decel)
             margin = stopping_distance + abs(self.reference_velocity) * 2 * dt + 1 / self.c.counts_per_rev
             if ((self.reference_velocity > 0 and self.c.max_rev - next_reference <= margin)
                     or (self.reference_velocity < 0 and next_reference - self.c.min_rev <= margin)):

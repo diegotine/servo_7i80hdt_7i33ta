@@ -22,6 +22,7 @@ class MainWindow final : public QMainWindow
     Q_OBJECT
 public:
     explicit MainWindow(QWidget *parent = nullptr);
+    ~MainWindow() override;
 protected:
     void closeEvent(QCloseEvent *event) override;
 private:
@@ -29,15 +30,16 @@ private:
         QLabel *position = nullptr, *rpm = nullptr, *error = nullptr, *volts = nullptr;
         std::array<QLabel *, 5> testLabels{};
         QLabel *reference = nullptr, *calibration = nullptr;
-        QDoubleSpinBox *target = nullptr, *jogRpm = nullptr, *acceleration = nullptr;
+        QDoubleSpinBox *target = nullptr, *jogRpm = nullptr, *acceleration = nullptr, *deceleration = nullptr;
         QPushButton *outputTest = nullptr;
         TelemetryPlot *plot = nullptr;
-        QWidget *accelerationControl = nullptr;
+        QWidget *accelerationControl = nullptr, *decelerationControl = nullptr;
         QPushButton *enable = nullptr, *move = nullptr, *zero = nullptr;
         QPushButton *cw = nullptr, *ccw = nullptr, *stop = nullptr, *settings = nullptr;
         bool enabled = false;
     };
     void setupInterface();
+    void startCpuClock();
     void showIdentification(const QJsonObject &message);
     void logDiagnostic(const QString &message);
     void startConnection();
@@ -49,7 +51,7 @@ private:
     void updateFaultDiagnostics(const QJsonObject &message);
     void setDisconnected();
     void configureAxis(int index);
-    void applyAcceleration(int index, double value);
+    void applyAcceleration(int index, double value, bool deceleration = false);
     void refreshConfig();
     void loadConfig();
     void saveConfig();
@@ -62,6 +64,7 @@ private:
     QPlainTextEdit *m_diagLog = nullptr;
     QElapsedTimer m_statusAge, m_plotClock;
     QProcess m_backend;
+    QProcess m_cpuClock;
     QTimer m_heartbeat;
     QByteArray m_buffer;
     QJsonObject m_config;

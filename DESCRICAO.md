@@ -15,7 +15,7 @@ os encoders e envia referências analógicas de velocidade ao drive.
   indicação do comando ENABLE.
 - Movimento para uma posição definida e JOG com retenção nos dois sentidos.
 - Alteração do RPM durante o JOG, inclusive ao confirmar o campo com Enter.
-- Aceleração máxima ajustável durante o movimento, campos com botões `[+][−]`
+- Aceleração e desaceleração independentes, ajustáveis durante o movimento, campos com botões `[+][−]`
   lado a lado e unidades à direita.
 - STOP com desaceleração e manutenção do ENABLE; botão ENABLE para habilitar
   ou desabilitar cada motor.
@@ -24,7 +24,7 @@ os encoders e envia referências analógicas de velocidade ao drive.
 - Gráfico por motor com posição comandada e feedback real do encoder.
 - Ajustes do motor com a placa conectada e troca de modo teste com ENABLE ligado.
 - Aba TESTES com loopback digital ENA → encoder A, 100 ciclos e médias de ON/OFF.
-- Faixa analógica fixa em ±10 V e limite de velocidade padrão de 3000 RPM.
+- Faixa analógica fixa em ±10 V e limite de velocidade padrão de 1000 RPM.
 - Abas de entradas e saídas digitais das portas P1 e P2.
 - Aba de diagnóstico da HDT, com identificação, contadores, estados e histórico
   de falhas; após uma falha, mantém a comunicação disponível para diagnóstico
@@ -36,12 +36,17 @@ os encoders e envia referências analógicas de velocidade ao drive.
 ## Organização e requisitos
 
 A interface utiliza C++20 e Qt 6 Widgets. O driver Ethernet próprio e o
-controlador utilizam Python com a biblioteca padrão.
+controlador utilizam módulos Cython, com núcleo C++ para temporização, estatísticas
+e rampas assimétricas. Os fontes Python existentes permanecem como integração
+durante a migração incremental.
 
 Para compilar e executar: Linux, CMake 3.21 ou superior, compilador C++20,
-Qt 6.4 ou superior e Python 3.10 ou superior. Execute `./iniciar.sh` na pasta
+Qt 6.4 ou superior, Python 3.10 ou superior com cabeçalhos e Cython 3.2 ou superior. Execute `./iniciar.sh` na pasta
 do projeto. As instruções detalhadas estão em [README.md](README.md), e a
 pinagem em [PINOUT.md](PINOUT.md).
+
+Os padrões de aceleração e desaceleração são 350 e 600 RPM/s. O ciclo é de 2 ms.
+TuneD ativo assume os ajustes de CPU; o diagnóstico identifica a versão do núcleo.
 
 ## Estado da versão 0.2.5
 

@@ -140,9 +140,10 @@ class Session:
             axis.set_output_test(message['value'])
         elif operation == 'stop':
             axis.stop_motion()
-        elif operation == 'acceleration':
-            axis.set_acceleration(message['value'])
-            self.output('axis_config', axis=index, acceleration_rpm_s=axis.c.acceleration_rpm_s)
+        elif operation in ('acceleration', 'deceleration'):
+            axis.set_acceleration(message['value'], operation == 'deceleration')
+            self.output('axis_config', axis=index, acceleration_rpm_s=axis.c.acceleration_rpm_s,
+                        deceleration_rpm_s=axis.c.deceleration_rpm_s)
         elif operation == 'configure':
             disabled = axis.configure(message['config'])
             self.output('axis_config', axis=index, config=asdict(axis.c), motor_disabled=disabled)
@@ -319,7 +320,7 @@ class Session:
                 if self.clock() - received > self.client_timeout:
                     continue
                 self.last_client = received
-                if operation in ('enable', 'output_test', 'acceleration', 'configure'):
+                if operation in ('enable', 'output_test', 'acceleration', 'deceleration', 'configure'):
                     try:
                         index = message.get('axis')
                         if type(index) is not int or not 0 <= index < 4:

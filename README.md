@@ -7,9 +7,9 @@
 **Versão 0.2.5 em desenvolvimento** — consulte [DESCRICAO.md](DESCRICAO.md) para a apresentação
 do projeto e o estado desta versão.
 
-![Interface do T3D Analog Velocity 0.1, com controles do motor e modo teste](screenshots/interface-v0.1.png)
+![Interface do T3D Analog Velocity 0.2.5, aceleração e desaceleração independentes](screenshots/interface-v0.2.5.png)
 
-Captura da interface sem conexão à placa, com o modo teste selecionado.
+Captura da interface 0.2.5 sem conexão à placa.
 Mais imagens em [screenshots/](screenshots/).
 
 Projeto independente: **LAN → 7i80HDT P3 → 7i33TA → T3D em velocity mode**.
@@ -152,8 +152,9 @@ suas alterações. O Designer somente edita a interface; não conecta à placa.
 | Escala de velocidade | +10 V = 3000 RPM horário; −10 V = 3000 RPM anti-horário, informados pelo operador |
 | Encoder | 10.000 contagens/volta, derivadas do padrão P-172=2500 linhas ×4 |
 | Referência de posição | Voltas do motor; positivo = horário |
-| Limite inicial de velocidade | 3000 RPM; JOG começa em 10 RPM |
-| Aceleração da trajetória | 120 RPM/s |
+| Limite inicial de velocidade | 1000 RPM; JOG começa em 1000 RPM |
+| Aceleração da trajetória | 350 RPM/s |
+| Desaceleração / STOP | 600 RPM/s, ajustável separadamente |
 | Faixa de saída analógica | Fixa em ±10 V; velocidade limitada pelo ajuste de RPM |
 | PID inicial | P=50 s⁻¹, I=0, D=0; FF1=1 |
 | Erro de seguimento | 0,1 volta entre referência da trajetória e encoder |
@@ -212,7 +213,7 @@ conferidos para aquele motor, apenas como registro opcional. Essa marca não blo
    e mantém a posição final. Clicar no sentido oposto inverte com a rampa definida.
    Perda de foco não cancela o comando; STOP para o movimento, e clicar em ENABLE
    retira a habilitação daquele motor. Fora do teste de saída, JOG mantém a malha de posição.
-7. **STOP** na aba do motor desacelera a trajetória com **Max. Acell.** e
+7. **STOP** na aba do motor desacelera a trajetória com **Max. Decell.** e
    mantém ENABLE e retenção da posição final. **ENABLE** é um botão de alternância:
    verde indica comando ligado; vermelho indica desligado. Clicar novamente retira
    ENABLE e zera a saída daquele motor. Desconectar/fechar solicita esse
@@ -341,7 +342,7 @@ Ao perder o processo/rede, o watchdog deixa GPIO como entrada e os pull-ups de
 
 Python e o escalonador comum do sistema **não garantem tempo real rígido**. O
 comportamento sob carga, latência Ethernet e sintonia precisam ser medidos antes
-do uso físico. O limite padrão é 3000 RPM, ajustável por motor.
+do uso físico. O limite padrão é 1000 RPM, ajustável por motor.
 O watchdog não substitui a parada de emergência elétrica.
 
 A placa deve ter um único proprietário: não executar outro aplicativo, HAL ou
@@ -429,3 +430,17 @@ O seletor também oferece loopback analógico 0/+4 V, medindo o cruzamento do
 limiar da entrada A. A entrada TTL não é especificada para a faixa ±10 V de
 DRV: consulte as condições elétricas em TESTE_LOOPBACK.md antes da ligação.
 O ensaio não mede diretamente a estabilização da tensão.
+
+## Otimizações locais 0.2.5
+
+O período permanece em 2 ms. Temporizador absoluto, estatísticas com janela fixa
+e planejamento de rampas assimétricas usam C++ em `native/`; o restante do backend
+continua em extensões Cython. O gráfico e o protocolo de telemetria foram preservados.
+Não há ganho de jitter declarado antes de uma nova medição física.
+
+Ao abrir a interface, o helper instalado aplica o governador `performance`,
+preferência de desempenho e restrição de repouso apenas à CPU dedicada (CPU 5
+nesta máquina). Solicita limites mínimo/máximo de 4200 MHz quando o driver permite
+selecionar essa frequência. O diagnóstico registra o que foi confirmado e a
+configuração anterior é restaurada ao fechar, inclusive após queda da interface.
+Detalhes e limitações em [OTIMIZACAO_0.2.5.md](OTIMIZACAO_0.2.5.md).

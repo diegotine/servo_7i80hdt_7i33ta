@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='utf-8'?>
+<?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
  <class>AxisSettingsDialog</class>
  <widget class="QDialog" name="AxisSettingsDialog">
@@ -108,14 +108,14 @@ Confira os valores atuais, os sinais A/B e a interface de ENABLE. O software nã
        </property>
       </widget>
      </item>
-     <item row="4" column="0">
+     <item row="5" column="0">
       <widget class="QLabel" name="kpLabel">
        <property name="text">
         <string>P (1/s)</string>
        </property>
       </widget>
      </item>
-     <item row="4" column="1">
+     <item row="5" column="1">
       <widget class="QDoubleSpinBox" name="kp">
        <property name="decimals">
         <number>4</number>
@@ -131,14 +131,14 @@ Confira os valores atuais, os sinais A/B e a interface de ENABLE. O software nã
        </property>
       </widget>
      </item>
-     <item row="5" column="0">
+     <item row="6" column="0">
       <widget class="QLabel" name="kiLabel">
        <property name="text">
         <string>I (1/s²)</string>
        </property>
       </widget>
      </item>
-     <item row="5" column="1">
+     <item row="6" column="1">
       <widget class="QDoubleSpinBox" name="ki">
        <property name="decimals">
         <number>4</number>
@@ -154,14 +154,14 @@ Confira os valores atuais, os sinais A/B e a interface de ENABLE. O software nã
        </property>
       </widget>
      </item>
-     <item row="6" column="0">
+     <item row="7" column="0">
       <widget class="QLabel" name="kdLabel">
        <property name="text">
         <string>D</string>
        </property>
       </widget>
      </item>
-     <item row="6" column="1">
+     <item row="7" column="1">
       <widget class="QDoubleSpinBox" name="kd">
        <property name="decimals">
         <number>4</number>
@@ -177,14 +177,14 @@ Confira os valores atuais, os sinais A/B e a interface de ENABLE. O software nã
        </property>
       </widget>
      </item>
-     <item row="7" column="0">
+     <item row="8" column="0">
       <widget class="QLabel" name="ff1Label">
        <property name="text">
         <string>Feedforward de velocidade FF1</string>
        </property>
       </widget>
      </item>
-     <item row="7" column="1">
+     <item row="8" column="1">
       <widget class="QDoubleSpinBox" name="ff1">
        <property name="decimals">
         <number>4</number>
@@ -200,14 +200,14 @@ Confira os valores atuais, os sinais A/B e a interface de ENABLE. O software nã
        </property>
       </widget>
      </item>
-     <item row="8" column="0">
+     <item row="9" column="0">
       <widget class="QLabel" name="following_error_revLabel">
        <property name="text">
         <string>Erro máximo de seguimento (voltas)</string>
        </property>
       </widget>
      </item>
-     <item row="8" column="1">
+     <item row="9" column="1">
       <widget class="QDoubleSpinBox" name="following_error_rev">
        <property name="decimals">
         <number>5</number>
@@ -223,14 +223,14 @@ Confira os valores atuais, os sinais A/B e a interface de ENABLE. O software nã
        </property>
       </widget>
      </item>
-     <item row="9" column="0">
+     <item row="10" column="0">
       <widget class="QLabel" name="tolerance_countsLabel">
        <property name="text">
         <string>Tolerância de posição (contagens)</string>
        </property>
       </widget>
      </item>
-     <item row="9" column="1">
+     <item row="10" column="1">
       <widget class="QDoubleSpinBox" name="tolerance_counts">
        <property name="decimals">
         <number>1</number>
@@ -246,14 +246,14 @@ Confira os valores atuais, os sinais A/B e a interface de ENABLE. O software nã
        </property>
       </widget>
      </item>
-     <item row="10" column="0">
+     <item row="11" column="0">
       <widget class="QLabel" name="no_response_timeout_sLabel">
        <property name="text">
         <string>Prazo sem resposta do encoder (s)</string>
        </property>
       </widget>
      </item>
-     <item row="10" column="1">
+     <item row="11" column="1">
       <widget class="QDoubleSpinBox" name="no_response_timeout_s">
        <property name="decimals">
         <number>2</number>
@@ -269,14 +269,14 @@ Confira os valores atuais, os sinais A/B e a interface de ENABLE. O software nã
        </property>
       </widget>
      </item>
-     <item row="11" column="0">
+     <item row="12" column="0">
       <widget class="QLabel" name="min_revLabel">
        <property name="text">
         <string>Limite inferior desde zero local (voltas)</string>
        </property>
       </widget>
      </item>
-     <item row="11" column="1">
+     <item row="12" column="1">
       <widget class="QDoubleSpinBox" name="min_rev">
        <property name="decimals">
         <number>5</number>
@@ -292,14 +292,14 @@ Confira os valores atuais, os sinais A/B e a interface de ENABLE. O software nã
        </property>
       </widget>
      </item>
-     <item row="12" column="0">
+     <item row="13" column="0">
       <widget class="QLabel" name="max_revLabel">
        <property name="text">
         <string>Limite superior desde zero local (voltas)</string>
        </property>
       </widget>
      </item>
-     <item row="12" column="1">
+     <item row="13" column="1">
       <widget class="QDoubleSpinBox" name="max_rev">
        <property name="decimals">
         <number>5</number>
@@ -315,14 +315,14 @@ Confira os valores atuais, os sinais A/B e a interface de ENABLE. O software nã
        </property>
       </widget>
      </item>
-     <item row="13" column="0">
+     <item row="14" column="0">
       <widget class="QLabel" name="encoderSignLabel">
        <property name="text">
         <string>Sentido do encoder</string>
        </property>
       </widget>
      </item>
-     <item row="13" column="1">
+     <item row="14" column="1">
       <widget class="QComboBox" name="encoderSign">
        <item>
         <property name="text">
@@ -336,14 +336,14 @@ Confira os valores atuais, os sinais A/B e a interface de ENABLE. O software nã
        </item>
       </widget>
      </item>
-     <item row="14" column="0">
+     <item row="15" column="0">
       <widget class="QLabel" name="outputSignLabel">
        <property name="text">
         <string>Sentido da saída</string>
        </property>
       </widget>
      </item>
-     <item row="14" column="1">
+     <item row="15" column="1">
       <widget class="QComboBox" name="outputSign">
        <item>
         <property name="text">
@@ -355,6 +355,29 @@ Confira os valores atuais, os sinais A/B e a interface de ENABLE. O software nã
          <string>−1 • tensão negativa gira horário</string>
         </property>
        </item>
+      </widget>
+     </item>
+     <item row="4" column="0">
+      <widget class="QLabel" name="deceleration_rpm_sLabel">
+       <property name="text">
+        <string>Desaceleração da trajetória (RPM/s)</string>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="1">
+      <widget class="QDoubleSpinBox" name="deceleration_rpm_s">
+       <property name="decimals">
+        <number>1</number>
+       </property>
+       <property name="minimum">
+        <double>0.1</double>
+       </property>
+       <property name="maximum">
+        <double>100000</double>
+       </property>
+       <property name="keyboardTracking">
+        <bool>false</bool>
+       </property>
       </widget>
      </item>
     </layout>

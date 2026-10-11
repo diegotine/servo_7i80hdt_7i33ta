@@ -32,6 +32,7 @@
 #include <QTabWidget>
 #include <QVBoxLayout>
 #include <algorithm>
+#include <sched.h>
 
 namespace {
 QString runtimePath()
@@ -84,6 +85,62 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     });
     refreshConfig();
     setDisconnected();
+    QTimer::singleShot(0, this, &MainWindow::startCpuClock);
+}
+
+MainWindow::~MainWindow()
+{
+    m_cpuClock.closeWriteChannel();
+    if (m_cpuClock.state() != QProcess::NotRunning && !m_cpuClock.waitForFinished(1500)) {
+        m_cpuClock.terminate();
+        m_cpuClock.waitForFinished(1000);
+    }
+}
+
+void MainWindow::startCpuClock()
+{
+    const auto args = QCoreApplication::arguments();
+    // Screenshots and UI checks must never change system settings.
+    if (args.contains("--smoke-test") || args.contains("--screenshot")) return;
+    QProcess tuned;
+    tuned.start("/usr/bin/systemctl", {"is-active", "--quiet", "tuned.service"});
+    if (tuned.waitForFinished(1000) && tuned.exitStatus() == QProcess::NormalExit && tuned.exitCode() == 0) {
+        logDiagnostic("Clock: gerenciado pelo TuneD; ajustes locais de CPU não aplicados.");
+        return;
+    }
+    const QString requested = qEnvironmentVariable("T3D_CPU", "auto");
+    if (requested == "none") return;
+    cpu_set_t allowed;
+    CPU_ZERO(&allowed);
+    if (sched_getaffinity(0, sizeof allowed, &allowed)) {
+        logDiagnostic("Clock: não foi possível determinar a CPU dedicada.");
+        return;
+    }
+    int cpu = -1, count = 0;
+    for (int i = 0; i < CPU_SETSIZE; ++i) if (CPU_ISSET(i, &allowed)) { cpu = i; ++count; }
+    if (requested == "auto" && count <= 1) return;
+    if (requested != "auto") {
+        bool valid = false;
+        cpu = requested.toInt(&valid);
+        if (!valid || cpu < 0 || cpu >= CPU_SETSIZE || !CPU_ISSET(cpu, &allowed)) {
+            logDiagnostic("Clock: T3D_CPU inválido; nenhum ajuste aplicado.");
+            return;
+        }
+    }
+    const QString helper = QString("/usr/local/libexec/t3d-analog-runtime-%1").arg(getuid());
+    if (!QFileInfo(helper).isExecutable()) {
+        logDiagnostic("Clock: instale o helper de tempo real para ajustar o governador.");
+        return;
+    }
+    m_cpuClock.setProcessChannelMode(QProcess::MergedChannels);
+    connect(&m_cpuClock, &QProcess::readyReadStandardOutput, this, [this] {
+        const QString output = QString::fromUtf8(m_cpuClock.readAllStandardOutput()).trimmed();
+        for (const auto &line : output.split('\n', Qt::SkipEmptyParts)) logDiagnostic("Clock: " + line);
+    });
+    connect(&m_cpuClock, &QProcess::errorOccurred, this, [this](QProcess::ProcessError) {
+        logDiagnostic("Clock: " + m_cpuClock.errorString());
+    });
+    m_cpuClock.start("/usr/bin/sudo", {"-n", "--", helper, "--cpu-session", QString::number(cpu)});
 }
 
 void MainWindow::showMessage(const QString &message, bool error)
@@ -108,6 +165,10 @@ void MainWindow::showIdentification(const QJsonObject &message)
         .arg(runtime.value("priority").toInt()).arg(cpus.join(", "))
         .arg(runtime.value("memory_current_locked").toBool() ? "sim" : "não")
         .arg(runtime.value("native_servo").toBool() ? "Cython" : "Python"));
+    logDiagnostic(QString("Versões: interface %1 | núcleo %2 | timer C++ %3 | estatísticas C++ %4")
+        .arg(QCoreApplication::applicationVersion(), runtime.value("driver_version").toString("não informado"))
+        .arg(runtime.value("native_timing").toBool() ? "sim" : "não")
+        .arg(runtime.value("native_statistics").toBool() ? "sim" : "não"));
     for (const auto &warning : runtime.value("warnings").toArray()) logDiagnostic(warning.toString());
     const auto info = message.value("identification").toObject();
     const auto channels = message.value("encoder_channels").toArray();
@@ -166,7 +227,9 @@ void MainWindow::refreshConfig()
             .arg(i).arg(c.value("counts_per_rev").toDouble()).arg(c.value("rpm_at_10v").toDouble())
             .arg(c.value("verified").toBool() ? "Configuração conferida" : "Conferência opcional"));
         const QSignalBlocker accelerationBlocker(p.acceleration);
-        p.acceleration->setValue(c.value("acceleration_rpm_s").toDouble(120));
+        p.acceleration->setValue(c.value("acceleration_rpm_s").toDouble(350));
+        const QSignalBlocker decelerationBlocker(p.deceleration);
+        p.deceleration->setValue(c.value("deceleration_rpm_s").toDouble(600));
         p.target->setRange(c.value("min_rev").toDouble(), c.value("max_rev").toDouble());
         p.jogRpm->setMaximum(9999.9);
     }
@@ -200,6 +263,7 @@ void MainWindow::startConnection()
         p.settings->setEnabled(false);
         p.outputTest->setEnabled(false);
         p.accelerationControl->setEnabled(false);
+        p.decelerationControl->setEnabled(false);
     }
     m_link->setText("Conectando à 7i80HDT…");
     const QString runtimeLauncher = QString("/usr/local/libexec/t3d-analog-runtime-%1").arg(getuid());
@@ -235,7 +299,7 @@ void MainWindow::send(const QJsonObject &message)
 
 void MainWindow::axisCommand(int index, const QString &operation, double value)
 {
-    if ((!m_ready && !(m_diagnosticMode && (operation == "enable" || operation == "acceleration"))) || m_stopping) return;
+    if ((!m_ready && !(m_diagnosticMode && (operation == "enable" || operation == "acceleration" || operation == "deceleration"))) || m_stopping) return;
     send({{"op", operation}, {"axis", index}, {"value", value}});
 }
 
@@ -276,7 +340,10 @@ void MainWindow::receive()
                 auto config = axes[index].toObject();
                 const bool fullConfig = message.value("config").isObject();
                 if (fullConfig) config = message.value("config").toObject();
-                else config["acceleration_rpm_s"] = message.value("acceleration_rpm_s");
+                else {
+                    for (const auto &key : {"acceleration_rpm_s", "deceleration_rpm_s"})
+                        if (message.contains(key)) config[key] = message.value(key);
+                }
                 axes[index] = config;
                 m_config["axes"] = axes;
                 if (fullConfig) {
@@ -287,8 +354,9 @@ void MainWindow::receive()
                     showMessage(text);
                     logDiagnostic(QString("Motor %1 • ").arg(index + 1) + text);
                 }
-                else logDiagnostic(QString("Motor %1 • aceleração aplicada: %2 RPM/s").arg(index + 1)
-                              .arg(config.value("acceleration_rpm_s").toDouble()));
+                else logDiagnostic(QString("Motor %1 • aceleração: %2 RPM/s | desaceleração: %3 RPM/s").arg(index + 1)
+                              .arg(config.value("acceleration_rpm_s").toDouble())
+                              .arg(config.value("deceleration_rpm_s").toDouble(600)));
             }
         } else if (type == "pwm_test") {
             m_pwmRunning = message.value("active").toBool();
@@ -343,6 +411,7 @@ void MainWindow::receive()
                         }
                         panel.enable->setStyleSheet("background:#842f26; color:white; font-weight:700;");
                         panel.accelerationControl->setEnabled(true);
+                        panel.decelerationControl->setEnabled(true);
                         panel.outputTest->setEnabled(true);
                         panel.enable->setEnabled(true);
                         panel.settings->setEnabled(true);
@@ -476,6 +545,7 @@ void MainWindow::updateStatus(const QJsonObject &message)
         p.enable->setToolTip(p.enabled ? "Retirar ENABLE" : "Ativar ENABLE e manter posição");
         const bool accelerationEditable = m_ready && !m_stopping && !m_loopbackRunning && !m_pwmRunning;
         p.accelerationControl->setEnabled(accelerationEditable);
+        p.decelerationControl->setEnabled(accelerationEditable);
         p.settings->setEnabled(accelerationEditable);
         const bool live = m_ready && !m_stopping && !m_loopbackRunning && !m_pwmRunning;
         p.enable->setEnabled(live);
@@ -571,18 +641,19 @@ void MainWindow::setDisconnected()
         p.enable->setStyleSheet("background:#842f26; color:white; font-weight:700;");
         p.enable->setToolTip("Ativar ENABLE e manter posição");
         p.accelerationControl->setEnabled(true);
+        p.decelerationControl->setEnabled(true);
     }
 }
 
-void MainWindow::applyAcceleration(int index, double value)
+void MainWindow::applyAcceleration(int index, double value, bool deceleration)
 {
     if (m_backend.state() != QProcess::NotRunning) {
-        axisCommand(index, "acceleration", value);
+        axisCommand(index, deceleration ? "deceleration" : "acceleration", value);
         return;
     }
     auto axes = m_config.value("axes").toArray();
     auto config = axes[index].toObject();
-    config["acceleration_rpm_s"] = value;
+    config[deceleration ? "deceleration_rpm_s" : "acceleration_rpm_s"] = value;
     axes[index] = config;
     m_config["axes"] = axes;
 }
@@ -597,8 +668,9 @@ void MainWindow::configureAxis(int index)
     dialog.setWindowTitle(QString("Motor %1 — calibração e malha de posição").arg(index + 1));
     Ui::AxisSettingsDialog ui;
     ui.setupUi(&dialog);
-    const QStringList fields{"counts_per_rev", "rpm_at_10v", "max_rpm", "acceleration_rpm_s", "kp", "ki", "kd", "ff1", "following_error_rev", "tolerance_counts", "no_response_timeout_s", "min_rev", "max_rev"};
-    const QVector<QDoubleSpinBox *> editors{ui.counts_per_rev, ui.rpm_at_10v, ui.max_rpm, ui.acceleration_rpm_s, ui.kp, ui.ki, ui.kd, ui.ff1, ui.following_error_rev, ui.tolerance_counts, ui.no_response_timeout_s, ui.min_rev, ui.max_rev};
+    if (!config.contains("deceleration_rpm_s")) config["deceleration_rpm_s"] = 600;
+    const QStringList fields{"counts_per_rev", "rpm_at_10v", "max_rpm", "acceleration_rpm_s", "deceleration_rpm_s", "kp", "ki", "kd", "ff1", "following_error_rev", "tolerance_counts", "no_response_timeout_s", "min_rev", "max_rev"};
+    const QVector<QDoubleSpinBox *> editors{ui.counts_per_rev, ui.rpm_at_10v, ui.max_rpm, ui.acceleration_rpm_s, ui.deceleration_rpm_s, ui.kp, ui.ki, ui.kd, ui.ff1, ui.following_error_rev, ui.tolerance_counts, ui.no_response_timeout_s, ui.min_rev, ui.max_rev};
     for (int i = 0; i < editors.size(); ++i)
         editors[i]->setValue(config.value(fields[i]).toDouble(fields[i] == "no_response_timeout_s" ? 0.5 : 0.0));
     auto *encoderSign = ui.encoderSign;

@@ -3,7 +3,7 @@ import importlib
 from importlib.machinery import EXTENSION_SUFFIXES
 import sys
 
-MODULES = ('servo', 'mesa7i80hdt', 'loopback', 'timing', 'backend')
+MODULES = ('servo', 'mesa7i80hdt', 'loopback', 'timing', 'backend', '_rtcore')
 
 def native_modules():
     paths = {}

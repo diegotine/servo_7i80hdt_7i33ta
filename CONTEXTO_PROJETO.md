@@ -23,9 +23,9 @@ e TESTE_LOOPBACK.md para os detalhes técnicos.
 - Controlador de trajetória/PID em driver/servo.py; backend.py é o único
   proprietário da comunicação da sessão. Ciclo nominal 2 ms, prazo 20 ms,
   watchdog 100 ms; sem garantia de tempo real rígido ou infraestrutura RTAPI.
-- Versão local 0.2.4 em desenvolvimento, conforme CMakeLists.txt e CHANGELOG.md.
+- Versão local 0.2.5 em desenvolvimento, conforme CMakeLists.txt e CHANGELOG.md.
   Há alterações locais ainda não publicadas; não confundir com release público.
-- Recursos locais: ajustes com placa conectada, limite padrão 3000 RPM,
+- Recursos locais: ajustes com placa conectada, limite padrão 1000 RPM,
   saída ±10 V, JOG com retenção, STOP mantendo ENABLE, modo teste com
   posição virtual e encoder real, gráfico de comando/feedback e diagnóstico.
 - Aba TESTES implementa loopback digital ENA → A, 100 ciclos, médias ON/OFF,
@@ -103,3 +103,39 @@ Atalho novo Iniciar T3D v0.2.2.desktop criado; anteriores preservados.
 - Pacotes oficiais Fedora python3-cython e python3-devel instalados; Python atualizado pela dependência para 3.14.8, Cython 3.2.4.
 - Auxiliar/sudoers existente compatível: backend.py delega ao backend compilado antes de qualquer I/O.
 - Qt .ui permanece editável. Atalho 0.2.4 criado; anteriores preservados. Comparação física Cython pendente.
+
+## Atualização 0.2.5
+
+- Defaults solicitados: limite/JOG 1000 RPM, aceleração 350 RPM/s,
+  desaceleração independente 600 RPM/s. Escala física +10 V = 3000 RPM mantida.
+- Novo `_rtcore` C++: rampas/planejamento, estatísticas e sleep absoluto;
+  demais módulos seguem em Cython. Sem alegar ganho antes da bancada.
+- Skills Intel performance-patterns/linux-perf instaladas; revisão baseada em
+  fonte aplicada, sem perf ou simulação de placa. Preferência global nativa registrada.
+- TuneD CPU/sysfs/latency-performance estudados. Helper acompanha a vida da GUI,
+  aplica performance/EPB/PM QoS por CPU e restaura no EOF.
+- CPU i5-13500, 6 CPUs online; dedicada 5. Kernel informa
+  `intel_pstate: HWP-disabled hybrid CPU is not supported` no boot atual.
+  Driver acpi-cpufreq representa turbo por 2501000 kHz, sem seleção exata de 4200 MHz.
+  Não confundir esse marcador com limite físico: /proc/cpuinfo mostra 4500 MHz.
+  Conferir Intel Speed Shift/HWP no firmware para disponibilizar intel_pstate.
+
+## Boot e ensaio posterior ao TuneD
+
+- Novo JSON 180048-574: GUI 0.2.4, backend já com `_rtcore` 0.2.5.
+  Comparação salva em medicoes/2026-10-11-loopback-tuned-comparacao.md.
+  Não é ensaio isolado da 0.2.4 com TuneD.
+- Defaults e entradas BLS preparados com intel_pstate=active; reinício pendente.
+  Backup /var/backups/t3d-pstate-20261011T180312Z. Não houve reboot automático.
+- A versão 0.2.4 foi isolada em .versions/v0.2.4, fonte 04f7c66,
+  com helper e atalho separados para impedir mistura de módulos.
+  Atalho Iniciar T3D v0.2.4.desktop atualizado na pasta e na Área de trabalho.
+  Build, gui_smoke e seis testes de compatibilidade passaram sem placa.
+
+- Núcleo 0.2.5 passou a exportar runtime.driver_version; GUI registra ambas as versões.
+- Usuário pediu finalizar 0.2.5 antes de retomar pstate. A mudança de boot já estava
+  gravada antes dessa instrução; não reiniciar automaticamente.
+
+- 0.2.5 concluída localmente: build, interface, regressões matemáticas e temporização
+  passaram; preflight confirmou FIFO 10 / CPU 5 / mlock e núcleo 0.2.5, sem placa.
+  Atalho 0.2.5 disponível; 0.2.4 preservada isoladamente. Nenhuma publicação nova.

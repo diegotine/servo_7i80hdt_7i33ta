@@ -1,0 +1,20 @@
+{
+  "version": "0.2.5",
+  "board_access": false,
+  "sources_sha256": {
+    "native/rtcore.cpp": "1a392b0b11729b33dc6fdd9c16fb13b2e733aa84eb90ae35a7b90610816b07e9",
+    "native/motion.hpp": "d167b751da6b81402d0e6543c1020c1488c3fce3f53af39079a48e0eda69c9c5",
+    "app/cpu_clock.cpp": "5130775053d7cfec0b749d9cdc5b81d2e7e465f86a01d621ad3171b358f0646e",
+    "driver/servo.py": "466f31ddb317c3d0f55fc862d09a6cc0603f3bb3c27af19d76f703ff5bf88ee3",
+    "driver/backend.py": "5519271a8b40214fe6d5c0bb2b9747cef17929e425bb5451552af509679d0938",
+    "driver/timing.py": "435dcbe843deb2a73d91dab35f86549b0258479ff7486989000a91a102142544"
+  },
+  "modules_sha256": {
+    "build/driver/loopback.cpython-314-x86_64-linux-gnu.so": "0c2929a5f3b82488d5c17d5d7474552dceb85ded624970c01c8e9c042047fb2d",
+    "build/driver/mesa7i80hdt.cpython-314-x86_64-linux-gnu.so": "5742c99de5feb633d9dc87f046f92154e2441a046786f1095db2547fd0ee7ae8",
+    "build/driver/servo.cpython-314-x86_64-linux-gnu.so": "2ef6fdff21173ae13bb2396c3d4be3b69872a0d8b078009802c164adb854014e",
+    "build/driver/backend.cpython-314-x86_64-linux-gnu.so": "f25697f47a4aca5aa9b9a2d5a39e832b66ff406bd316871e08f7717cd19b14ae",
+    "build/driver/_rtcore.cpython-314-x86_64-linux-gnu.so": "d421db86cc2ec7aaa477473b46fd76a3e72509024d698c6f2c5a54e065a4c9cd",
+    "build/driver/timing.cpython-314-x86_64-linux-gnu.so": "4b5ff2afec84ab9ca94c483616d48ad0c324b49c4494fcf74bc3ffb5b7490de4"
+  }
+}

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version='1.0' encoding='UTF-8'?>
 <ui version="4.0">
  <class>MainWindow</class>
  <widget class="QMainWindow" name="MainWindow">
@@ -936,7 +936,7 @@
              <string />
             </property>
             <property name="toolTip">
-             <string>Parar com a aceleração configurada e manter ENABLE e posição</string>
+             <string>Parar com Max. Decell. e manter ENABLE e posição</string>
             </property>
             <property name="styleSheet">
              <string notr="true">background:#842f26; color:white; font-weight:700;</string>
@@ -1032,7 +1032,7 @@
                 <double>10.000000000000000</double>
                </property>
                <property name="value">
-                <double>120.000000000000000</double>
+                <double>350</double>
                </property>
               </widget>
              </item>
@@ -1106,6 +1106,173 @@
              </item>
              <item>
               <widget class="QLabel" name="element190">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="windowTitle">
+                <string />
+               </property>
+               <property name="text">
+                <string>RPM/s</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignLeading|Qt::AlignVCenter</set>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="decelerationLabel0">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="windowTitle">
+             <string />
+            </property>
+            <property name="text">
+             <string>Max. Decell.</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignLeading|Qt::AlignVCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QWidget" name="decelerationControl0">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="windowTitle">
+             <string />
+            </property>
+            <layout class="QHBoxLayout" name="decel0_element188">
+             <property name="spacing">
+              <number>5</number>
+             </property>
+             <item>
+              <widget class="QDoubleSpinBox" name="deceleration0">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="minimumSize">
+                <size>
+                 <width>115</width>
+                 <height>0</height>
+                </size>
+               </property>
+               <property name="windowTitle">
+                <string />
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignLeading|Qt::AlignVCenter</set>
+               </property>
+               <property name="buttonSymbols">
+                <enum>QAbstractSpinBox::NoButtons</enum>
+               </property>
+               <property name="keyboardTracking">
+                <bool>false</bool>
+               </property>
+               <property name="decimals">
+                <number>1</number>
+               </property>
+               <property name="minimum">
+                <double>0.100000000000000</double>
+               </property>
+               <property name="maximum">
+                <double>100000.000000000000000</double>
+               </property>
+               <property name="singleStep">
+                <double>10.000000000000000</double>
+               </property>
+               <property name="value">
+                <double>600.000000000000000</double>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="deceleration0Plus">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="minimumSize">
+                <size>
+                 <width>40</width>
+                 <height>0</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>40</width>
+                 <height>16777215</height>
+                </size>
+               </property>
+               <property name="windowTitle">
+                <string />
+               </property>
+               <property name="accessibleName">
+                <string>Aumentar RPM/s</string>
+               </property>
+               <property name="text">
+                <string>+</string>
+               </property>
+               <property name="autoRepeat">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="deceleration0Minus">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="minimumSize">
+                <size>
+                 <width>40</width>
+                 <height>0</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>40</width>
+                 <height>16777215</height>
+                </size>
+               </property>
+               <property name="windowTitle">
+                <string />
+               </property>
+               <property name="accessibleName">
+                <string>Diminuir RPM/s</string>
+               </property>
+               <property name="text">
+                <string>−</string>
+               </property>
+               <property name="autoRepeat">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="decel0_element190">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                  <horstretch>0</horstretch>
@@ -1442,7 +1609,7 @@
                  <double>1.000000000000000</double>
                 </property>
                 <property name="value">
-                 <double>10.000000000000000</double>
+                 <double>1000</double>
                 </property>
                </widget>
               </item>
@@ -2097,7 +2264,7 @@
              <string />
             </property>
             <property name="toolTip">
-             <string>Parar com a aceleração configurada e manter ENABLE e posição</string>
+             <string>Parar com Max. Decell. e manter ENABLE e posição</string>
             </property>
             <property name="styleSheet">
              <string notr="true">background:#842f26; color:white; font-weight:700;</string>
@@ -2193,7 +2360,7 @@
                 <double>10.000000000000000</double>
                </property>
                <property name="value">
-                <double>120.000000000000000</double>
+                <double>350</double>
                </property>
               </widget>
              </item>
@@ -2267,6 +2434,173 @@
              </item>
              <item>
               <widget class="QLabel" name="element159">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="windowTitle">
+                <string />
+               </property>
+               <property name="text">
+                <string>RPM/s</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignLeading|Qt::AlignVCenter</set>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="decelerationLabel1">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="windowTitle">
+             <string />
+            </property>
+            <property name="text">
+             <string>Max. Decell.</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignLeading|Qt::AlignVCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QWidget" name="decelerationControl1">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="windowTitle">
+             <string />
+            </property>
+            <layout class="QHBoxLayout" name="decel1_element157">
+             <property name="spacing">
+              <number>5</number>
+             </property>
+             <item>
+              <widget class="QDoubleSpinBox" name="deceleration1">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="minimumSize">
+                <size>
+                 <width>115</width>
+                 <height>0</height>
+                </size>
+               </property>
+               <property name="windowTitle">
+                <string />
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignLeading|Qt::AlignVCenter</set>
+               </property>
+               <property name="buttonSymbols">
+                <enum>QAbstractSpinBox::NoButtons</enum>
+               </property>
+               <property name="keyboardTracking">
+                <bool>false</bool>
+               </property>
+               <property name="decimals">
+                <number>1</number>
+               </property>
+               <property name="minimum">
+                <double>0.100000000000000</double>
+               </property>
+               <property name="maximum">
+                <double>100000.000000000000000</double>
+               </property>
+               <property name="singleStep">
+                <double>10.000000000000000</double>
+               </property>
+               <property name="value">
+                <double>600.000000000000000</double>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="deceleration1Plus">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="minimumSize">
+                <size>
+                 <width>40</width>
+                 <height>0</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>40</width>
+                 <height>16777215</height>
+                </size>
+               </property>
+               <property name="windowTitle">
+                <string />
+               </property>
+               <property name="accessibleName">
+                <string>Aumentar RPM/s</string>
+               </property>
+               <property name="text">
+                <string>+</string>
+               </property>
+               <property name="autoRepeat">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="deceleration1Minus">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="minimumSize">
+                <size>
+                 <width>40</width>
+                 <height>0</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>40</width>
+                 <height>16777215</height>
+                </size>
+               </property>
+               <property name="windowTitle">
+                <string />
+               </property>
+               <property name="accessibleName">
+                <string>Diminuir RPM/s</string>
+               </property>
+               <property name="text">
+                <string>−</string>
+               </property>
+               <property name="autoRepeat">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="decel1_element159">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                  <horstretch>0</horstretch>
@@ -2603,7 +2937,7 @@
                  <double>1.000000000000000</double>
                 </property>
                 <property name="value">
-                 <double>10.000000000000000</double>
+                 <double>1000</double>
                 </property>
                </widget>
               </item>
@@ -3258,7 +3592,7 @@
              <string />
             </property>
             <property name="toolTip">
-             <string>Parar com a aceleração configurada e manter ENABLE e posição</string>
+             <string>Parar com Max. Decell. e manter ENABLE e posição</string>
             </property>
             <property name="styleSheet">
              <string notr="true">background:#842f26; color:white; font-weight:700;</string>
@@ -3354,7 +3688,7 @@
                 <double>10.000000000000000</double>
                </property>
                <property name="value">
-                <double>120.000000000000000</double>
+                <double>350</double>
                </property>
               </widget>
              </item>
@@ -3428,6 +3762,173 @@
              </item>
              <item>
               <widget class="QLabel" name="element129">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="windowTitle">
+                <string />
+               </property>
+               <property name="text">
+                <string>RPM/s</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignLeading|Qt::AlignVCenter</set>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="decelerationLabel2">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="windowTitle">
+             <string />
+            </property>
+            <property name="text">
+             <string>Max. Decell.</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignLeading|Qt::AlignVCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QWidget" name="decelerationControl2">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="windowTitle">
+             <string />
+            </property>
+            <layout class="QHBoxLayout" name="decel2_element127">
+             <property name="spacing">
+              <number>5</number>
+             </property>
+             <item>
+              <widget class="QDoubleSpinBox" name="deceleration2">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="minimumSize">
+                <size>
+                 <width>115</width>
+                 <height>0</height>
+                </size>
+               </property>
+               <property name="windowTitle">
+                <string />
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignLeading|Qt::AlignVCenter</set>
+               </property>
+               <property name="buttonSymbols">
+                <enum>QAbstractSpinBox::NoButtons</enum>
+               </property>
+               <property name="keyboardTracking">
+                <bool>false</bool>
+               </property>
+               <property name="decimals">
+                <number>1</number>
+               </property>
+               <property name="minimum">
+                <double>0.100000000000000</double>
+               </property>
+               <property name="maximum">
+                <double>100000.000000000000000</double>
+               </property>
+               <property name="singleStep">
+                <double>10.000000000000000</double>
+               </property>
+               <property name="value">
+                <double>600.000000000000000</double>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="deceleration2Plus">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="minimumSize">
+                <size>
+                 <width>40</width>
+                 <height>0</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>40</width>
+                 <height>16777215</height>
+                </size>
+               </property>
+               <property name="windowTitle">
+                <string />
+               </property>
+               <property name="accessibleName">
+                <string>Aumentar RPM/s</string>
+               </property>
+               <property name="text">
+                <string>+</string>
+               </property>
+               <property name="autoRepeat">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="deceleration2Minus">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="minimumSize">
+                <size>
+                 <width>40</width>
+                 <height>0</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>40</width>
+                 <height>16777215</height>
+                </size>
+               </property>
+               <property name="windowTitle">
+                <string />
+               </property>
+               <property name="accessibleName">
+                <string>Diminuir RPM/s</string>
+               </property>
+               <property name="text">
+                <string>−</string>
+               </property>
+               <property name="autoRepeat">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="decel2_element129">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                  <horstretch>0</horstretch>
@@ -3764,7 +4265,7 @@
                  <double>1.000000000000000</double>
                 </property>
                 <property name="value">
-                 <double>10.000000000000000</double>
+                 <double>1000</double>
                 </property>
                </widget>
               </item>
@@ -4419,7 +4920,7 @@
              <string />
             </property>
             <property name="toolTip">
-             <string>Parar com a aceleração configurada e manter ENABLE e posição</string>
+             <string>Parar com Max. Decell. e manter ENABLE e posição</string>
             </property>
             <property name="styleSheet">
              <string notr="true">background:#842f26; color:white; font-weight:700;</string>
@@ -4515,7 +5016,7 @@
                 <double>10.000000000000000</double>
                </property>
                <property name="value">
-                <double>120.000000000000000</double>
+                <double>350</double>
                </property>
               </widget>
              </item>
@@ -4589,6 +5090,173 @@
              </item>
              <item>
               <widget class="QLabel" name="element99">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="windowTitle">
+                <string />
+               </property>
+               <property name="text">
+                <string>RPM/s</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignLeading|Qt::AlignVCenter</set>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="decelerationLabel3">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="windowTitle">
+             <string />
+            </property>
+            <property name="text">
+             <string>Max. Decell.</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignLeading|Qt::AlignVCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QWidget" name="decelerationControl3">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="windowTitle">
+             <string />
+            </property>
+            <layout class="QHBoxLayout" name="decel3_element97">
+             <property name="spacing">
+              <number>5</number>
+             </property>
+             <item>
+              <widget class="QDoubleSpinBox" name="deceleration3">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="minimumSize">
+                <size>
+                 <width>115</width>
+                 <height>0</height>
+                </size>
+               </property>
+               <property name="windowTitle">
+                <string />
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignLeading|Qt::AlignVCenter</set>
+               </property>
+               <property name="buttonSymbols">
+                <enum>QAbstractSpinBox::NoButtons</enum>
+               </property>
+               <property name="keyboardTracking">
+                <bool>false</bool>
+               </property>
+               <property name="decimals">
+                <number>1</number>
+               </property>
+               <property name="minimum">
+                <double>0.100000000000000</double>
+               </property>
+               <property name="maximum">
+                <double>100000.000000000000000</double>
+               </property>
+               <property name="singleStep">
+                <double>10.000000000000000</double>
+               </property>
+               <property name="value">
+                <double>600.000000000000000</double>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="deceleration3Plus">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="minimumSize">
+                <size>
+                 <width>40</width>
+                 <height>0</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>40</width>
+                 <height>16777215</height>
+                </size>
+               </property>
+               <property name="windowTitle">
+                <string />
+               </property>
+               <property name="accessibleName">
+                <string>Aumentar RPM/s</string>
+               </property>
+               <property name="text">
+                <string>+</string>
+               </property>
+               <property name="autoRepeat">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="deceleration3Minus">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="minimumSize">
+                <size>
+                 <width>40</width>
+                 <height>0</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>40</width>
+                 <height>16777215</height>
+                </size>
+               </property>
+               <property name="windowTitle">
+                <string />
+               </property>
+               <property name="accessibleName">
+                <string>Diminuir RPM/s</string>
+               </property>
+               <property name="text">
+                <string>−</string>
+               </property>
+               <property name="autoRepeat">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="decel3_element99">
                <property name="sizePolicy">
                 <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                  <horstretch>0</horstretch>
@@ -4925,7 +5593,7 @@
                  <double>1.000000000000000</double>
                 </property>
                 <property name="value">
-                 <double>10.000000000000000</double>
+                 <double>1000</double>
                 </property>
                </widget>
               </item>
@@ -6385,15 +7053,25 @@ Tensão exibida é o comando enviado; a HDT não mede a tensão analógica nem a
         </item>
         <item>
          <widget class="QLabel" name="diagRuntime">
-          <property name="text"><string>Execução: sem sessão ativa.</string></property>
-          <property name="wordWrap"><bool>true</bool></property>
-          <property name="textFormat"><enum>Qt::PlainText</enum></property>
+          <property name="text">
+           <string>Execução: sem sessão ativa.</string>
+          </property>
+          <property name="wordWrap">
+           <bool>true</bool>
+          </property>
+          <property name="textFormat">
+           <enum>Qt::PlainText</enum>
+          </property>
          </widget>
         </item>
         <item>
          <widget class="QLabel" name="diagTiming">
-          <property name="wordWrap"><bool>true</bool></property>
-          <property name="textFormat"><enum>Qt::PlainText</enum></property>
+          <property name="wordWrap">
+           <bool>true</bool>
+          </property>
+          <property name="textFormat">
+           <enum>Qt::PlainText</enum>
+          </property>
           <property name="sizePolicy">
            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
             <horstretch>0</horstretch>
@@ -6702,20 +7380,79 @@ Tensão exibida é o comando enviado; a HDT não mede a tensão analógica nem a
         </item>
         <item>
          <layout class="QHBoxLayout" name="pwmManualRow">
-          <item><widget class="QLabel" name="pwmLabel"><property name="text"><string>Teste manual PWM/PDM:</string></property></widget></item>
-          <item><widget class="QDoubleSpinBox" name="pwmPercent"><property name="suffix"><string> %</string></property><property name="decimals"><number>1</number></property><property name="maximum"><double>100.000000000000000</double></property><property name="keyboardTracking"><bool>false</bool></property></widget></item>
-          <item><widget class="QPushButton" name="pwmApply"><property name="text"><string>Aplicar</string></property></widget></item>
-          <item><widget class="QPushButton" name="pwmPulse"><property name="text"><string>Pulso 40% / 500 ms</string></property><property name="toolTip"><string>Pulso automático de +4 V nominal para osciloscópio; não depende da entrada A</string></property></widget></item>
-          <item><widget class="QPushButton" name="pwmStop"><property name="text"><string>Zerar / desligar</string></property></widget></item>
-          <item><widget class="QLabel" name="pwmStatus"><property name="text"><string>Desligado • medir DRV com multímetro, sem fio no encoder</string></property><property name="wordWrap"><bool>true</bool></property></widget></item>
+          <item>
+           <widget class="QLabel" name="pwmLabel">
+            <property name="text">
+             <string>Teste manual PWM/PDM:</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QDoubleSpinBox" name="pwmPercent">
+            <property name="suffix">
+             <string> %</string>
+            </property>
+            <property name="decimals">
+             <number>1</number>
+            </property>
+            <property name="maximum">
+             <double>100.000000000000000</double>
+            </property>
+            <property name="keyboardTracking">
+             <bool>false</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="pwmApply">
+            <property name="text">
+             <string>Aplicar</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="pwmPulse">
+            <property name="text">
+             <string>Pulso 40% / 500 ms</string>
+            </property>
+            <property name="toolTip">
+             <string>Pulso automático de +4 V nominal para osciloscópio; não depende da entrada A</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="pwmStop">
+            <property name="text">
+             <string>Zerar / desligar</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="pwmStatus">
+            <property name="text">
+             <string>Desligado • medir DRV com multímetro, sem fio no encoder</string>
+            </property>
+            <property name="wordWrap">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
          </layout>
         </item>
         <item>
          <layout class="QHBoxLayout" name="loopbackChannelRow">
           <item>
            <widget class="QComboBox" name="loopbackMode">
-            <item><property name="text"><string>Digital • ENABLE</string></property></item>
-            <item><property name="text"><string>Analógico • 0 / +4 V (40%)</string></property></item>
+            <item>
+             <property name="text">
+              <string>Digital • ENABLE</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Analógico • 0 / +4 V (40%)</string>
+             </property>
+            </item>
            </widget>
           </item>
           <item>

@@ -131,3 +131,22 @@ integralmente RTAPI nem garante tempo real rígido. Consulte CYTHON.md.
 Referências: [clock_nanosleep](https://man7.org/linux/man-pages/man2/clock_nanosleep.2.html),
 [mlockall](https://man7.org/linux/man-pages/man2/mlockall.2.html),
 [escalonamento e afinidade em Python](https://docs.python.org/3/library/os.html#interface-to-the-scheduler).
+
+## 0.2.5: núcleo C++ e política de CPU
+
+`_rtcore` contém sleep absoluto, estatísticas de janela fixa e as rampas
+assimétricas. O JSON inclui `runtime.driver_version` para distinguir a versão do
+núcleo da interface. O período continua em 2 ms.
+
+Reinstale o auxiliar com `instalar-limites-tempo-real.sh` após compilar a 0.2.5.
+Ele oferece uma sessão fixa de ajustes de CPU, separada da execução do backend:
+performance, boost por política, EPB/EPP e PM QoS da CPU escolhida. Salva valores,
+confere os ajustes e restaura ao fechar a interface. A seleção de CPU acompanha
+T3D_CPU (`auto`: maior CPU permitida); `none` desativa os ajustes locais.
+A frequência de 4200 MHz só é solicitada como limites mínimo/máximo quando o
+driver a expõe; indisponibilidade é registrada no diagnóstico.
+
+Se `tuned.service` está ativo ao abrir, a interface deixa a política a cargo do
+TuneD e não altera os ajustes de CPU. Os limites FIFO/memória do backend
+continuam sendo concedidos normalmente. Não há conflito intencional com o perfil
+selecionado pelo operador. Detalhes em OTIMIZACAO_0.2.5.md.

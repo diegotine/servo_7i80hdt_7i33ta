@@ -8,6 +8,11 @@ import time
 from importlib.machinery import EXTENSION_SUFFIXES
 
 
+try:
+    from _rtcore import Samples as NativeSamples, sleep_until_ns as native_sleep
+except ImportError:
+    NativeSamples = native_sleep = None  # Source-only mathematical checks.
+
 NOMINAL_PERIOD_NS = 2_000_000
 
 
@@ -40,7 +45,7 @@ class CycleTimer:
             raise ValueError('Período deve ser um número positivo de nanossegundos')
         self.period_ns = period_ns
         self.clock = clock
-        self.sleep_until = sleeper if sleeper is not None else AbsoluteSleeper()
+        self.sleep_until = sleeper if sleeper is not None else (native_sleep or AbsoluteSleeper())
         self.next_ns = clock() + period_ns
         self.skipped = 0
 
@@ -84,6 +89,11 @@ class Samples:
                     min_ms=self.minimum, max_ms=self.maximum,
                     stddev_ms=math.sqrt(max(0, self.m2 / self.count)),
                     p95_recent_ms=ordered[math.ceil(len(ordered) * .95) - 1])
+
+
+# Normal application startup requires _rtcore; keep source reference for checks.
+if NativeSamples is not None:
+    Samples = NativeSamples
 
 
 class CycleMetrics:
@@ -149,4 +159,6 @@ def configure_runtime(environ=None):
                 priority=os.sched_getparam(0).sched_priority,
                 cpus=sorted(os.sched_getaffinity(0)), memory_current_locked=memory_locked,
                 warnings=errors, timer='CLOCK_MONOTONIC / TIMER_ABSTIME',
+                native_timing=native_sleep is not None, native_statistics=NativeSamples is not None,
+                driver_version=getattr(__import__('_rtcore'), '__version__', 'unknown') if native_sleep is not None else 'source',
                 native_servo=__import__('servo').__file__.endswith(tuple(EXTENSION_SUFFIXES)))

@@ -8,8 +8,8 @@
       "rpm_at_10v": 3000,
       "encoder_sign": 1,
       "output_sign": 1,
-      "max_rpm": 3000,
-      "acceleration_rpm_s": 120,
+      "max_rpm": 1000,
+      "acceleration_rpm_s": 350,
       "kp": 50,
       "ki": 0,
       "kd": 0,
@@ -19,15 +19,16 @@
       "min_rev": -10,
       "max_rev": 10,
       "verified": false,
-      "no_response_timeout_s": 0.5
+      "no_response_timeout_s": 0.5,
+      "deceleration_rpm_s": 600
     },
     {
       "counts_per_rev": 10000,
       "rpm_at_10v": 3000,
       "encoder_sign": 1,
       "output_sign": 1,
-      "max_rpm": 3000,
-      "acceleration_rpm_s": 120,
+      "max_rpm": 1000,
+      "acceleration_rpm_s": 350,
       "kp": 50,
       "ki": 0,
       "kd": 0,
@@ -37,15 +38,16 @@
       "min_rev": -10,
       "max_rev": 10,
       "verified": false,
-      "no_response_timeout_s": 0.5
+      "no_response_timeout_s": 0.5,
+      "deceleration_rpm_s": 600
     },
     {
       "counts_per_rev": 10000,
       "rpm_at_10v": 3000,
       "encoder_sign": 1,
       "output_sign": 1,
-      "max_rpm": 3000,
-      "acceleration_rpm_s": 120,
+      "max_rpm": 1000,
+      "acceleration_rpm_s": 350,
       "kp": 50,
       "ki": 0,
       "kd": 0,
@@ -55,15 +57,16 @@
       "min_rev": -10,
       "max_rev": 10,
       "verified": false,
-      "no_response_timeout_s": 0.5
+      "no_response_timeout_s": 0.5,
+      "deceleration_rpm_s": 600
     },
     {
       "counts_per_rev": 10000,
       "rpm_at_10v": 3000,
       "encoder_sign": 1,
       "output_sign": 1,
-      "max_rpm": 3000,
-      "acceleration_rpm_s": 120,
+      "max_rpm": 1000,
+      "acceleration_rpm_s": 350,
       "kp": 50,
       "ki": 0,
       "kd": 0,
@@ -73,7 +76,8 @@
       "min_rev": -10,
       "max_rev": 10,
       "verified": false,
-      "no_response_timeout_s": 0.5
+      "no_response_timeout_s": 0.5,
+      "deceleration_rpm_s": 600
     }
   ]
 }

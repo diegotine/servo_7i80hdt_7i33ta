@@ -29,7 +29,9 @@ class NativeCompatibilityTests(unittest.TestCase):
 
     def test_all_runtime_modules_are_extensions(self):
         paths = native_modules()
-        self.assertEqual(len(paths), 5)
+        self.assertEqual(len(paths), 6)
+        import _rtcore
+        self.assertEqual(_rtcore.__version__, "0.2.5")
         self.assertTrue(all(path.endswith(tuple(EXTENSION_SUFFIXES)) for path in paths.values()))
 
     def test_lbp16_packet_bytes_and_validation_match(self):

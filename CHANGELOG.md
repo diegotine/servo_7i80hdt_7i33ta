@@ -4,6 +4,11 @@
 
 - Versão incrementada antes das otimizações; período de 2 ms mantido.
 - Referência física 0.2.4 salva antes das mudanças.
+- Núcleo C++ para temporização absoluta, estatísticas e rampas assimétricas.
+- Aceleração e desaceleração separadas; padrões 350 e 600 RPM/s, limite/JOG 1000 RPM.
+- Helper aplica governador e ajustes de CPU inspirados no TuneD ao abrir e restaura ao fechar.
+- Solicitação de 4200 MHz condicionada ao suporte real do driver; diagnóstico explícito.
+- Validação matemática, compatibilidade e interface sem acionar ou simular a placa.
 
 ## 0.2.4 — conversão Cython
 

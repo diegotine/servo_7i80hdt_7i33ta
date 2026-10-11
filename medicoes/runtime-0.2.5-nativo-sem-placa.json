@@ -1,0 +1,43 @@
+{
+  "scheduler": "SCHED_FIFO",
+  "priority": 10,
+  "cpus": [
+    5
+  ],
+  "memory_current_locked": true,
+  "warnings": [],
+  "timer": "CLOCK_MONOTONIC / TIMER_ABSTIME",
+  "native_timing": true,
+  "native_statistics": true,
+  "driver_version": "0.2.5",
+  "native_servo": true,
+  "native_modules": {
+    "servo": "/home/dell7010/Documentos/ChatGPT/servo_7i80hdt_7i33ta/build/driver/servo.cpython-314-x86_64-linux-gnu.so",
+    "mesa7i80hdt": "/home/dell7010/Documentos/ChatGPT/servo_7i80hdt_7i33ta/build/driver/mesa7i80hdt.cpython-314-x86_64-linux-gnu.so",
+    "loopback": "/home/dell7010/Documentos/ChatGPT/servo_7i80hdt_7i33ta/build/driver/loopback.cpython-314-x86_64-linux-gnu.so",
+    "timing": "/home/dell7010/Documentos/ChatGPT/servo_7i80hdt_7i33ta/build/driver/timing.cpython-314-x86_64-linux-gnu.so",
+    "backend": "/home/dell7010/Documentos/ChatGPT/servo_7i80hdt_7i33ta/build/driver/backend.cpython-314-x86_64-linux-gnu.so",
+    "_rtcore": "/home/dell7010/Documentos/ChatGPT/servo_7i80hdt_7i33ta/build/driver/_rtcore.cpython-314-x86_64-linux-gnu.so"
+  },
+  "uid": 1000,
+  "limits": {
+    "rtprio": [
+      20,
+      20
+    ],
+    "memlock_bytes": [
+      268435456,
+      268435456
+    ]
+  },
+  "capabilities": {
+    "CapPrm": "0000000000000000",
+    "CapEff": "0000000000000000",
+    "NoNewPrivs": "1"
+  },
+  "memory": {
+    "VmSize": "107168 kB",
+    "VmLck": "106976 kB",
+    "Threads": "2"
+  }
+}

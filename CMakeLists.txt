@@ -7,7 +7,7 @@ set(CMAKE_AUTOUIC ON)
 find_package(Qt6 6.4 REQUIRED COMPONENTS Widgets)
 find_package(Python3 3.10 REQUIRED COMPONENTS Interpreter Development.Module)
 execute_process(COMMAND id -u OUTPUT_VARIABLE T3D_LOCAL_UID OUTPUT_STRIP_TRAILING_WHITESPACE COMMAND_ERROR_IS_FATAL ANY)
-add_executable(t3d_runtime_limiter app/runtime_limiter.cpp)
+add_executable(t3d_runtime_limiter app/runtime_limiter.cpp app/cpu_clock.cpp)
 target_compile_options(t3d_runtime_limiter PRIVATE -Wall -Wextra -Wpedantic)
 target_compile_definitions(t3d_runtime_limiter PRIVATE
     T3D_ALLOWED_UID=${T3D_LOCAL_UID}
@@ -40,7 +40,7 @@ add_test(NAME driver_and_servo
     COMMAND ${Python3_EXECUTABLE} -m unittest discover -s tests -v)
 set_tests_properties(driver_and_servo PROPERTIES
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
-    ENVIRONMENT "PYTHONPATH=${CMAKE_CURRENT_SOURCE_DIR}/driver;PYTHONDONTWRITEBYTECODE=1"
+    ENVIRONMENT "PYTHONPATH=${CMAKE_CURRENT_BINARY_DIR}/driver;PYTHONDONTWRITEBYTECODE=1"
     TIMEOUT 45)
 add_test(NAME gui_smoke COMMAND t3d_analog --smoke-test)
 set_tests_properties(gui_smoke PROPERTIES ENVIRONMENT "QT_QPA_PLATFORM=offscreen" TIMEOUT 10)
@@ -80,3 +80,20 @@ add_test(NAME native_compatibility
 set_tests_properties(native_compatibility PROPERTIES
     ENVIRONMENT "PYTHONPATH=${CMAKE_CURRENT_BINARY_DIR}/driver;PYTHONDONTWRITEBYTECODE=1"
     TIMEOUT 15)
+
+Python3_add_library(native_rtcore MODULE WITH_SOABI native/rtcore.cpp)
+set_target_properties(native_rtcore PROPERTIES AUTOMOC OFF AUTOUIC OFF
+    OUTPUT_NAME _rtcore LIBRARY_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/driver")
+target_compile_definitions(native_rtcore PRIVATE T3D_VERSION="${PROJECT_VERSION}")
+target_compile_options(native_rtcore PRIVATE -Wall -Wextra -Wpedantic -ffp-contract=off -g)
+if(T3D_SANITIZERS)
+    target_compile_options(native_rtcore PRIVATE -fsanitize=address,undefined -fno-omit-frame-pointer)
+    target_link_options(native_rtcore PRIVATE -fsanitize=address,undefined)
+endif()
+add_dependencies(t3d_analog native_rtcore)
+
+add_executable(test_native_motion tests/test_motion.cpp)
+set_target_properties(test_native_motion PROPERTIES AUTOMOC OFF AUTOUIC OFF)
+target_include_directories(test_native_motion PRIVATE native)
+target_compile_options(test_native_motion PRIVATE -Wall -Wextra -Wpedantic -ffp-contract=off)
+add_test(NAME native_motion COMMAND test_native_motion)

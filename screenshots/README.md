@@ -30,3 +30,6 @@
 
 As imagens ilustram a interface; não comprovam funcionamento elétrico ou
 movimento real dos motores.
+
+- [Interface 0.2.5](interface-v0.2.5.png): aceleração e desaceleração independentes,
+  padrões 350/600 RPM/s e JOG 1000 RPM; captura sem conexão à placa.
