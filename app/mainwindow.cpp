@@ -104,10 +104,9 @@ void MainWindow::startCpuClock()
     if (args.contains("--smoke-test") || args.contains("--screenshot")) return;
     QProcess tuned;
     tuned.start("/usr/bin/systemctl", {"is-active", "--quiet", "tuned.service"});
-    if (tuned.waitForFinished(1000) && tuned.exitStatus() == QProcess::NormalExit && tuned.exitCode() == 0) {
-        logDiagnostic("Clock: gerenciado pelo TuneD; ajustes locais de CPU não aplicados.");
-        return;
-    }
+    const bool tunedActive = tuned.waitForFinished(1000) && tuned.exitStatus() == QProcess::NormalExit && tuned.exitCode() == 0;
+    if (tunedActive)
+        logDiagnostic("Clock: perfil TuneD preservado; solicitando apenas limites de 4200 MHz na CPU dedicada.");
     const QString requested = qEnvironmentVariable("T3D_CPU", "auto");
     if (requested == "none") return;
     cpu_set_t allowed;
@@ -140,7 +139,8 @@ void MainWindow::startCpuClock()
     connect(&m_cpuClock, &QProcess::errorOccurred, this, [this](QProcess::ProcessError) {
         logDiagnostic("Clock: " + m_cpuClock.errorString());
     });
-    m_cpuClock.start("/usr/bin/sudo", {"-n", "--", helper, "--cpu-session", QString::number(cpu)});
+    m_cpuClock.start("/usr/bin/sudo", {"-n", "--", helper,
+                     tunedActive ? "--cpu-clock-session" : "--cpu-session", QString::number(cpu)});
 }
 
 void MainWindow::showMessage(const QString &message, bool error)

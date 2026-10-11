@@ -172,3 +172,16 @@ Atalho novo Iniciar T3D v0.2.2.desktop criado; anteriores preservados.
   28,657/27,328 µs, menores que os 34,338/32,434 µs pré-reboot.
   Zero work_overruns/skipped_slots; intervalo máximo 2,102399 ms em 16595 ciclos.
   Máximos ON/OFF maiores nesta amostra; análise preserva essa distinção.
+
+## Limites de CPU 4200 MHz na 0.2.5
+
+- Exemplo C fornecido pelo usuário adaptado ao intel_pstate ativo: não há
+  governador userspace; usa scaling_min_freq/scaling_max_freq na CPU dedicada.
+- TuneD ativo não impede mais o ajuste de frequência: preserva governador,
+  EPP/EPB, boost e PM QoS do perfil. FIFO continua 10, período 2 ms.
+- Helper atualizado e instalado. Espera a aplicação assíncrona do kernel nas
+  gravações e restaurações; confirmação de mínimo/máximo 4200000 kHz na CPU 5.
+- Testes reais de sysfs com perfil desktop: restauração por EOF e SIGTERM
+  confirmada para 2501000/2501000, demais valores preservados. Não acionou placa.
+- Instância do usuário mantida aberta; reabrir 0.2.5 para o novo ajuste automático.
+  Ainda falta medir clock físico e loopback com esses limites.

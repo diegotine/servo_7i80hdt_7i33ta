@@ -44,12 +44,25 @@ ou cair dispara restauração. SIGTERM também restaura. SIGKILL do próprio hel
 ou queda do sistema não permite executar a restauração. Alterações externas
 posteriores são respeitadas. Instâncias concorrentes usam lock exclusivo.
 
-Quando TuneD está ativo, o aplicativo deixa os ajustes de CPU a cargo dele,
-para permitir comparação de perfis sem sobreposição de políticas.
+Quando TuneD está ativo, a sessão `--cpu-clock-session` solicita apenas os
+limites mínimo/máximo de 4200 MHz da CPU dedicada. Governador, EPP/EPB, boost
+e PM QoS permanecem sob controle do perfil TuneD. Os limites anteriores são
+restaurados ao fechar. Uma mudança posterior de perfil pode substituir esses
+limites; a sessão não os reaplica continuamente.
+
+Após habilitar Speed Shift na BIOS e reiniciar, o driver é `intel_pstate` ativo
+com HWP. Os governadores disponíveis são `performance` e `powersave`, sem
+`userspace`; por isso o ajuste usa `scaling_min_freq`/`scaling_max_freq`, sem
+`scaling_setspeed`. A leitura dos limites confirma a solicitação ao kernel,
+não garante frequência física constante diante de limites térmicos/energéticos.
+CPUFreq pode aplicar os pedidos de limites de forma assíncrona. O helper espera
+confirmação por até 1 segundo em cada gravação, inclusive na restauração, fora
+da malha de controle. Validação local em
+`medicoes/2026-10-11-limites-cpu-4200mhz.md`.
 
 ## Máquina atual / solicitação de 4200 MHz
 
-CPU i5-13500, CPU dedicada 5, acpi-cpufreq; governador originalmente schedutil,
+Estado anterior ao reboot: CPU i5-13500, CPU dedicada 5, acpi-cpufreq; governador originalmente schedutil,
 EPB 6, PM QoS 0. Turbo habilitado. O estado 2501000 kHz representa a faixa turbo,
 não um teto físico de 2501 MHz. /proc/cpuinfo mostrou 4500 MHz.
 

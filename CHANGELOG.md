@@ -2,6 +2,8 @@
 
 ## 0.2.5 — otimização nativa
 
+- Com TuneD ativo, solicita mínimo/máximo de 4200 MHz na CPU dedicada e restaura ao fechar, preservando os demais ajustes do perfil.
+
 - Aba Pinout com a fotografia da 7i33TA centralizada horizontalmente; fundo externo transparente em PNG. A conversão JPG inicial também foi preservada.
 
 - Versão incrementada antes das otimizações; período de 2 ms mantido.

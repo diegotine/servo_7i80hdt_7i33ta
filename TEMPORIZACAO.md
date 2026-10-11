@@ -146,7 +146,9 @@ T3D_CPU (`auto`: maior CPU permitida); `none` desativa os ajustes locais.
 A frequência de 4200 MHz só é solicitada como limites mínimo/máximo quando o
 driver a expõe; indisponibilidade é registrada no diagnóstico.
 
-Se `tuned.service` está ativo ao abrir, a interface deixa a política a cargo do
-TuneD e não altera os ajustes de CPU. Os limites FIFO/memória do backend
-continuam sendo concedidos normalmente. Não há conflito intencional com o perfil
-selecionado pelo operador. Detalhes em OTIMIZACAO_0.2.5.md.
+Se `tuned.service` está ativo ao abrir, a interface solicita somente os limites
+mínimo/máximo de 4200 MHz na CPU dedicada, preservando governador, EPP/EPB,
+boost e PM QoS do perfil. Ao fechar, restaura os limites anteriores se ainda
+forem os aplicados pela sessão. Mudanças posteriores de perfil podem substituir
+os limites. FIFO 10 e bloqueio de memória do backend continuam independentes.
+Detalhes em OTIMIZACAO_0.2.5.md.

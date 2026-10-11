@@ -1,5 +1,6 @@
 #include "cpu_clock.h"
 #include <cerrno>
+#include <chrono>
 #include <csignal>
 #include <cstdio>
 #include <cstring>
@@ -7,6 +8,7 @@
 #include <sstream>
 #include <stdexcept>
 #include <string>
+#include <thread>
 #include <vector>
 #include <fcntl.h>
 #include <poll.h>
@@ -41,9 +43,21 @@ bool contains(const std::string &values, const std::string &value)
     while (stream >> token) if (token == value) return true;
     return false;
 }
+void writeFrequency(const std::string &path, const std::string &value)
+{
+    write(path, value);
+    // CPUFreq QoS changes can be applied asynchronously by the kernel.
+    // Wait only in this setup helper, never in the motor control loop.
+    const auto deadline = std::chrono::steady_clock::now() + std::chrono::seconds(1);
+    do {
+        if (read(path) == value) return;
+        std::this_thread::sleep_for(std::chrono::milliseconds(5));
+    } while (std::chrono::steady_clock::now() < deadline);
+    throw std::runtime_error("kernel não confirmou frequência: " + path + "=" + value);
+}
 }
 
-int cpuClockSession(int cpu, bool inspectOnly)
+int cpuClockSession(int cpu, bool inspectOnly, bool clockOnly)
 {
     const std::string path = "/sys/devices/system/cpu/cpu" + std::to_string(cpu) + "/cpufreq/";
     int lock = -1;
@@ -60,7 +74,12 @@ int cpuClockSession(int cpu, bool inspectOnly)
         // Restore only settings still owned by this session. Respect external changes.
         auto one = [&](const char *file, const std::string &saved, const char *ours, bool changed) {
             if (!changed) return;
-            try { if (read(path + file) == ours) write(path + file, saved); }
+            try {
+                if (read(path + file) == ours) {
+                    if (std::strcmp(file, "scaling_governor") == 0) write(path + file, saved);
+                    else writeFrequency(path + file, saved);
+                }
+            }
             catch (const std::exception &e) { std::fprintf(stderr, "CPU: restauração falhou: %s\n", e.what()); }
         };
         // Saved maximum may be below our temporary minimum.
@@ -94,24 +113,27 @@ int cpuClockSession(int cpu, bool inspectOnly)
         std::fflush(stdout);
         if (inspectOnly) return 0;
         if (geteuid() != 0) throw std::runtime_error("ajuste requer helper instalado via sudo");
-        if (!contains(available, "performance")) throw std::runtime_error("governador performance indisponível");
+        if (clockOnly && !exact) throw std::runtime_error("4200 MHz indisponíveis; perfil TuneD preservado");
+        if (!clockOnly && !contains(available, "performance")) throw std::runtime_error("governador performance indisponível");
         const std::string lockPath = "/run/t3d-cpu-clock-" + std::to_string(cpu) + ".lock";
         lock = open(lockPath.c_str(), O_CREAT | O_RDWR | O_CLOEXEC | O_NOFOLLOW, 0600);
         if (lock < 0 || flock(lock, LOCK_EX | LOCK_NB)) throw std::runtime_error("CPU já reservada por outra instância ou lock indisponível");
         std::signal(SIGPIPE, SIG_IGN);
         std::signal(SIGTERM, stop); std::signal(SIGINT, stop); std::signal(SIGHUP, stop);
-        governorChanged = governor != "performance";
-        write(path + "scaling_governor", "performance");
+        if (!clockOnly) {
+            governorChanged = governor != "performance";
+            write(path + "scaling_governor", "performance");
+        }
         if (exact) {
             // Widen first when the old minimum is above the requested maximum.
             if (std::stoll(minimum) > 4200000) {
                 minimumChanged = minimum != target;
-                write(path + "scaling_min_freq", target);
+                writeFrequency(path + "scaling_min_freq", target);
             }
             maximumChanged = maximum != target;
-            write(path + "scaling_max_freq", target);
+            writeFrequency(path + "scaling_max_freq", target);
             minimumChanged = minimum != target;
-            write(path + "scaling_min_freq", target);
+            writeFrequency(path + "scaling_min_freq", target);
             if (read(path + "scaling_min_freq") != target || read(path + "scaling_max_freq") != target)
                 throw std::runtime_error("kernel não confirmou os limites de 4200 MHz");
         }
@@ -130,12 +152,15 @@ int cpuClockSession(int cpu, bool inspectOnly)
             }
         };
         const auto power = "/sys/devices/system/cpu/cpu" + std::to_string(cpu) + "/power/";
-        optional(path + "boost", "1");
-        optional(path + "energy_performance_preference", "performance");
-        optional(power + "energy_perf_bias", "0");
-        optional(power + "pm_qos_resume_latency_us", "n/a");
-        if (read(path + "scaling_governor") != "performance") throw std::runtime_error("kernel não confirmou performance");
-        std::printf("CPU %d: performance aplicado; %s. Restauração ao fechar o aplicativo.\n", cpu,
+        if (!clockOnly) {
+            optional(path + "boost", "1");
+            optional(path + "energy_performance_preference", "performance");
+            optional(power + "energy_perf_bias", "0");
+            optional(power + "pm_qos_resume_latency_us", "n/a");
+            if (read(path + "scaling_governor") != "performance") throw std::runtime_error("kernel não confirmou performance");
+        }
+        std::printf("CPU %d: %s; %s. Restauração ao fechar o aplicativo.\n", cpu,
+                    clockOnly ? "perfil TuneD preservado" : "performance aplicado",
                     exact ? "limites solicitados e confirmados em 4200 MHz (sujeitos ao hardware)" : "4200 MHz exatos indisponíveis neste driver; turbo continua sob controle do hardware");
         std::fflush(stdout);
         // GUI owns stdin. EOF also restores after a GUI crash, without a timer in the control loop.

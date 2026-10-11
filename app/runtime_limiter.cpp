@@ -31,12 +31,13 @@ int main(int argc, char **argv)
         std::fprintf(stderr, "T3D runtime: usuário não autorizado\n");
         return 1;
     }
-    if (argc == 3 && (std::strcmp(argv[1], "--cpu-session") == 0 || std::strcmp(argv[1], "--cpu-check") == 0)) {
+    if (argc == 3 && (std::strcmp(argv[1], "--cpu-session") == 0 || std::strcmp(argv[1], "--cpu-clock-session") == 0 || std::strcmp(argv[1], "--cpu-check") == 0)) {
         int cpu = -1;
         const auto end = argv[2] + std::strlen(argv[2]);
         const auto parsed = std::from_chars(argv[2], end, cpu);
         if (parsed.ec != std::errc{} || parsed.ptr != end || cpu < 0 || cpu >= 1024) return 2;
-        return cpuClockSession(cpu, std::strcmp(argv[1], "--cpu-check") == 0);
+        return cpuClockSession(cpu, std::strcmp(argv[1], "--cpu-check") == 0,
+                               std::strcmp(argv[1], "--cpu-clock-session") == 0);
     }
     // Priority 10 requested by default; maximum granted is 20. Only this
     // process and descendants inherit these limits, not the desktop session.
