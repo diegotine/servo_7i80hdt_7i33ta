@@ -1,6 +1,10 @@
 # Histórico de versões
 
-## 0.2.0 — em desenvolvimento
+## 0.2.1 — em desenvolvimento
+
+- Otimizações de temporização e diagnóstico de latência em implementação.
+
+## 0.2.0 — referência de bancada, 11/10/2026
 
 - Gráfico de comando e feedback real do encoder por motor.
 - Modo teste alternável com ENABLE ligado, preservando a posição virtual.

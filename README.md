@@ -4,7 +4,7 @@
 >
 > Comunicação direta com a Mesa 7i80HDT, sem instalar ou executar LinuxCNC.
 
-**Versão 0.2.0 em desenvolvimento** — consulte [DESCRICAO.md](DESCRICAO.md) para a apresentação
+**Versão 0.2.1 em desenvolvimento** — consulte [DESCRICAO.md](DESCRICAO.md) para a apresentação
 do projeto e o estado desta versão.
 
 ![Interface do T3D Analog Velocity 0.1, com controles do motor e modo teste](screenshots/interface-v0.1.png)
