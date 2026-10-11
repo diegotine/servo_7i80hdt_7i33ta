@@ -23,7 +23,7 @@ e TESTE_LOOPBACK.md para os detalhes técnicos.
 - Controlador de trajetória/PID em driver/servo.py; backend.py é o único
   proprietário da comunicação da sessão. Ciclo nominal 5 ms, prazo 20 ms,
   watchdog 100 ms; sem garantia de tempo real rígido ou infraestrutura RTAPI.
-- Versão local 0.2.1 em desenvolvimento, conforme CMakeLists.txt e CHANGELOG.md.
+- Versão local 0.2.2 em desenvolvimento, conforme CMakeLists.txt e CHANGELOG.md.
   Há alterações locais ainda não publicadas; não confundir com release público.
 - Recursos locais: ajustes com placa conectada, limite padrão 3000 RPM,
   saída ±10 V, JOG com retenção, STOP mantendo ENABLE, modo teste com
@@ -56,7 +56,7 @@ para comando de 40%. Tensão de patamar e condições da ponta ainda pendentes.
    0,050/0,048 ms. Prioridade atual: teste manual de magnitude PWM/PDM para
    medir relação com tensão, sem retorno conectado ao encoder. Depois medir
    o loopback analógico.
-2. Versão 0.2.1 implementada: temporizador absoluto nativo, horários vencidos
+2. Versão 0.2.2 implementada: temporizador absoluto nativo, horários vencidos
    pulados, métricas de ciclo/fases, afinidade de CPU, tentativa SCHED_FIFO 10
    e MCL_CURRENT; resultado real aparece em HDT • Diagnóstico. Coleta cíclica
    automática Python suspensa durante controle. Sem migração do PID para C/C++.
@@ -69,3 +69,13 @@ para comando de 40%. Tensão de patamar e condições da ponta ainda pendentes.
 
 Não acionar hardware durante manutenção de documentação. Testes simulados
 não comprovam a latência, a ligação elétrica ou a sintonia do conjunto real.
+
+## Correção de numeração e medição das otimizações
+
+Operador determinou que a versão com otimizações é **0.2.2**, e não 0.2.1.
+Captura e JSON da medição original preservados sem alterar o rótulo 0.2.1.
+100 ciclos analógicos: ON 4,98157029 ms, OFF 4,97217125 ms; desvios
+0,103568251 ms e 0,089186910 ms. CPU 5 aplicada; SCHED_OTHER / prioridade 0;
+MCL_CURRENT falhou com Cannot allocate memory; FIFO negado por permissão.
+Ciclo médio real 5,000008561 ms; zero horários pulados nessa sessão.
+Atalho novo Iniciar T3D v0.2.2.desktop criado; anteriores preservados.

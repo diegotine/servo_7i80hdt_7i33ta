@@ -1,5 +1,9 @@
 # Capturas da interface
 
+- [Loopback analógico com otimizações](loopback-analogico-otimizacoes-2026-10-11.png):
+  100 ciclos reais, ON 4,982 ms e OFF 4,972 ms. A captura original mostra
+  v0.2.1 no título; esse código foi renumerado para 0.2.2 em seguida.
+
 - [Diagnóstico 0.2.1](diagnostico-temporizacao-v0.2.1.png): interface sem conexão;
   as métricas e ajustes de execução aparecem ao conectar à placa.
 

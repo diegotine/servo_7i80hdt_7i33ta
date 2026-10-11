@@ -1,4 +1,4 @@
-# Temporização — 0.2.1
+# Temporização — 0.2.2
 
 O período nominal continua em **5 ms (200 Hz)**. O PID usa o intervalo real
 entre inícios de ciclos, não uma constante de 5 ms nem a média do loopback.
@@ -57,7 +57,7 @@ Para comparar ajustes, variáveis de ambiente podem ser passadas ao iniciador:
 # Temporizador absoluto e métricas, com escalonamento/afinidade normais:
 T3D_RT_PRIORITY=0 T3D_CPU=none T3D_MLOCK=0 ./iniciar.sh
 
-# Padrões da 0.2.1: tentativa FIFO 10, última CPU permitida, memória atual:
+# Padrões da 0.2.2: tentativa FIFO 10, última CPU permitida, memória atual:
 ./iniciar.sh
 ```
 
@@ -73,9 +73,13 @@ para contornar permissões de tempo real.
 Referência da 0.2.0 em `medicoes/2026-10-11-loopback-referencia.md`, com JSONs
 originais e screenshots. Repetir o mesmo canal, ligação, amplitude e condições
 de carga/rede. Comparar a dispersão, P95, máximos e horários pulados, além das
-médias ON/OFF. Melhoria de latência ainda depende das medições reais.
+médias ON/OFF. Primeira medição do código otimizado registrada em
+[medicoes/2026-10-11-loopback-otimizacoes.md](medicoes/2026-10-11-loopback-otimizacoes.md),
+com rótulo original 0.2.1 antes da correção para 0.2.2. Nessa execução, afinidade
+foi aplicada, mas prioridade RT e bloqueio de memória foram recusados.
+Melhoria de latência ainda depende de comparação sob condições controladas.
 
-A 0.2.1 foi compilada e conferida sem executar a placa simulada, por solicitação
+A 0.2.2 foi compilada e conferida sem executar a placa simulada, por solicitação
 do operador. Os novos testes de regressão estão disponíveis para execução
 posterior; não foram executados nessa entrega. A abertura Qt sem placa e a
 verificação de sintaxe não validam temporização ou movimento físico.

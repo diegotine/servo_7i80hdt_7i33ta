@@ -1,4 +1,4 @@
-# T3D Analog Velocity — versão 0.2.1 em desenvolvimento
+# T3D Analog Velocity — versão 0.2.2 em desenvolvimento
 
 > **DRIVER ETHERNET PRÓPRIO — USE A PLACA MESA SEM LINUXCNC OU HAL.**
 >
@@ -43,7 +43,7 @@ Qt 6.4 ou superior e Python 3.10 ou superior. Execute `./iniciar.sh` na pasta
 do projeto. As instruções detalhadas estão em [README.md](README.md), e a
 pinagem em [PINOUT.md](PINOUT.md).
 
-## Estado da versão 0.2.1
+## Estado da versão 0.2.2
 
 Evolução da versão 0.1 para testes de bancada. As funções principais e a organização
 da interface foram implementadas; permanecem o polimento visual, a validação

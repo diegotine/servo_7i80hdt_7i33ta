@@ -1,13 +1,19 @@
 # Histórico de versões
 
-## 0.2.1 — em desenvolvimento
+## 0.2.2 — em desenvolvimento
 
 - Temporização absoluta nativa, sem acumular atrasos ou executar ciclos de compensação.
 - Afinidade de CPU, tentativa SCHED_FIFO e bloqueio de memória atual, com resultado visível no diagnóstico.
 - Coleta automática de referências cíclicas Python suspensa no ciclo de controle.
 - Métricas de ciclo, despertar, leitura, cálculo e escrita; inclusão nos JSONs de loopback.
 - Referência 0.2.0 preservada para comparação real; limite de 20 ms, watchdog e PID mantidos.
-- Compilação e conferência sem placa simulada; medição física da 0.2.1 pendente.
+- Loopback analógico medido: ON 4,982 ms e OFF 4,972 ms (executável ainda identificado como 0.2.1 na captura).
+- Afinidade confirmada em CPU 5; prioridade RT e bloqueio de memória recusados pelo sistema nessa medição.
+
+## 0.2.1 — preparação
+
+- Incremento anterior às otimizações, registrado no commit 604bcb6.
+- A versão com otimizações foi renumerada para 0.2.2 por orientação do operador.
 
 ## 0.2.0 — referência de bancada, 11/10/2026
 
