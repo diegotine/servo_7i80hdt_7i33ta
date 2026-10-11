@@ -164,3 +164,22 @@ as sessões de escrita exigem sudo e o UID autorizado na compilação.
 
 Binários em `build/v0.2.6` e auxiliares com versão no nome preservam o runtime
 da 0.2.5 aberta. Consulte VALIDACAO_0.2.6.md para verificações e limites atuais.
+
+## Rede dedicada: moderação RX desativada
+
+O ensaio da Intel I219-LM de 11/10/2026 foi documentado em
+[medicoes/2026-10-11-rede-i219-lm-RELATORIO.md](medicoes/2026-10-11-rede-i219-lm-RELATORIO.md).
+O `e1000e` já era o driver correto. A única alteração nesse ensaio foi
+`rx-usecs: 3 → 0`, aplicada com ethtool e persistida no perfil NetworkManager.
+Foram preservados link, rotas, Wi-Fi e afinidade IRQ na CPU 2.
+
+Com 100 pacotes ICMP por fase, RTT médio passou de 0,327 para 0,144 ms,
+P95 de 0,345 para 0,163 ms e máximo de 0,367 para 0,168 ms, sem perdas.
+Desativar a moderação aumentou a frequência observada de interrupções; a
+variação da CPU agregada não isola o custo da mudança. São medidas de RTT
+ICMP, distintas dos tempos ON/OFF do loopback e do jitter de escalonamento.
+Não houve teste de movimento nesse ensaio de rede.
+
+Para reverter, é necessário remover a opção persistente no NetworkManager
+e restaurar `rx-usecs=3` no driver ativo. Remover somente a opção salva não
+muda imediatamente o valor ativo. Os comandos exatos e fontes estão no relatório.

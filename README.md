@@ -352,6 +352,36 @@ A placa deve ter um único proprietário: não executar outro aplicativo, HAL ou
 mesaflash fazendo escritas simultaneamente. Há trava local entre instâncias deste
 backend, além da recusa de assumir uma placa com saídas PWM já habilitadas.
 
+## Ajuste medido da rede dedicada à Mesa
+
+Na Intel I219-LM (`enp0s31f6`, driver `e1000e`), a moderação de interrupções
+RX foi desativada com `rx-usecs=0`, persistido no perfil Ethernet `lan-cnc` do
+NetworkManager. O valor anterior, `3`, selecionava um modo dinâmico conservador;
+não representava um atraso literal de 3 µs. A mudança foi aplicada sem derrubar
+o link e sem alterar o Wi-Fi, os offloads, a BIOS ou o kernel nesse ensaio.
+
+Comparação de 100 pings antes e 100 depois, em 11/10/2026:
+
+| RTT | Antes | Depois |
+|---|---:|---:|
+| Médio | 0,327 ms | **0,144 ms** |
+| P95 | 0,345 ms | **0,163 ms** |
+| Máximo | 0,367 ms | **0,168 ms** |
+| Perda de pacotes | 0/100 | 0/100 |
+
+O RTT médio caiu aproximadamente **56%**. As interrupções da NIC aumentaram de
+cerca de 1501 para 2015 por segundo. A carga total de CPU também variou, mas o
+ensaio não isolou o custo do driver. O desvio informado pelo ping foi de 0,011
+para 0,012 ms; a redução do RTT não demonstra, por si só, redução do jitter da
+malha ou garantia de tempo real. O kernel deste ensaio não era PREEMPT_RT.
+
+O ajuste recomendado pela documentação `hm2_eth` também se aplica à rede do
+driver próprio T3D, sem instalar LinuxCNC. Consulte o
+[relatório integral, com comandos, fontes e reversão](medicoes/2026-10-11-rede-i219-lm-RELATORIO.md).
+O relatório foi copiado sem alterações; os arquivos brutos que ele menciona
+permanecem na pasta de origem
+`/home/dell7010/.local/state/network-tuning/i219-lm-20261011-oTQ5Tr/`.
+
 ## Validação sem placa
 
 ```sh

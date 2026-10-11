@@ -227,3 +227,15 @@ Atalho novo Iniciar T3D v0.2.2.desktop criado; anteriores preservados.
 - BIOS precisa do próximo reboot para aplicar a alteração. Com turbo desligado,
   o alvo 4200 MHz do auxiliar da interface excede o teto sem turbo; o auxiliar
   pode registrar que o kernel não confirmou esse alvo ao reabrir o app.
+
+## Relatório da otimização da rede incorporado ao projeto
+
+- A pedido do operador, copiado integralmente o RELATORIO.md de
+  /home/dell7010/.local/state/network-tuning/i219-lm-20261011-oTQ5Tr/
+  para medicoes/2026-10-11-rede-i219-lm-RELATORIO.md.
+- README e TEMPORIZACAO resumem a mudança rx-usecs 3→0 no e1000e/I219-LM,
+  persistência NetworkManager, RTT médio 0,327→0,144 ms, custo em interrupções,
+  limites da comparação e reversão. Arquivos brutos permanecem na origem.
+- A investigação de clock foi adiada pelo operador; foco passa a cabo e testes
+  físicos. Nenhuma configuração de rede ou sistema foi alterada ao copiar e
+  documentar este relatório.
