@@ -102,6 +102,38 @@ class NativeCompatibilityTests(unittest.TestCase):
                 with self.assertRaises(module.ServoFault):
                     module.Axis(module.AxisConfig()).calculate(dt)
 
+    def test_leave_test_preserves_position_and_manual_feedback_without_pid_jump(self):
+        for module in (servo, reference):
+            for enabled, saved in ((False, 12.5), (True, 12.5), (False, -12.5), (True, -12.5)):
+                axis = module.Axis(module.AxisConfig())
+                axis.feedback(0, .001)
+                axis.set_output_test(True)
+                axis.virtual_position = saved  # Also outside the former local bounds.
+                axis.enabled = enabled
+                axis.mode = 'hold' if enabled else 'disabled'
+                minimum, maximum = axis.c.min_rev, axis.c.max_rev
+                axis.set_output_test(False)
+                self.assertEqual(axis.telemetry()['position'], saved)
+                self.assertEqual(axis.encoder.count, 0)
+                self.assertEqual(axis.encoder.previous, 0)
+                self.assertEqual(axis.c.min_rev - axis.position, minimum)
+                self.assertEqual(axis.c.max_rev - axis.position, maximum)
+                self.assertEqual(axis.enabled, enabled)
+                self.assertEqual(axis.calculate(.001), 0)
+                axis.feedback(25, .001)
+                self.assertAlmostEqual(axis.telemetry()['position'], saved + .0025)
+                self.assertAlmostEqual(axis.telemetry()['error'], -.0025)
+                origin = axis.offset
+                axis.set_output_test(False)
+                self.assertEqual(axis.offset, origin)
+                axis.set_output_test(True)
+                self.assertAlmostEqual(axis.telemetry()['position'], saved + .0025)
+                axis.set_output_test(False)
+                self.assertAlmostEqual(axis.telemetry()['position'], saved + .0025)
+                axis.disable()
+                axis.zero()
+                self.assertEqual(axis.telemetry()['position'], 0)
+
 
 if __name__ == '__main__':
     unittest.main()

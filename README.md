@@ -237,10 +237,15 @@ STOP desacelera a saída até zero e mantém ENABLE; clicar em ENABLE retira a
 habilitação. Watchdog, limite de velocidade e verificações de comunicação
 continuam ativos. Movimento para posição também funciona no modo teste: a trajetória comanda a
 saída e move a posição virtual até o destino, sem correção pelo erro real.
-A seleção do teste é temporária e é desfeita ao desconectar. Alternar o modo
-não zera o encoder nem a posição virtual acumulada. Ao sair do teste, os campos
-mostram novamente o encoder real; a posição virtual fica preservada para a
-próxima ativação. JOG continua com ENABLE ligado. Um movimento para posição
+A seleção do teste é temporária e é desfeita ao desconectar. Ao sair do teste,
+a posição acumulada é preservada como nova origem local do encoder: girar o eixo
+à mão continua somando/subtraindo desse valor. A contagem física não é alterada.
+O campo de erro volta a mostrar a diferença da malha real, inclusive com ENABLE
+desligado; RPM e tensão mostram os valores atuais, não valores congelados.
+Os limites locais são deslocados pela mesma diferença para preservar o curso
+permitido; a configuração da interface acompanha esse ajuste. Reativar o teste
+parte da posição atual, incluindo o movimento manual. **Definir zero local**
+continua sendo o comando explícito para zerar a posição. JOG continua com ENABLE ligado. Um movimento para posição
 em andamento é interrompido com desaceleração na troca, e a referência normal é ancorada na posição
 real para evitar tentar alcançar uma posição simulada.
 

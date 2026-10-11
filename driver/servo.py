@@ -5,7 +5,7 @@ PID + FF1 structure follows LinuxCNC pid(9). This is not a hard realtime runtime
 """
 from dataclasses import dataclass, fields, replace
 import math
-from _rtcore import plan_trajectory, ramp_velocity
+from _rtcore import plan_trajectory, ramp_velocity, preserve_test_position
 
 
 class ServoFault(Exception):
@@ -165,8 +165,7 @@ class Axis:
     def feedback(self, raw, dt):
         position, self.velocity = self.encoder.update(raw, dt)
         self.position = position - self.offset
-        if self.output_test:
-            self.error = self.virtual_position - self.position
+        self.error = (self.virtual_position if self.output_test else self.reference) - self.position
 
     def enable(self):
         if self.encoder.previous is None or abs(self.velocity) > self.c.vmax * 0.01:
@@ -192,9 +191,19 @@ class Axis:
             raise ValueError('Expected boolean output test mode')
         if self.output_test == active:
             return
-        # Preserve the simulated position and real encoder origin across toggles.
-        # Rebase the closed-loop trajectory on the real measurement to avoid
-        # commanding a catch-up to a simulated position when leaving test mode.
+        if active:
+            # Start from the current local coordinate, including manual motion.
+            self.virtual_position = self.position
+        else:
+            # Only the coordinate origin changes; never add synthetic encoder
+            # counts or turn the previous simulated error into a PID demand.
+            shift, offset, minimum, maximum = preserve_test_position(
+                self.position, self.virtual_position, self.offset, self.c.min_rev, self.c.max_rev)
+            updated = replace(self.c, min_rev=minimum, max_rev=maximum)
+            self.offset = offset
+            self.position = self.virtual_position
+            self.reference += shift
+            self.c = self.encoder.config = updated
         if self.enabled:
             if self.mode == 'move':
                 self.mode = 'stopping'

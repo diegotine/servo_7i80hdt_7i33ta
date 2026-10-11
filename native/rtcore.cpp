@@ -158,6 +158,14 @@ PyObject *ramp_velocity(PyObject *, PyObject *args) {
         return Py_BuildValue("(dd)", result.velocity, result.travel);
     } catch (const std::exception &error) { return motion_error(error); }
 }
+PyObject *preserve_test_position(PyObject *, PyObject *args) {
+    double measured, simulated, offset, minimum, maximum;
+    if (!PyArg_ParseTuple(args, "ddddd", &measured, &simulated, &offset, &minimum, &maximum)) return nullptr;
+    try {
+        const auto result = t3d::preserve_test_position(measured, simulated, offset, minimum, maximum);
+        return Py_BuildValue("(dddd)", result.shift, result.offset, result.minimum, result.maximum);
+    } catch (const std::exception &error) { return motion_error(error); }
+}
 PyObject *plan_trajectory(PyObject *, PyObject *args) {
     double start, target, vmax, accel, velocity, decel;
     if (!PyArg_ParseTuple(args, "dddddd", &start, &target, &vmax, &accel, &velocity, &decel)) return nullptr;
@@ -176,6 +184,7 @@ PyObject *plan_trajectory(PyObject *, PyObject *args) {
     } catch (const std::exception &error) { return motion_error(error); }
 }
 PyMethodDef methods[] = {
+    {"preserve_test_position", preserve_test_position, METH_VARARGS, "Rebase encoder origin while retaining physical travel limits."},
     {"ramp_velocity", ramp_velocity, METH_VARARGS, "Independent acceleration/braking with exact travel."},
     {"plan_trajectory", plan_trajectory, METH_VARARGS, "Asymmetric position trajectory."},
     {"sleep_until_ns", sleep_until_ns, METH_O, "Absolute monotonic wait, releases GIL."},

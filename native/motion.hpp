@@ -6,6 +6,19 @@
 #include <stdexcept>
 
 namespace t3d {
+struct EncoderOrigin { double shift; double offset; double minimum; double maximum; };
+inline EncoderOrigin preserve_test_position(double measured, double simulated, double offset,
+                                           double minimum, double maximum) {
+    const double shift = simulated - measured;
+    const EncoderOrigin result{shift, offset - shift, minimum + shift, maximum + shift};
+    if (!std::isfinite(measured) || !std::isfinite(simulated) || !std::isfinite(offset)
+        || !std::isfinite(minimum) || !std::isfinite(maximum) || minimum >= maximum
+        || !std::isfinite(shift) || !std::isfinite(result.offset)
+        || !std::isfinite(result.minimum) || !std::isfinite(result.maximum)
+        || result.minimum >= result.maximum)
+        throw std::invalid_argument("Invalid encoder origin change");
+    return result;
+}
 struct Ramp { double velocity; double travel; };
 // A reversal brakes to zero first, then accelerates with the remaining time.
 inline Ramp ramp_velocity(double velocity, double target, double acceleration,

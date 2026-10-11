@@ -2,6 +2,8 @@
 
 ## 0.2.7 — publicação e monitor de períodos
 
+- Correção posterior à publicação: sair do modo teste preserva a posição acumulada como origem local do encoder; o erro passa a ser o da malha real e acompanha movimento manual mesmo desabilitado. Limites locais acompanham a origem sem ampliar o curso físico. Nenhum salto de referência é enviado ao PID.
+
 - Reúne as melhorias de controle, telemetria, núcleo nativo e bancada desde a publicação 0.1.0.
 - Mantém a grade absoluta de 1 ms, aceleração de 350 RPM/s e desaceleração de 600 RPM/s.
 - Monitor C++/Qt em processo separado e outra CPU, com log das estatísticas existentes, estouros de trabalho e ciclos perdidos.

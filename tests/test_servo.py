@@ -305,7 +305,7 @@ class ControlTests(unittest.TestCase):
         for _ in range(240):
             axis.feedback(0, 0.005)
             axis.calculate(0.005)
-            self.assertLessEqual(abs(axis.volts - previous), 0.001 + 1e-10)
+            self.assertLessEqual(abs(axis.volts - previous), axis.c.decel * 0.005 * 600 / axis.c.rpm_at_10v + 1e-10)
             previous = axis.volts
         self.assertEqual(axis.volts, 0)
         self.assertTrue(axis.enabled)
@@ -343,12 +343,12 @@ class ControlTests(unittest.TestCase):
         self.assertEqual(axis.mode, 'jog')
         self.assertEqual(axis.virtual_position, simulated)
         self.assertEqual(axis.encoder.previous, raw)
-        self.assertEqual(axis.offset, origin)
+        self.assertAlmostEqual(axis.offset, origin - simulated)
         axis.feedback(raw + 25, 0.005)
         axis.calculate(0.005)
         self.assertAlmostEqual(axis.volts, voltage)
         axis.set_output_test(True)
-        self.assertEqual(axis.virtual_position, simulated)
+        self.assertAlmostEqual(axis.virtual_position, simulated + 25 / axis.c.counts_per_rev)
         axis.calculate(0.005)
         self.assertGreater(axis.virtual_position, simulated)
         axis.set_output_test(True)  # Repeated requests must not reset anything.

@@ -1,5 +1,16 @@
 # T3D Analog Velocity 0.2.7
 
+## Correção posterior à publicação
+
+Disponível na branch `main`: sair do modo teste mantém a posição acumulada,
+usando-a como origem local do encoder real. Movimento manual continua atualizando
+a posição; o erro mostrado é o da malha real, inclusive com ENABLE desligado.
+A contagem física não muda, e os limites locais são deslocados para preservar
+o curso permitido. Reativar o teste parte da posição atual; zerar permanece
+uma ação explícita. A troca não cria demanda para alcançar a antiga posição simulada.
+Testes de regressão cobrem a transição habilitada/desabilitada, movimento manual,
+limites, trocas repetidas e zero explícito. A tag original `v0.2.7` é preservada.
+
 Driver Ethernet próprio para Mesa 7i80HDT + 7i33TA, sem LinuxCNC ou HAL.
 Esta publicação reúne a evolução desde a 0.1.0 e preserva o firmware atual
 da HDT. O próximo ensaio será com o conjunto físico de drive, motor e encoder.

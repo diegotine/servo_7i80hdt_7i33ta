@@ -351,7 +351,9 @@ void MainWindow::receive()
                 m_config["axes"] = axes;
                 if (fullConfig) {
                     refreshConfig();
-                    const QString text = message.value("motor_disabled").toBool()
+                    const QString text = message.value("test_position_preserved").toBool()
+                        ? "Posição do teste preservada; encoder real ativo e erro da malha real. Limites locais acompanham a nova origem."
+                        : message.value("motor_disabled").toBool()
                         ? "Ajustes aplicados. Escala/sentido alterados: motor desabilitado; use ENABLE para retomar."
                         : "Ajustes aplicados ao motor conectado.";
                     showMessage(text);

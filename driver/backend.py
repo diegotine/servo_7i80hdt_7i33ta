@@ -137,7 +137,11 @@ class Session:
                 raise ValueError('Axis already enabled')
             axis.enable()
         elif operation == 'output_test':
+            was_test = axis.output_test
             axis.set_output_test(message['value'])
+            if was_test and not axis.output_test:
+                self.output('axis_config', axis=index, config=asdict(axis.c),
+                            test_position_preserved=True)
         elif operation == 'stop':
             axis.stop_motion()
         elif operation in ('acceleration', 'deceleration'):
