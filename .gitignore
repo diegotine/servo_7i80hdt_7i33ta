@@ -1,0 +1,15 @@
+build/
+__pycache__/
+*.pyc
+config.local.json
+
+.tools/
+
+# Ferramentas e pacotes oficiais baixados localmente.
+firmware/tools/
+firmware/official/
+firmware/*.zip
+reference/*.pdf
+
+# Atalhos locais com caminhos específicos desta instalação.
+*.desktop

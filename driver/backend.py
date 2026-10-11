@@ -1,0 +1,317 @@
+"""One board owner, one cyclic software servo, JSON-lines pipe to Qt.
+
+No LinuxCNC dependency. A GUI heartbeat never feeds the hardware watchdog:
+only a complete feedback -> control -> acknowledged output cycle does that.
+"""
+import argparse
+import fcntl
+import hashlib
+import json
+import os
+import queue
+import sys
+import tempfile
+import threading
+import time
+
+from mesa7i80hdt import Mesa7i80hdt, MesaError
+from servo import Axis, AxisConfig, ServoFault
+
+
+def emit(kind, **data):
+    print(json.dumps(dict(type=kind, **data), allow_nan=False), flush=True)
+
+
+def load_config(path):
+    with open(path, encoding='utf-8') as source:
+        config = json.load(source)
+    if config.get('schema') != 1 or config.get('connector') != 'P3':
+        raise ValueError('Unsupported configuration or connector')
+    if len(config.get('axes', [])) != 4:
+        raise ValueError('Exactly four local axes are required')
+    axes = [Axis(AxisConfig(**value)) for value in config['axes']]
+    # Runtime timing is deliberately fixed; do not silently relax fault limits.
+    return config, axes
+
+
+class Session:
+    period = 0.005
+    deadline = 0.020
+    client_timeout = 0.5
+
+    def __init__(self, board, axes, commands, output=emit, clock=time.monotonic):
+        self.board, self.axes, self.commands = board, axes, commands
+        self.output, self.clock = output, clock
+        self.previous = self.last_client = clock()
+        self.last_status = 0.0
+        self.cycles = 0
+        self.max_cycle_ms = 0.0
+        self.running = True
+        self.generic_outputs = {'P1': 0, 'P2': 0}
+
+    def dispatch(self, message):
+        operation = message.get('op')
+        if operation == 'heartbeat':
+            return
+        if operation == 'io_output':
+            connector, channel, value = message.get('connector'), message.get('channel'), message.get('value')
+            if (connector not in self.generic_outputs or type(channel) is not int
+                    or not 0 <= channel < 12 or type(value) is not bool):
+                raise ValueError('Invalid generic output command')
+            bit = 1 << channel
+            self.generic_outputs[connector] = ((self.generic_outputs[connector] | bit) if value
+                                               else (self.generic_outputs[connector] & ~bit))
+            return
+        if operation in ('quit', 'stop_all'):
+            self.generic_outputs = {'P1': 0, 'P2': 0}
+            for axis in self.axes:
+                axis.disable()
+            if operation == 'quit':
+                self.running = False
+            return
+        index = message.get('axis')
+        if type(index) is not int or not 0 <= index < 4:
+            raise ValueError('Invalid axis')
+        axis = self.axes[index]
+        if operation == 'enable':
+            if axis.enabled:
+                raise ValueError('Axis already enabled')
+            axis.enable()
+        elif operation == 'output_test':
+            axis.set_output_test(message['value'])
+        elif operation == 'stop':
+            axis.stop_motion()
+        elif operation == 'acceleration':
+            axis.set_acceleration(message['value'])
+            self.output('axis_config', axis=index, acceleration_rpm_s=axis.c.acceleration_rpm_s)
+        elif operation == 'disable':
+            axis.disable()
+        elif operation == 'zero':
+            axis.zero()
+        elif operation == 'move':
+            axis.move(float(message['value']))
+        elif operation == 'jog':
+            rpm = float(message['value'])
+            axis.jog(rpm)
+            effective = max(-axis.c.vmax * 60, min(axis.c.vmax * 60, rpm))
+            self.output('jog_command', axis=index, requested_rpm=rpm, effective_rpm=effective)
+        elif operation == 'jog_stop':
+            axis.jog_stop()
+        else:
+            raise ValueError('Unknown operation')
+
+    def step(self):
+        start = self.clock()
+        dt = start - self.previous
+        if not 0 < dt <= self.deadline:
+            raise ServoFault('Servo cycle exceeded 20 ms; session latched off')
+        if start - self.last_client > self.client_timeout:
+            raise ServoFault('Interface heartbeat missing; session latched off')
+        counts = self.board.read_encoders()
+        for axis, raw in zip(self.axes, counts):
+            axis.feedback(raw, dt)
+        for _ in range(32):
+            try:
+                received, message = self.commands.get_nowait()
+            except queue.Empty:
+                break
+            if start - received > self.client_timeout:
+                if message.get('op') == 'heartbeat':
+                    continue  # Discovery can take longer than a client heartbeat interval.
+                raise ServoFault('Stale interface command')
+            self.last_client = received
+            try:
+                self.dispatch(message)
+            except (ValueError, KeyError, TypeError) as exc:
+                self.output('rejected', message=str(exc))
+        volts = []
+        for index, axis in enumerate(self.axes, 1):
+            try:
+                volts.append(axis.calculate(dt))
+            except ServoFault as exc:
+                raise ServoFault(f'Motor {index}: {exc}') from exc
+        if self.clock() - start >= self.deadline:
+            raise ServoFault('Feedback/control exceeded deadline; outputs not refreshed')
+        self.board.write_servo(volts, [axis.enabled for axis in self.axes], generic_outputs=self.generic_outputs)
+        if self.clock() - start >= self.deadline:
+            raise ServoFault('Output acknowledgement exceeded deadline')
+        self.previous = start
+        self.cycles += 1
+        self.max_cycle_ms = max(self.max_cycle_ms, dt * 1000)
+        if start - self.last_status >= 0.05:
+            self.output('status', axes=[axis.telemetry() for axis in self.axes], cycle_ms=dt * 1000,
+                        diagnostics=dict(raw_counts=counts, cycles=self.cycles,
+                                         max_cycle_ms=self.max_cycle_ms,
+                                         watchdog_ok=True),
+                        io={connector: dict(inputs=self.board.generic_inputs.get(connector, 0), outputs=value)
+                            for connector, value in self.generic_outputs.items()})
+            self.last_status = start
+
+    def rearm(self, index):
+        peer = self.board.bus.peer
+        candidate = None
+        try:
+            candidate = Mesa7i80hdt(peer[0], port=peer[1], timeout=0.25)
+            candidate.encoder_mapping('P3')
+            candidate.bus.timeout = 0.008
+            candidate.configure_servo('P3', watchdog_ms=100)
+            for connector in ('P1', 'P2'):
+                candidate.configure_generic_io(connector)
+            counts = candidate.read_encoders()
+            for axis, raw in zip(self.axes, counts):
+                axis.feedback(raw, self.deadline)
+            time.sleep(self.period)
+            counts = candidate.read_encoders()
+            for axis, raw in zip(self.axes, counts):
+                axis.feedback(raw, self.period)
+            self.axes[index].enable()
+        except (MesaError, ServoFault, ValueError, OSError):
+            if candidate is not None:
+                try:
+                    candidate.close()
+                except MesaError:
+                    pass
+            for axis in self.axes:
+                axis.disable()
+            raise
+        self.board = candidate
+        self.previous = self.last_client = self.clock()
+        self.last_status = 0.0
+        self.output('rearmed', axis=index)
+
+    def diagnose_fault(self, fault):
+        for axis in self.axes:
+            axis.disable()
+        self.generic_outputs = {'P1': 0, 'P2': 0}
+        shutdown_error = None
+        try:
+            self.board.close()
+        except MesaError as exc:
+            shutdown_error = str(exc)
+        self.output('fault', message=str(fault), diagnostic_mode=True, shutdown_error=shutdown_error)
+        self.last_client = self.clock()
+        last_error = None
+        while self.running:
+            for _ in range(128):
+                try:
+                    received, message = self.commands.get_nowait()
+                except queue.Empty:
+                    break
+                operation = message.get('op')
+                if operation == 'quit':
+                    self.running = False
+                    return
+                if self.clock() - received > self.client_timeout:
+                    continue
+                self.last_client = received
+                if operation in ('enable', 'output_test', 'acceleration'):
+                    try:
+                        index = message.get('axis')
+                        if type(index) is not int or not 0 <= index < 4:
+                            raise ValueError('Invalid axis')
+                        if operation == 'enable':
+                            self.rearm(index)
+                            return True
+                        self.dispatch(message)
+                    except (MesaError, ServoFault, ValueError, OSError, KeyError, TypeError) as exc:
+                        self.output('rejected', message='Rearme / ajuste: ' + str(exc))
+                    continue
+                if operation not in ('heartbeat', 'stop_all', 'disable', 'stop', 'jog_stop'):
+                    self.output('rejected', message='Use ENABLE para rearmar antes de comandar movimento')
+            if self.clock() - self.last_client > self.client_timeout:
+                return
+            try:
+                self.output('diagnostic_status', **self.board.read_diagnostics())
+                last_error = None
+            except (MesaError, OSError) as exc:
+                error = str(exc)
+                if error != last_error:
+                    self.output('diagnostic_error', message=error)
+                last_error = error
+            time.sleep(0.1)
+
+    def run(self):
+        while self.running:
+            try:
+                self.step()
+            except (MesaError, ServoFault) as exc:
+                # With no live client, terminate as before. Otherwise preserve
+                # the board owner and switch permanently to read-only diagnosis.
+                if self.clock() - self.last_client > self.client_timeout:
+                    raise
+                if self.diagnose_fault(exc):
+                    continue
+                return
+            # Absolute next start: never run catch-up cycles using old feedback.
+            delay = self.previous + self.period - self.clock()
+            if delay > 0:
+                time.sleep(delay)
+
+
+def read_commands(commands):
+    try:
+        for line in sys.stdin:
+            if len(line) > 4096:
+                break
+            message = json.loads(line)
+            if not isinstance(message, dict):
+                break
+            commands.put_nowait((time.monotonic(), message))
+    except (ValueError, queue.Full):
+        pass
+    # EOF/invalid input is never permission to keep moving unattended.
+    try:
+        commands.put_nowait((time.monotonic(), {'op': 'quit'}))
+    except queue.Full:
+        pass  # Queue overflow will fail the client/deadline checks.
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--config', required=True)
+    parser.add_argument('--port', type=int, default=27181, help='UDP simulator or LBP16 port')
+    args = parser.parse_args()
+    board = None
+    lock = None
+    result = 0
+    session = None
+    try:
+        config, axes = load_config(args.config)
+        name = hashlib.sha256(f"{config['ip']}:{args.port}".encode()).hexdigest()[:24]
+        lock = open(os.path.join(tempfile.gettempdir(), f't3d-analog-{name}.lock'), 'a', encoding='ascii')
+        fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        commands = queue.Queue(maxsize=128)
+        threading.Thread(target=read_commands, args=(commands,), daemon=True).start()
+        board = Mesa7i80hdt(config['ip'], port=args.port, timeout=0.25)
+        # Discovery is read-only; validate all encoder/output pins before writes.
+        board.encoder_mapping(config['connector'])
+        board.bus.timeout = 0.008
+        board.configure_servo(config['connector'], watchdog_ms=100)
+        for connector in ('P1', 'P2'):
+            board.configure_generic_io(connector)
+        session = Session(board, axes, commands)
+        emit('ready', model=board.model, connector=config['connector'],
+             identification=board.inspect(), encoder_channels=board.encoder_channels,
+             watchdog_ms=100, pdm_hz=board.pdm_frequency)
+        # First feedback needs a nonzero interval; no output has been enabled.
+        time.sleep(session.period)
+        session.run()
+    except (MesaError, ServoFault, ValueError, OSError, KeyError, TypeError) as exc:
+        emit('fault', message=str(exc))
+        result = 1
+    finally:
+        if session is not None:
+            board = session.board
+        if board is not None:
+            try:
+                board.close()
+            except MesaError as exc:
+                emit('fault', message=f'Output shutdown not acknowledged; hardware watchdog active: {exc}')
+                result = 1
+        if lock is not None:
+            lock.close()
+    return result
+
+
+if __name__ == '__main__':
+    sys.exit(main())

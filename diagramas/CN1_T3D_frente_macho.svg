@@ -1,0 +1,246 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="2200" height="2520" viewBox="0 0 2200 2520">
+<rect width="100%" height="100%" fill="white"/>
+<text x="65" y="40" dominant-baseline="text-before-edge" text-anchor="start" font-family="Noto Sans,sans-serif" font-size="48" font-weight="700" fill="#24364b">CN1 • T3D • conector de 44 pinos (DB44 / HD44)</text>
+<text x="65" y="110" dominant-baseline="text-before-edge" text-anchor="start" font-family="Noto Sans,sans-serif" font-size="32" font-weight="400" fill="#24364b">Vista frontal do plugue MACHO do cabo: pinos voltados para você.</text>
+<text x="65" y="165" dominant-baseline="text-before-edge" text-anchor="start" font-family="Noto Sans,sans-serif" font-size="31" font-weight="700" fill="#bd4f00">Entrada analógica em destaque: 26 = AS+   •   10 = AS−   •   11 = GNDA</text>
+<text x="65" y="235" dominant-baseline="text-before-edge" text-anchor="start" font-family="Noto Sans,sans-serif" font-size="29" font-weight="700" fill="#24364b">Como segurar para ler o desenho abaixo:</text>
+<text x="65" y="280" dominant-baseline="text-before-edge" text-anchor="start" font-family="Noto Sans,sans-serif" font-size="28" font-weight="400" fill="#24364b">Gire 90° no sentido horário; o lado mais largo fica à direita.</text>
+<text x="65" y="322" dominant-baseline="text-before-edge" text-anchor="start" font-family="Noto Sans,sans-serif" font-size="28" font-weight="400" fill="#24364b">Pino 1 no alto à direita; pino 15 embaixo à direita.</text>
+<polygon points="1510,230 2090,230 2050,355 1550,355" fill="#f3f6f9" stroke="#607185" stroke-width="2"/>
+<circle cx="1540" cy="255" r="4" fill="#607185" stroke="#607185" stroke-width="2"/>
+<text x="1540" y="239" dominant-baseline="text-before-edge" text-anchor="middle" font-family="Noto Sans,sans-serif" font-size="13" font-weight="700" fill="#24364b">1</text>
+<circle cx="1575" cy="255" r="4" fill="#607185" stroke="#607185" stroke-width="2"/>
+<circle cx="1610" cy="255" r="4" fill="#607185" stroke="#607185" stroke-width="2"/>
+<circle cx="1645" cy="255" r="4" fill="#607185" stroke="#607185" stroke-width="2"/>
+<circle cx="1680" cy="255" r="4" fill="#607185" stroke="#607185" stroke-width="2"/>
+<circle cx="1715" cy="255" r="4" fill="#607185" stroke="#607185" stroke-width="2"/>
+<circle cx="1750" cy="255" r="4" fill="#607185" stroke="#607185" stroke-width="2"/>
+<circle cx="1785" cy="255" r="4" fill="#607185" stroke="#607185" stroke-width="2"/>
+<circle cx="1820" cy="255" r="4" fill="#607185" stroke="#607185" stroke-width="2"/>
+<circle cx="1855" cy="255" r="4" fill="#607185" stroke="#607185" stroke-width="2"/>
+<circle cx="1890" cy="255" r="4" fill="#607185" stroke="#607185" stroke-width="2"/>
+<circle cx="1925" cy="255" r="4" fill="#607185" stroke="#607185" stroke-width="2"/>
+<circle cx="1960" cy="255" r="4" fill="#607185" stroke="#607185" stroke-width="2"/>
+<circle cx="1995" cy="255" r="4" fill="#607185" stroke="#607185" stroke-width="2"/>
+<circle cx="2030" cy="255" r="4" fill="#607185" stroke="#607185" stroke-width="2"/>
+<text x="2030" y="239" dominant-baseline="text-before-edge" text-anchor="middle" font-family="Noto Sans,sans-serif" font-size="13" font-weight="700" fill="#24364b">15</text>
+<circle cx="1528" cy="287" r="4" fill="#607185" stroke="#607185" stroke-width="2"/>
+<text x="1528" y="271" dominant-baseline="text-before-edge" text-anchor="middle" font-family="Noto Sans,sans-serif" font-size="13" font-weight="700" fill="#24364b">16</text>
+<circle cx="1563" cy="287" r="4" fill="#607185" stroke="#607185" stroke-width="2"/>
+<circle cx="1598" cy="287" r="4" fill="#607185" stroke="#607185" stroke-width="2"/>
+<circle cx="1633" cy="287" r="4" fill="#607185" stroke="#607185" stroke-width="2"/>
+<circle cx="1668" cy="287" r="4" fill="#607185" stroke="#607185" stroke-width="2"/>
+<circle cx="1703" cy="287" r="4" fill="#607185" stroke="#607185" stroke-width="2"/>
+<circle cx="1738" cy="287" r="4" fill="#607185" stroke="#607185" stroke-width="2"/>
+<circle cx="1773" cy="287" r="4" fill="#607185" stroke="#607185" stroke-width="2"/>
+<circle cx="1808" cy="287" r="4" fill="#607185" stroke="#607185" stroke-width="2"/>
+<circle cx="1843" cy="287" r="4" fill="#607185" stroke="#607185" stroke-width="2"/>
+<circle cx="1878" cy="287" r="4" fill="#607185" stroke="#607185" stroke-width="2"/>
+<circle cx="1913" cy="287" r="4" fill="#607185" stroke="#607185" stroke-width="2"/>
+<circle cx="1948" cy="287" r="4" fill="#607185" stroke="#607185" stroke-width="2"/>
+<circle cx="1983" cy="287" r="4" fill="#607185" stroke="#607185" stroke-width="2"/>
+<circle cx="2018" cy="287" r="4" fill="#607185" stroke="#607185" stroke-width="2"/>
+<text x="2018" y="271" dominant-baseline="text-before-edge" text-anchor="middle" font-family="Noto Sans,sans-serif" font-size="13" font-weight="700" fill="#24364b">30</text>
+<circle cx="1528" cy="319" r="4" fill="#607185" stroke="#607185" stroke-width="2"/>
+<text x="1528" y="303" dominant-baseline="text-before-edge" text-anchor="middle" font-family="Noto Sans,sans-serif" font-size="13" font-weight="700" fill="#24364b">31</text>
+<circle cx="1563" cy="319" r="4" fill="#607185" stroke="#607185" stroke-width="2"/>
+<circle cx="1598" cy="319" r="4" fill="#607185" stroke="#607185" stroke-width="2"/>
+<circle cx="1633" cy="319" r="4" fill="#607185" stroke="#607185" stroke-width="2"/>
+<circle cx="1668" cy="319" r="4" fill="#607185" stroke="#607185" stroke-width="2"/>
+<circle cx="1703" cy="319" r="4" fill="#607185" stroke="#607185" stroke-width="2"/>
+<circle cx="1738" cy="319" r="4" fill="#607185" stroke="#607185" stroke-width="2"/>
+<circle cx="1773" cy="319" r="4" fill="#607185" stroke="#607185" stroke-width="2"/>
+<circle cx="1808" cy="319" r="4" fill="#607185" stroke="#607185" stroke-width="2"/>
+<circle cx="1843" cy="319" r="4" fill="#607185" stroke="#607185" stroke-width="2"/>
+<circle cx="1878" cy="319" r="4" fill="#607185" stroke="#607185" stroke-width="2"/>
+<circle cx="1913" cy="319" r="4" fill="#607185" stroke="#607185" stroke-width="2"/>
+<circle cx="1948" cy="319" r="4" fill="#607185" stroke="#607185" stroke-width="2"/>
+<circle cx="1983" cy="319" r="4" fill="#607185" stroke="#607185" stroke-width="2"/>
+<text x="1983" y="303" dominant-baseline="text-before-edge" text-anchor="middle" font-family="Noto Sans,sans-serif" font-size="13" font-weight="700" fill="#24364b">44</text>
+<text x="1800" y="372" dominant-baseline="text-before-edge" text-anchor="middle" font-family="Noto Sans,sans-serif" font-size="20" font-weight="400" fill="#24364b">Antes de girar: lado largo em cima</text>
+<polygon points="855,375 1195,335 1195,2155 855,2115" fill="#e9eef4" stroke="#526579" stroke-width="4"/>
+<circle cx="1030" cy="355" r="15" fill="white" stroke="#526579" stroke-width="3"/>
+<circle cx="1030" cy="2153" r="15" fill="white" stroke="#526579" stroke-width="3"/>
+<text x="1045" y="2215" dominant-baseline="text-before-edge" text-anchor="middle" font-family="Noto Sans,sans-serif" font-size="25" font-weight="400" fill="#24364b">Carcaça metálica — FG / blindagem</text>
+<polyline points="1045,2212 1045,2168" fill="none" stroke="#526579" stroke-width="3"/>
+<polyline points="1134,480 1270,480" fill="none" stroke="#20517d" stroke-width="2"/>
+<text x="1290" y="461" dominant-baseline="text-before-edge" text-anchor="start" font-family="Noto Sans,sans-serif" font-size="27" font-weight="400" fill="#20517d">01 — DI2 / ACLR — limpar alarme*</text>
+<circle cx="1115" cy="480" r="20" fill="white" stroke="#20517d" stroke-width="3"/>
+<text x="1115" y="465" dominant-baseline="text-before-edge" text-anchor="middle" font-family="Noto Sans,sans-serif" font-size="20" font-weight="700" fill="#20517d">1</text>
+<polyline points="1134,590 1270,590" fill="none" stroke="#20517d" stroke-width="2"/>
+<text x="1290" y="571" dominant-baseline="text-before-edge" text-anchor="start" font-family="Noto Sans,sans-serif" font-size="27" font-weight="400" fill="#20517d">02 — DI4 / CWL — permissão de giro horário*</text>
+<circle cx="1115" cy="590" r="20" fill="white" stroke="#20517d" stroke-width="3"/>
+<text x="1115" y="575" dominant-baseline="text-before-edge" text-anchor="middle" font-family="Noto Sans,sans-serif" font-size="20" font-weight="700" fill="#20517d">2</text>
+<polyline points="1134,700 1270,700" fill="none" stroke="#76828d" stroke-width="2"/>
+<text x="1290" y="681" dominant-baseline="text-before-edge" text-anchor="start" font-family="Noto Sans,sans-serif" font-size="27" font-weight="400" fill="#76828d">03 — Função não indicada no manual</text>
+<circle cx="1115" cy="700" r="20" fill="white" stroke="#76828d" stroke-width="3"/>
+<text x="1115" y="685" dominant-baseline="text-before-edge" text-anchor="middle" font-family="Noto Sans,sans-serif" font-size="20" font-weight="700" fill="#76828d">3</text>
+<polyline points="1134,810 1270,810" fill="none" stroke="#76828d" stroke-width="2"/>
+<text x="1290" y="791" dominant-baseline="text-before-edge" text-anchor="start" font-family="Noto Sans,sans-serif" font-size="27" font-weight="400" fill="#76828d">04 — Função não indicada no manual</text>
+<circle cx="1115" cy="810" r="20" fill="white" stroke="#76828d" stroke-width="3"/>
+<text x="1115" y="795" dominant-baseline="text-before-edge" text-anchor="middle" font-family="Noto Sans,sans-serif" font-size="20" font-weight="700" fill="#76828d">4</text>
+<polyline points="1134,920 1270,920" fill="none" stroke="#20517d" stroke-width="2"/>
+<text x="1290" y="901" dominant-baseline="text-before-edge" text-anchor="start" font-family="Noto Sans,sans-serif" font-size="27" font-weight="400" fill="#20517d">05 — DO2 / ALM — saída de estado de alarme*</text>
+<circle cx="1115" cy="920" r="20" fill="white" stroke="#20517d" stroke-width="3"/>
+<text x="1115" y="905" dominant-baseline="text-before-edge" text-anchor="middle" font-family="Noto Sans,sans-serif" font-size="20" font-weight="700" fill="#20517d">5</text>
+<polyline points="1134,1030 1270,1030" fill="none" stroke="#20517d" stroke-width="2"/>
+<text x="1290" y="1011" dominant-baseline="text-before-edge" text-anchor="start" font-family="Noto Sans,sans-serif" font-size="27" font-weight="400" fill="#20517d">06 — DO4 / BRK — liberação do freio*</text>
+<circle cx="1115" cy="1030" r="20" fill="white" stroke="#20517d" stroke-width="3"/>
+<text x="1115" y="1015" dominant-baseline="text-before-edge" text-anchor="middle" font-family="Noto Sans,sans-serif" font-size="20" font-weight="700" fill="#20517d">6</text>
+<polyline points="1134,1140 1270,1140" fill="none" stroke="#76828d" stroke-width="2"/>
+<text x="1290" y="1121" dominant-baseline="text-before-edge" text-anchor="start" font-family="Noto Sans,sans-serif" font-size="27" font-weight="400" fill="#76828d">07 — Função não indicada no manual</text>
+<circle cx="1115" cy="1140" r="20" fill="white" stroke="#76828d" stroke-width="3"/>
+<text x="1115" y="1125" dominant-baseline="text-before-edge" text-anchor="middle" font-family="Noto Sans,sans-serif" font-size="20" font-weight="700" fill="#76828d">7</text>
+<polyline points="1134,1250 1270,1250" fill="none" stroke="#20517d" stroke-width="2"/>
+<text x="1290" y="1231" dominant-baseline="text-before-edge" text-anchor="start" font-family="Noto Sans,sans-serif" font-size="27" font-weight="400" fill="#20517d">08 — SIGN− — entrada de direção, negativo</text>
+<circle cx="1115" cy="1250" r="20" fill="white" stroke="#20517d" stroke-width="3"/>
+<text x="1115" y="1235" dominant-baseline="text-before-edge" text-anchor="middle" font-family="Noto Sans,sans-serif" font-size="20" font-weight="700" fill="#20517d">8</text>
+<polyline points="1134,1360 1270,1360" fill="none" stroke="#20517d" stroke-width="2"/>
+<text x="1290" y="1341" dominant-baseline="text-before-edge" text-anchor="start" font-family="Noto Sans,sans-serif" font-size="27" font-weight="400" fill="#20517d">09 — PULS− — entrada de pulsos, negativo</text>
+<circle cx="1115" cy="1360" r="20" fill="white" stroke="#20517d" stroke-width="3"/>
+<text x="1115" y="1345" dominant-baseline="text-before-edge" text-anchor="middle" font-family="Noto Sans,sans-serif" font-size="20" font-weight="700" fill="#20517d">9</text>
+<polyline points="1134,1470 1270,1470" fill="none" stroke="#bd4f00" stroke-width="4"/>
+<text x="1290" y="1451" dominant-baseline="text-before-edge" text-anchor="start" font-family="Noto Sans,sans-serif" font-size="27" font-weight="700" fill="#bd4f00">10 — AS− — entrada analógica, negativo</text>
+<circle cx="1115" cy="1470" r="20" fill="#fff1df" stroke="#bd4f00" stroke-width="3"/>
+<text x="1115" y="1455" dominant-baseline="text-before-edge" text-anchor="middle" font-family="Noto Sans,sans-serif" font-size="20" font-weight="700" fill="#bd4f00">10</text>
+<polyline points="1134,1580 1270,1580" fill="none" stroke="#bd4f00" stroke-width="4"/>
+<text x="1290" y="1561" dominant-baseline="text-before-edge" text-anchor="start" font-family="Noto Sans,sans-serif" font-size="27" font-weight="700" fill="#bd4f00">11 — GNDA — terra de referência analógica</text>
+<circle cx="1115" cy="1580" r="20" fill="#fff1df" stroke="#bd4f00" stroke-width="3"/>
+<text x="1115" y="1565" dominant-baseline="text-before-edge" text-anchor="middle" font-family="Noto Sans,sans-serif" font-size="20" font-weight="700" fill="#bd4f00">11</text>
+<polyline points="1134,1690 1270,1690" fill="none" stroke="#20517d" stroke-width="2"/>
+<text x="1290" y="1671" dominant-baseline="text-before-edge" text-anchor="start" font-family="Noto Sans,sans-serif" font-size="27" font-weight="400" fill="#20517d">12 — GND — terra dos sinais de encoder</text>
+<circle cx="1115" cy="1690" r="20" fill="white" stroke="#20517d" stroke-width="3"/>
+<text x="1115" y="1675" dominant-baseline="text-before-edge" text-anchor="middle" font-family="Noto Sans,sans-serif" font-size="20" font-weight="700" fill="#20517d">12</text>
+<polyline points="1134,1800 1270,1800" fill="none" stroke="#20517d" stroke-width="2"/>
+<text x="1290" y="1781" dominant-baseline="text-before-edge" text-anchor="start" font-family="Noto Sans,sans-serif" font-size="27" font-weight="400" fill="#20517d">13 — OA+ — saída de encoder A+</text>
+<circle cx="1115" cy="1800" r="20" fill="white" stroke="#20517d" stroke-width="3"/>
+<text x="1115" y="1785" dominant-baseline="text-before-edge" text-anchor="middle" font-family="Noto Sans,sans-serif" font-size="20" font-weight="700" fill="#20517d">13</text>
+<polyline points="1134,1910 1270,1910" fill="none" stroke="#20517d" stroke-width="2"/>
+<text x="1290" y="1891" dominant-baseline="text-before-edge" text-anchor="start" font-family="Noto Sans,sans-serif" font-size="27" font-weight="400" fill="#20517d">14 — OB+ — saída de encoder B+</text>
+<circle cx="1115" cy="1910" r="20" fill="white" stroke="#20517d" stroke-width="3"/>
+<text x="1115" y="1895" dominant-baseline="text-before-edge" text-anchor="middle" font-family="Noto Sans,sans-serif" font-size="20" font-weight="700" fill="#20517d">14</text>
+<polyline points="1134,2020 1270,2020" fill="none" stroke="#20517d" stroke-width="2"/>
+<text x="1290" y="2001" dominant-baseline="text-before-edge" text-anchor="start" font-family="Noto Sans,sans-serif" font-size="27" font-weight="400" fill="#20517d">15 — OZ+ — saída de encoder Z+ (índice)</text>
+<circle cx="1115" cy="2020" r="20" fill="white" stroke="#20517d" stroke-width="3"/>
+<text x="1115" y="2005" dominant-baseline="text-before-edge" text-anchor="middle" font-family="Noto Sans,sans-serif" font-size="20" font-weight="700" fill="#20517d">15</text>
+<polyline points="1006,435 995,435 970,480 810,480" fill="none" stroke="#20517d" stroke-width="2"/>
+<text x="792" y="461" dominant-baseline="text-before-edge" text-anchor="end" font-family="Noto Sans,sans-serif" font-size="27" font-weight="400" fill="#20517d">16 — DI1 / SON — habilitação do servo*</text>
+<circle cx="1025" cy="435" r="20" fill="white" stroke="#20517d" stroke-width="3"/>
+<text x="1025" y="420" dominant-baseline="text-before-edge" text-anchor="middle" font-family="Noto Sans,sans-serif" font-size="20" font-weight="700" fill="#20517d">16</text>
+<polyline points="1006,545 995,545 970,590 810,590" fill="none" stroke="#20517d" stroke-width="2"/>
+<text x="792" y="571" dominant-baseline="text-before-edge" text-anchor="end" font-family="Noto Sans,sans-serif" font-size="27" font-weight="400" fill="#20517d">17 — DI3 / CCWL — permissão de giro anti-horário*</text>
+<circle cx="1025" cy="545" r="20" fill="white" stroke="#20517d" stroke-width="3"/>
+<text x="1025" y="530" dominant-baseline="text-before-edge" text-anchor="middle" font-family="Noto Sans,sans-serif" font-size="20" font-weight="700" fill="#20517d">17</text>
+<polyline points="1006,655 995,655 970,700 810,700" fill="none" stroke="#76828d" stroke-width="2"/>
+<text x="792" y="681" dominant-baseline="text-before-edge" text-anchor="end" font-family="Noto Sans,sans-serif" font-size="27" font-weight="400" fill="#76828d">18 — Função não indicada no manual</text>
+<circle cx="1025" cy="655" r="20" fill="white" stroke="#76828d" stroke-width="3"/>
+<text x="1025" y="640" dominant-baseline="text-before-edge" text-anchor="middle" font-family="Noto Sans,sans-serif" font-size="20" font-weight="700" fill="#76828d">18</text>
+<polyline points="1006,765 995,765 970,810 810,810" fill="none" stroke="#76828d" stroke-width="2"/>
+<text x="792" y="791" dominant-baseline="text-before-edge" text-anchor="end" font-family="Noto Sans,sans-serif" font-size="27" font-weight="400" fill="#76828d">19 — Função não indicada no manual</text>
+<circle cx="1025" cy="765" r="20" fill="white" stroke="#76828d" stroke-width="3"/>
+<text x="1025" y="750" dominant-baseline="text-before-edge" text-anchor="middle" font-family="Noto Sans,sans-serif" font-size="20" font-weight="700" fill="#76828d">19</text>
+<polyline points="1006,875 995,875 970,920 810,920" fill="none" stroke="#20517d" stroke-width="2"/>
+<text x="792" y="901" dominant-baseline="text-before-edge" text-anchor="end" font-family="Noto Sans,sans-serif" font-size="27" font-weight="400" fill="#20517d">20 — DO1 / RDY — servo pronto*</text>
+<circle cx="1025" cy="875" r="20" fill="white" stroke="#20517d" stroke-width="3"/>
+<text x="1025" y="860" dominant-baseline="text-before-edge" text-anchor="middle" font-family="Noto Sans,sans-serif" font-size="20" font-weight="700" fill="#20517d">20</text>
+<polyline points="1006,985 995,985 970,1030 810,1030" fill="none" stroke="#20517d" stroke-width="2"/>
+<text x="792" y="1011" dominant-baseline="text-before-edge" text-anchor="end" font-family="Noto Sans,sans-serif" font-size="27" font-weight="400" fill="#20517d">21 — DO3 / COIN — posição concluída*</text>
+<circle cx="1025" cy="985" r="20" fill="white" stroke="#20517d" stroke-width="3"/>
+<text x="1025" y="970" dominant-baseline="text-before-edge" text-anchor="middle" font-family="Noto Sans,sans-serif" font-size="20" font-weight="700" fill="#20517d">21</text>
+<polyline points="1006,1095 995,1095 970,1140 810,1140" fill="none" stroke="#76828d" stroke-width="2"/>
+<text x="792" y="1121" dominant-baseline="text-before-edge" text-anchor="end" font-family="Noto Sans,sans-serif" font-size="27" font-weight="400" fill="#76828d">22 — Função não indicada no manual</text>
+<circle cx="1025" cy="1095" r="20" fill="white" stroke="#76828d" stroke-width="3"/>
+<text x="1025" y="1080" dominant-baseline="text-before-edge" text-anchor="middle" font-family="Noto Sans,sans-serif" font-size="20" font-weight="700" fill="#76828d">22</text>
+<polyline points="1006,1205 995,1205 970,1250 810,1250" fill="none" stroke="#20517d" stroke-width="2"/>
+<text x="792" y="1231" dominant-baseline="text-before-edge" text-anchor="end" font-family="Noto Sans,sans-serif" font-size="27" font-weight="400" fill="#20517d">23 — DO COM — comum das saídas digitais</text>
+<circle cx="1025" cy="1205" r="20" fill="white" stroke="#20517d" stroke-width="3"/>
+<text x="1025" y="1190" dominant-baseline="text-before-edge" text-anchor="middle" font-family="Noto Sans,sans-serif" font-size="20" font-weight="700" fill="#20517d">23</text>
+<polyline points="1006,1315 995,1315 970,1360 810,1360" fill="none" stroke="#20517d" stroke-width="2"/>
+<text x="792" y="1341" dominant-baseline="text-before-edge" text-anchor="end" font-family="Noto Sans,sans-serif" font-size="27" font-weight="400" fill="#20517d">24 — SIGN+ (5 V) — entrada de direção, positivo</text>
+<circle cx="1025" cy="1315" r="20" fill="white" stroke="#20517d" stroke-width="3"/>
+<text x="1025" y="1300" dominant-baseline="text-before-edge" text-anchor="middle" font-family="Noto Sans,sans-serif" font-size="20" font-weight="700" fill="#20517d">24</text>
+<polyline points="1006,1425 995,1425 970,1470 810,1470" fill="none" stroke="#20517d" stroke-width="2"/>
+<text x="792" y="1451" dominant-baseline="text-before-edge" text-anchor="end" font-family="Noto Sans,sans-serif" font-size="27" font-weight="400" fill="#20517d">25 — PULS+ (5 V) — entrada de pulsos, positivo</text>
+<circle cx="1025" cy="1425" r="20" fill="white" stroke="#20517d" stroke-width="3"/>
+<text x="1025" y="1410" dominant-baseline="text-before-edge" text-anchor="middle" font-family="Noto Sans,sans-serif" font-size="20" font-weight="700" fill="#20517d">25</text>
+<polyline points="1006,1535 995,1535 970,1580 810,1580" fill="none" stroke="#bd4f00" stroke-width="4"/>
+<text x="792" y="1561" dominant-baseline="text-before-edge" text-anchor="end" font-family="Noto Sans,sans-serif" font-size="27" font-weight="700" fill="#bd4f00">26 — AS+ — entrada analógica, positivo</text>
+<circle cx="1025" cy="1535" r="20" fill="#fff1df" stroke="#bd4f00" stroke-width="3"/>
+<text x="1025" y="1520" dominant-baseline="text-before-edge" text-anchor="middle" font-family="Noto Sans,sans-serif" font-size="20" font-weight="700" fill="#bd4f00">26</text>
+<polyline points="1006,1645 995,1645 970,1690 810,1690" fill="none" stroke="#20517d" stroke-width="2"/>
+<text x="792" y="1671" dominant-baseline="text-before-edge" text-anchor="end" font-family="Noto Sans,sans-serif" font-size="27" font-weight="400" fill="#20517d">27 — CZ — saída de índice Z</text>
+<circle cx="1025" cy="1645" r="20" fill="white" stroke="#20517d" stroke-width="3"/>
+<text x="1025" y="1630" dominant-baseline="text-before-edge" text-anchor="middle" font-family="Noto Sans,sans-serif" font-size="20" font-weight="700" fill="#20517d">27</text>
+<polyline points="1006,1755 995,1755 970,1800 810,1800" fill="none" stroke="#20517d" stroke-width="2"/>
+<text x="792" y="1781" dominant-baseline="text-before-edge" text-anchor="end" font-family="Noto Sans,sans-serif" font-size="27" font-weight="400" fill="#20517d">28 — OA− — saída de encoder A−</text>
+<circle cx="1025" cy="1755" r="20" fill="white" stroke="#20517d" stroke-width="3"/>
+<text x="1025" y="1740" dominant-baseline="text-before-edge" text-anchor="middle" font-family="Noto Sans,sans-serif" font-size="20" font-weight="700" fill="#20517d">28</text>
+<polyline points="1006,1865 995,1865 970,1910 810,1910" fill="none" stroke="#20517d" stroke-width="2"/>
+<text x="792" y="1891" dominant-baseline="text-before-edge" text-anchor="end" font-family="Noto Sans,sans-serif" font-size="27" font-weight="400" fill="#20517d">29 — OB− — saída de encoder B−</text>
+<circle cx="1025" cy="1865" r="20" fill="white" stroke="#20517d" stroke-width="3"/>
+<text x="1025" y="1850" dominant-baseline="text-before-edge" text-anchor="middle" font-family="Noto Sans,sans-serif" font-size="20" font-weight="700" fill="#20517d">29</text>
+<polyline points="1006,1975 995,1975 970,2020 810,2020" fill="none" stroke="#20517d" stroke-width="2"/>
+<text x="792" y="2001" dominant-baseline="text-before-edge" text-anchor="end" font-family="Noto Sans,sans-serif" font-size="27" font-weight="400" fill="#20517d">30 — OZ− — saída de encoder Z− (índice)</text>
+<circle cx="1025" cy="1975" r="20" fill="white" stroke="#20517d" stroke-width="3"/>
+<text x="1025" y="1960" dominant-baseline="text-before-edge" text-anchor="middle" font-family="Noto Sans,sans-serif" font-size="20" font-weight="700" fill="#20517d">30</text>
+<polyline points="916,435 810,435" fill="none" stroke="#20517d" stroke-width="2"/>
+<text x="792" y="416" dominant-baseline="text-before-edge" text-anchor="end" font-family="Noto Sans,sans-serif" font-size="27" font-weight="400" fill="#20517d">31 — COM+ — alimentação das entradas DI (24 V)</text>
+<circle cx="935" cy="435" r="20" fill="white" stroke="#20517d" stroke-width="3"/>
+<text x="935" y="420" dominant-baseline="text-before-edge" text-anchor="middle" font-family="Noto Sans,sans-serif" font-size="20" font-weight="700" fill="#20517d">31</text>
+<polyline points="916,545 810,545" fill="none" stroke="#76828d" stroke-width="2"/>
+<text x="792" y="526" dominant-baseline="text-before-edge" text-anchor="end" font-family="Noto Sans,sans-serif" font-size="27" font-weight="400" fill="#76828d">32 — Função não indicada no manual</text>
+<circle cx="935" cy="545" r="20" fill="white" stroke="#76828d" stroke-width="3"/>
+<text x="935" y="530" dominant-baseline="text-before-edge" text-anchor="middle" font-family="Noto Sans,sans-serif" font-size="20" font-weight="700" fill="#76828d">32</text>
+<polyline points="916,655 810,655" fill="none" stroke="#76828d" stroke-width="2"/>
+<text x="792" y="636" dominant-baseline="text-before-edge" text-anchor="end" font-family="Noto Sans,sans-serif" font-size="27" font-weight="400" fill="#76828d">33 — Função não indicada no manual</text>
+<circle cx="935" cy="655" r="20" fill="white" stroke="#76828d" stroke-width="3"/>
+<text x="935" y="640" dominant-baseline="text-before-edge" text-anchor="middle" font-family="Noto Sans,sans-serif" font-size="20" font-weight="700" fill="#76828d">33</text>
+<polyline points="916,765 810,765" fill="none" stroke="#76828d" stroke-width="2"/>
+<text x="792" y="746" dominant-baseline="text-before-edge" text-anchor="end" font-family="Noto Sans,sans-serif" font-size="27" font-weight="400" fill="#76828d">34 — Função não indicada no manual</text>
+<circle cx="935" cy="765" r="20" fill="white" stroke="#76828d" stroke-width="3"/>
+<text x="935" y="750" dominant-baseline="text-before-edge" text-anchor="middle" font-family="Noto Sans,sans-serif" font-size="20" font-weight="700" fill="#76828d">34</text>
+<polyline points="916,875 810,875" fill="none" stroke="#76828d" stroke-width="2"/>
+<text x="792" y="856" dominant-baseline="text-before-edge" text-anchor="end" font-family="Noto Sans,sans-serif" font-size="27" font-weight="400" fill="#76828d">35 — Função não indicada no manual</text>
+<circle cx="935" cy="875" r="20" fill="white" stroke="#76828d" stroke-width="3"/>
+<text x="935" y="860" dominant-baseline="text-before-edge" text-anchor="middle" font-family="Noto Sans,sans-serif" font-size="20" font-weight="700" fill="#76828d">35</text>
+<polyline points="916,985 810,985" fill="none" stroke="#76828d" stroke-width="2"/>
+<text x="792" y="966" dominant-baseline="text-before-edge" text-anchor="end" font-family="Noto Sans,sans-serif" font-size="27" font-weight="400" fill="#76828d">36 — Função não indicada no manual</text>
+<circle cx="935" cy="985" r="20" fill="white" stroke="#76828d" stroke-width="3"/>
+<text x="935" y="970" dominant-baseline="text-before-edge" text-anchor="middle" font-family="Noto Sans,sans-serif" font-size="20" font-weight="700" fill="#76828d">36</text>
+<polyline points="916,1095 810,1095" fill="none" stroke="#76828d" stroke-width="2"/>
+<text x="792" y="1076" dominant-baseline="text-before-edge" text-anchor="end" font-family="Noto Sans,sans-serif" font-size="27" font-weight="400" fill="#76828d">37 — Função não indicada no manual</text>
+<circle cx="935" cy="1095" r="20" fill="white" stroke="#76828d" stroke-width="3"/>
+<text x="935" y="1080" dominant-baseline="text-before-edge" text-anchor="middle" font-family="Noto Sans,sans-serif" font-size="20" font-weight="700" fill="#76828d">37</text>
+<polyline points="916,1205 810,1205" fill="none" stroke="#20517d" stroke-width="2"/>
+<text x="792" y="1186" dominant-baseline="text-before-edge" text-anchor="end" font-family="Noto Sans,sans-serif" font-size="27" font-weight="400" fill="#20517d">38 — SIGN+ (24 V) — entrada de direção, positivo</text>
+<circle cx="935" cy="1205" r="20" fill="white" stroke="#20517d" stroke-width="3"/>
+<text x="935" y="1190" dominant-baseline="text-before-edge" text-anchor="middle" font-family="Noto Sans,sans-serif" font-size="20" font-weight="700" fill="#20517d">38</text>
+<polyline points="916,1315 810,1315" fill="none" stroke="#20517d" stroke-width="2"/>
+<text x="792" y="1296" dominant-baseline="text-before-edge" text-anchor="end" font-family="Noto Sans,sans-serif" font-size="27" font-weight="400" fill="#20517d">39 — PULS+ (24 V) — entrada de pulsos, positivo</text>
+<circle cx="935" cy="1315" r="20" fill="white" stroke="#20517d" stroke-width="3"/>
+<text x="935" y="1300" dominant-baseline="text-before-edge" text-anchor="middle" font-family="Noto Sans,sans-serif" font-size="20" font-weight="700" fill="#20517d">39</text>
+<polyline points="916,1425 810,1425" fill="none" stroke="#20517d" stroke-width="2"/>
+<text x="792" y="1406" dominant-baseline="text-before-edge" text-anchor="end" font-family="Noto Sans,sans-serif" font-size="27" font-weight="400" fill="#20517d">40 — 485_A — comunicação RS-485 A</text>
+<circle cx="935" cy="1425" r="20" fill="white" stroke="#20517d" stroke-width="3"/>
+<text x="935" y="1410" dominant-baseline="text-before-edge" text-anchor="middle" font-family="Noto Sans,sans-serif" font-size="20" font-weight="700" fill="#20517d">40</text>
+<polyline points="916,1535 810,1535" fill="none" stroke="#20517d" stroke-width="2"/>
+<text x="792" y="1516" dominant-baseline="text-before-edge" text-anchor="end" font-family="Noto Sans,sans-serif" font-size="27" font-weight="400" fill="#20517d">41 — 485_B — comunicação RS-485 B</text>
+<circle cx="935" cy="1535" r="20" fill="white" stroke="#20517d" stroke-width="3"/>
+<text x="935" y="1520" dominant-baseline="text-before-edge" text-anchor="middle" font-family="Noto Sans,sans-serif" font-size="20" font-weight="700" fill="#20517d">41</text>
+<polyline points="916,1645 810,1645" fill="none" stroke="#20517d" stroke-width="2"/>
+<text x="792" y="1626" dominant-baseline="text-before-edge" text-anchor="end" font-family="Noto Sans,sans-serif" font-size="27" font-weight="400" fill="#20517d">42 — 485_GND — terra de sinal RS-485</text>
+<circle cx="935" cy="1645" r="20" fill="white" stroke="#20517d" stroke-width="3"/>
+<text x="935" y="1630" dominant-baseline="text-before-edge" text-anchor="middle" font-family="Noto Sans,sans-serif" font-size="20" font-weight="700" fill="#20517d">42</text>
+<polyline points="916,1755 810,1755" fill="none" stroke="#76828d" stroke-width="2"/>
+<text x="792" y="1736" dominant-baseline="text-before-edge" text-anchor="end" font-family="Noto Sans,sans-serif" font-size="27" font-weight="400" fill="#76828d">43 — Função não indicada no manual</text>
+<circle cx="935" cy="1755" r="20" fill="white" stroke="#76828d" stroke-width="3"/>
+<text x="935" y="1740" dominant-baseline="text-before-edge" text-anchor="middle" font-family="Noto Sans,sans-serif" font-size="20" font-weight="700" fill="#76828d">43</text>
+<polyline points="916,1865 810,1865" fill="none" stroke="#76828d" stroke-width="2"/>
+<text x="792" y="1846" dominant-baseline="text-before-edge" text-anchor="end" font-family="Noto Sans,sans-serif" font-size="27" font-weight="400" fill="#76828d">44 — Função não indicada no manual</text>
+<circle cx="935" cy="1865" r="20" fill="white" stroke="#76828d" stroke-width="3"/>
+<text x="935" y="1850" dominant-baseline="text-before-edge" text-anchor="middle" font-family="Noto Sans,sans-serif" font-size="20" font-weight="700" fill="#76828d">44</text>
+<text x="65" y="2305" dominant-baseline="text-before-edge" text-anchor="start" font-family="Noto Sans,sans-serif" font-size="26" font-weight="400" fill="#24364b">* DI/DO são programáveis; os nomes indicam as funções do esquema do manual.</text>
+<text x="65" y="2350" dominant-baseline="text-before-edge" text-anchor="start" font-family="Noto Sans,sans-serif" font-size="26" font-weight="400" fill="#24364b">“Não indicada” não significa pino livre: a fonte não atribui função a esse contato.</text>
+<text x="65" y="2395" dominant-baseline="text-before-edge" text-anchor="start" font-family="Noto Sans,sans-serif" font-size="26" font-weight="700" fill="#24364b">Conferir os números moldados no plugue. A vista da fêmea e o lado de solda são espelhados.</text>
+<text x="65" y="2450" dominant-baseline="text-before-edge" text-anchor="start" font-family="Noto Sans,sans-serif" font-size="23" font-weight="400" fill="#24364b">Fonte: manual de comissionamento T3D V2.3, PDF 6 / página impressa 3. Esquemático, sem escala mecânica.</text>
+</svg>
