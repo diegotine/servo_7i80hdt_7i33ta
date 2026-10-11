@@ -24,8 +24,10 @@ int main(int argc, char *argv[])
     }
     if (application.arguments().contains("--preview-tests")) {
         auto *tabs = window.findChild<QTabWidget *>("tabs");
-        tabs->setCurrentIndex(tabs->count() - 1);
+        tabs->setCurrentWidget(window.findChild<QWidget *>("testsTab"));
     }
+    if (application.arguments().contains("--preview-pinout"))
+        window.findChild<QTabWidget *>("tabs")->setCurrentWidget(window.findChild<QWidget *>("pinoutTab"));
     if (application.arguments().contains("--preview-test"))
         window.findChild<QPushButton *>("outputTest0")->setChecked(true);
     if (application.arguments().contains("--preview-graph")) {

@@ -2,6 +2,8 @@
 
 ## 0.2.5 — otimização nativa
 
+- Aba Pinout com a fotografia da 7i33TA convertida para JPG, centralizada horizontalmente.
+
 - Versão incrementada antes das otimizações; período de 2 ms mantido.
 - Referência física 0.2.4 salva antes das mudanças.
 - Núcleo C++ para temporização absoluta, estatísticas e rampas assimétricas.

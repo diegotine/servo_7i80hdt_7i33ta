@@ -1,0 +1,5 @@
+<RCC>
+ <qresource prefix="/pinout">
+  <file alias="7i33ta-pinout.jpg">../assets/7i33ta-pinout.jpg</file>
+ </qresource>
+</RCC>

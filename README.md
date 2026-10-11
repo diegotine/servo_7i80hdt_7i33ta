@@ -444,3 +444,9 @@ nesta máquina). Solicita limites mínimo/máximo de 4200 MHz quando o driver pe
 selecionar essa frequência. O diagnóstico registra o que foi confirmado e a
 configuração anterior é restaurada ao fechar, inclusive após queda da interface.
 Detalhes e limitações em [OTIMIZACAO_0.2.5.md](OTIMIZACAO_0.2.5.md).
+
+## Pinout
+
+A aba **Pinout** exibe a fotografia da 7i33TA, centralizada horizontalmente,
+com rolagem vertical para consultar toda a placa. A foto JPG está incorporada
+ao executável e não depende de um arquivo externo durante o uso.

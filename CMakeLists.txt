@@ -4,6 +4,7 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTOUIC ON)
+set(CMAKE_AUTORCC ON)
 find_package(Qt6 6.4 REQUIRED COMPONENTS Widgets)
 find_package(Python3 3.10 REQUIRED COMPONENTS Interpreter Development.Module)
 execute_process(COMMAND id -u OUTPUT_VARIABLE T3D_LOCAL_UID OUTPUT_STRIP_TRAILING_WHITESPACE COMMAND_ERROR_IS_FATAL ANY)
@@ -15,7 +16,7 @@ target_compile_definitions(t3d_runtime_limiter PRIVATE
     T3D_PYTHON="${Python3_EXECUTABLE}"
     T3D_BACKEND="${CMAKE_CURRENT_BINARY_DIR}/driver/backend.py"
     T3D_RUNTIME_CHECK="${CMAKE_CURRENT_BINARY_DIR}/driver/check_runtime.py")
-qt_add_executable(t3d_analog app/main.cpp app/mainwindow.cpp app/mainwindow.h app/mainwindow.ui app/interface.cpp app/axissettingsdialog.ui app/telemetryplot.cpp app/telemetryplot.h)
+qt_add_executable(t3d_analog app/main.cpp app/mainwindow.cpp app/mainwindow.h app/mainwindow.ui app/interface.cpp app/axissettingsdialog.ui app/telemetryplot.cpp app/telemetryplot.h app/pinoutimage.cpp app/pinoutimage.h app/resources.qrc)
 target_link_libraries(t3d_analog PRIVATE Qt6::Widgets)
 target_include_directories(t3d_analog PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/app)
 target_compile_options(t3d_analog PRIVATE -Wall -Wextra -Wpedantic)

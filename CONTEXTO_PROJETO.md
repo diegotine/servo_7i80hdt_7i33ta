@@ -139,3 +139,14 @@ Atalho novo Iniciar T3D v0.2.2.desktop criado; anteriores preservados.
 - 0.2.5 concluída localmente: build, interface, regressões matemáticas e temporização
   passaram; preflight confirmou FIFO 10 / CPU 5 / mlock e núcleo 0.2.5, sem placa.
   Atalho 0.2.5 disponível; 0.2.4 preservada isoladamente. Nenhuma publicação nova.
+
+## Último passo 0.2.5 antes do reboot
+
+- Foto fornecida em reference/7i33TAHires.png, preservada. Conversão JPG em
+  assets/7i33ta-pinout.jpg, incorporada por Qt Resource na nova aba Pinout.
+  Apenas foto centralizada horizontalmente; rolagem vertical, sem botões extras.
+- Novos JSONs 180456-898 e 180655-190 arquivados; análise em
+  medicoes/2026-10-11-ensaios-perfis-antes-reboot.md. Último loopback tem
+  máximos ON/OFF 2,026775/2,048945 ms, mas histórico da sessão inclui intervalo
+  máximo 8,006786 ms, duas execuções excedidas e seis slots pulados.
+- Operador vai reiniciar e conferir BIOS/HWP, depois medir 0.2.5.

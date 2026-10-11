@@ -7540,6 +7540,39 @@ Tensão exibida é o comando enviado; a HDT não mede a tensão analógica nem a
         </item>
        </layout>
       </widget>
+      <widget class="QWidget" name="pinoutTab">
+       <attribute name="title">
+        <string>Pinout</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="pinoutLayout">
+        <property name="leftMargin">
+         <number>0</number>
+        </property>
+        <property name="topMargin">
+         <number>0</number>
+        </property>
+        <property name="rightMargin">
+         <number>0</number>
+        </property>
+        <property name="bottomMargin">
+         <number>0</number>
+        </property>
+        <item>
+         <widget class="QScrollArea" name="pinoutScroll">
+          <property name="widgetResizable">
+           <bool>true</bool>
+          </property>
+          <property name="frameShape">
+           <enum>QFrame::NoFrame</enum>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignHCenter|Qt::AlignTop</set>
+          </property>
+          <widget class="PinoutImage" name="pinoutImage" />
+         </widget>
+        </item>
+       </layout>
+      </widget>
      </widget>
     </item>
     <item>
@@ -7573,6 +7606,11 @@ Tensão exibida é o comando enviado; a HDT não mede a tensão analógica nem a
    <class>TelemetryPlot</class>
    <extends>QWidget</extends>
    <header>telemetryplot.h</header>
+  </customwidget>
+  <customwidget>
+   <class>PinoutImage</class>
+   <extends>QWidget</extends>
+   <header>pinoutimage.h</header>
   </customwidget>
  </customwidgets>
 </ui>
