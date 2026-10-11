@@ -1,5 +1,8 @@
 # Capturas da interface
 
+- [Interface 0.2.7](interface-v0.2.7.png): controles atuais do motor, sem conexão à placa.
+- [TESTES 0.2.7](testes-v0.2.7.png): testes de bancada e botão para abrir o monitor separado de períodos/log.
+
 - [Loopback analógico com otimizações](loopback-analogico-otimizacoes-2026-10-11.png):
   100 ciclos reais, ON 4,982 ms e OFF 4,972 ms. A captura original mostra
   v0.2.1 no título; esse código foi renumerado para 0.2.2 em seguida.

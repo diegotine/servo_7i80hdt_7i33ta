@@ -168,6 +168,11 @@ da 0.2.5 aberta. Consulte VALIDACAO_0.2.6.md para verificações e limites atuai
 
 ## Rede dedicada: moderação RX desativada
 
+Para registrar a execução sem escrita em disco na malha, use o
+[monitor de períodos separado](MONITOR_PERIODOS.md), disponível na aba TESTES.
+Ele recebe a telemetria já existente pela interface e grava resumos e eventos
+em outro processo/CPU. Não adiciona instrumentação ao driver.
+
 O ensaio da Intel I219-LM de 11/10/2026 foi documentado em
 [medicoes/2026-10-11-rede-i219-lm-RELATORIO.md](medicoes/2026-10-11-rede-i219-lm-RELATORIO.md).
 O `e1000e` já era o driver correto. A única alteração nesse ensaio foi

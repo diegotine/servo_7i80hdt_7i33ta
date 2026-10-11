@@ -1,4 +1,4 @@
-# T3D Analog Velocity — versão 0.2.6 em desenvolvimento
+# T3D Analog Velocity — versão 0.2.7
 
 > **DRIVER ETHERNET PRÓPRIO — USE A PLACA MESA SEM LINUXCNC OU HAL.**
 >
@@ -24,6 +24,10 @@ os encoders e envia referências analógicas de velocidade ao drive.
 - Gráfico por motor com posição comandada e feedback real do encoder.
 - Ajustes do motor com a placa conectada e troca de modo teste com ENABLE ligado.
 - Aba TESTES com loopback digital ENA → encoder A, 100 ciclos e médias de ON/OFF.
+- Loopback analógico 0/+4 V e teste manual PWM/PDM com pulso de 40%.
+- Monitor de períodos em aplicativo C++ separado, com afinidade em outra CPU,
+  log de estatísticas, estouros de trabalho e ciclos perdidos.
+- Aba Pinout com fotografia incorporada e fundo transparente.
 - Faixa analógica fixa em ±10 V e limite de velocidade padrão de 1000 RPM.
 - Abas de entradas e saídas digitais das portas P1 e P2.
 - Aba de diagnóstico da HDT, com identificação, contadores, estados e histórico
@@ -45,16 +49,17 @@ Qt 6.4 ou superior, Python 3.10 ou superior com cabeçalhos e Cython 3.2 ou supe
 do projeto. As instruções detalhadas estão em [README.md](README.md), e a
 pinagem em [PINOUT.md](PINOUT.md).
 
-Os padrões de aceleração e desaceleração são 350 e 600 RPM/s. O ciclo atual da 0.2.6 é de 1 ms.
+Os padrões de aceleração e desaceleração são 350 e 600 RPM/s. O ciclo atual da 0.2.7 é de 1 ms.
 O auxiliar de CPU pertence à interface: solicita limites de 4200 MHz mesmo com
 TuneD ativo, preservando os demais ajustes do perfil. O diagnóstico identifica
 a versão do núcleo. O auxiliar do driver concede somente FIFO/memória.
 
-## Estado da versão 0.2.6
+## Estado da versão 0.2.7
 
-Evolução da versão 0.1 para testes de bancada. As funções principais e a organização
-da interface foram implementadas; permanecem o polimento visual, a validação
-prática com o conjunto completo e eventuais funções adicionais.
+Evolução da versão 0.1 com telemetria, testes de bancada, núcleo nativo,
+aceleração/desaceleração independentes e monitor separado. As medições de
+loopback e o ajuste da rede estão documentados em `medicoes/`. A validação do
+conjunto completo com cabo, drive, motor e encoder é a próxima etapa.
 
 Há testes automatizados do driver, controlador e comunicação com placa
 simulada, além da verificação de abertura e estabilidade do layout da interface.
@@ -71,6 +76,7 @@ Controle de até quatro servomotores T3D via Mesa 7i80HDT e 7i33TA, com interfac
 Qt, driver Ethernet próprio e uso da placa sem LinuxCNC ou HAL. Inclui JOG,
 trajetórias de posição, teste de saída e diagnóstico.
 
-Na 0.2.5, backend, driver Ethernet, controlador, loopback e temporização são
-compilados com Cython. Estado numérico do controlador em campos C; ciclo de
-2 ms mantido. Desvio físico será comparado com a referência 0.2.3.
+Backend, driver Ethernet, controlador, loopback e temporização são compilados
+com Cython. O núcleo C++ executa temporização, estatísticas e planejamento
+de rampas; o estado numérico do controlador usa campos C. Consulte
+[RELEASE_0.2.7.md](RELEASE_0.2.7.md) para mudanças e validação desta publicação.

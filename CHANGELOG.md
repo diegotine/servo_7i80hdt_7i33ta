@@ -1,5 +1,14 @@
 # Histórico de versões
 
+## 0.2.7 — publicação e monitor de períodos
+
+- Reúne as melhorias de controle, telemetria, núcleo nativo e bancada desde a publicação 0.1.0.
+- Mantém a grade absoluta de 1 ms, aceleração de 350 RPM/s e desaceleração de 600 RPM/s.
+- Monitor C++/Qt em processo separado e outra CPU, com log das estatísticas existentes, estouros de trabalho e ciclos perdidos.
+- Telemetria encaminhada pela interface por socket local sem bloqueio; sem gravação em disco na malha.
+- Documentação e capturas atualizadas; firmware da HDT preservado.
+- Compilação Release, testes de interface/IPC e testes matemáticos nativos/temporização aprovados; validação com motor e drive pendente.
+
 ## 0.2.6 — política de CPU da interface
 
 - Atualização a pedido do operador: período nominal de 1 ms (1000 Hz); limites de falha, watchdog e heartbeat preservados. Medição física pendente.

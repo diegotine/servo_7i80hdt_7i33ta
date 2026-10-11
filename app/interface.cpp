@@ -57,6 +57,10 @@ void MainWindow::setupInterface()
     m_loopbackOff = ui.loopbackOff;
     m_loopbackStatus = ui.loopbackStatus;
     m_loopbackDetails = ui.loopbackDetails;
+    connect(ui.timingMonitor, &QPushButton::clicked, this, [this] {
+        if (!QProcess::startDetached(QCoreApplication::applicationDirPath() + "/t3d_timing_monitor", {}))
+            showMessage("Não foi possível abrir o monitor de períodos.", true);
+    });
     connect(m_loopbackButton, &QPushButton::clicked, this, [this] {
         if (!m_ready || m_stopping) return;
         if (m_loopbackRunning) {

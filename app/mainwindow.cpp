@@ -70,6 +70,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
     });
     connect(&m_backend, qOverload<int, QProcess::ExitStatus>(&QProcess::finished), this,
             [this](int code, QProcess::ExitStatus) {
+        m_timingFeed.publish("{\"type\":\"disconnected\"}", 0);
         setDisconnected();
         if (code && !m_closing) showMessage("Sessão encerrada por falha. Confira a ligação e reconecte.", true);
         if (m_closing) close();
@@ -312,6 +313,8 @@ void MainWindow::receive()
         m_buffer.remove(0, end + 1);
         const auto message = QJsonDocument::fromJson(line).object();
         const QString type = message.value("type").toString();
+        if (type == "status" || type == "ready" || type == "fault" || type == "rearmed")
+            m_timingFeed.publish(line, m_backend.processId());
         if (type == "ready") {
             m_ready = true;
             showIdentification(message);

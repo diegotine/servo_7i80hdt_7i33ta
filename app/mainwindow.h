@@ -5,6 +5,7 @@
 #include <QTimer>
 #include <QElapsedTimer>
 #include <array>
+#include "timingfeed.h"
 
 class QLineEdit;
 class QComboBox;
@@ -64,6 +65,7 @@ private:
     QPlainTextEdit *m_diagLog = nullptr;
     QElapsedTimer m_statusAge, m_plotClock;
     QProcess m_backend;
+    TimingFeed m_timingFeed;
     QProcess m_cpuClock;
     QTimer m_heartbeat;
     QByteArray m_buffer;
