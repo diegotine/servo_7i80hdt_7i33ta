@@ -3,6 +3,9 @@
 #include <cerrno>
 #include <cstdio>
 #include <cstring>
+#include <cstdlib>
+#include <pwd.h>
+#include <grp.h>
 #include <linux/capability.h>
 #include <sys/prctl.h>
 #include <sys/resource.h>
@@ -18,7 +21,11 @@ static int fail(const char *operation)
 
 int main(int argc, char **argv)
 {
-    if (getuid() != T3D_ALLOWED_UID || geteuid() != getuid()) {
+    const bool sudoLaunch = getuid() == 0 && geteuid() == 0;
+    const char *sudoUid = std::getenv("SUDO_UID");
+    const bool correctSudoUser = sudoUid && std::strcmp(sudoUid, "" T3D_ALLOWED_UID_TEXT) == 0;
+    if ((sudoLaunch && !correctSudoUser)
+        || (!sudoLaunch && (getuid() != T3D_ALLOWED_UID || geteuid() != getuid()))) {
         std::fprintf(stderr, "T3D runtime: usuário não autorizado\n");
         return 1;
     }
@@ -31,11 +38,24 @@ int main(int argc, char **argv)
     if (setrlimit(RLIMIT_MEMLOCK, &memory)) return fail("RLIMIT_MEMLOCK");
     if (setrlimit(RLIMIT_RTTIME, &realtime_cpu)) return fail("RLIMIT_RTTIME");
 
+    if (sudoLaunch) {
+        const passwd *account = getpwuid(T3D_ALLOWED_UID);
+        if (!account) return fail("getpwuid");
+        const gid_t gid = account->pw_gid;
+        if (setgroups(0, nullptr)) return fail("setgroups");
+        if (setgid(gid)) return fail("setgid");
+        if (setuid(T3D_ALLOWED_UID)) return fail("setuid");
+    }
     __user_cap_header_struct header{};
     header.version = _LINUX_CAPABILITY_VERSION_3;
     __user_cap_data_struct capabilities[2]{};
     if (syscall(SYS_capset, &header, capabilities)) return fail("drop capabilities");
     if (prctl(PR_SET_NO_NEW_PRIVS, 1, 0, 0, 0)) return fail("no_new_privs");
+
+    // Backend JSON/numbers do not need the desktop's locale archive. Keep
+    // Python UTF-8 while avoiding hundreds of MiB of unused locale mappings.
+    if (setenv("LC_ALL", "C", 1) || setenv("PYTHONUTF8", "1", 1))
+        return fail("backend locale");
 
     const bool check = argc == 2 && std::strcmp(argv[1], "--check") == 0;
     std::vector<char *> args{

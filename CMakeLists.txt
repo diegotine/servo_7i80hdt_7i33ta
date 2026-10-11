@@ -11,6 +11,7 @@ add_executable(t3d_runtime_limiter app/runtime_limiter.cpp)
 target_compile_options(t3d_runtime_limiter PRIVATE -Wall -Wextra -Wpedantic)
 target_compile_definitions(t3d_runtime_limiter PRIVATE
     T3D_ALLOWED_UID=${T3D_LOCAL_UID}
+    T3D_ALLOWED_UID_TEXT="${T3D_LOCAL_UID}"
     T3D_PYTHON="${Python3_EXECUTABLE}"
     T3D_BACKEND="${CMAKE_CURRENT_BINARY_DIR}/driver/backend.py"
     T3D_RUNTIME_CHECK="${CMAKE_CURRENT_BINARY_DIR}/driver/check_runtime.py")

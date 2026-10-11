@@ -80,7 +80,11 @@ Esse auxiliar concede prioridade máxima 20, memória bloqueada até 256 MiB e
 limite de 200 ms de CPU RT sem bloqueio. Depois remove todas as capabilities e
 ativa `NO_NEW_PRIVS` antes de executar o backend, com o UID do usuário.
 Não atribui capabilities ao Python nem altera limites globais ou o kernel.
-A interface escolhe o auxiliar instalado automaticamente na próxima conexão.
+O instalador também cria `/etc/sudoers.d/t3d-analog-<UID>`, validado com
+`visudo`, autorizando sem senha somente esse auxiliar fixo. A interface verifica
+a autorização com `sudo -n -l` e usa `sudo -n` na próxima conexão. O auxiliar
+concede os limites e abandona root antes de executar Python. Sem a regra,
+continua disponível a execução direta com a capability restrita.
 Se ele não estiver instalado, usa o backend comum e informa as permissões negadas.
 Reinstale após mover o projeto: os caminhos do backend e do Python são fixados
 na compilação. O auxiliar só aceita o UID usado na compilação.
@@ -91,7 +95,14 @@ Verificação sem comunicação com a placa:
 /usr/local/libexec/t3d-analog-runtime-$(id -u) --check
 ```
 
-Neste computador, a verificação real confirmou **SCHED_FIFO 10**, CPU 5,
+O backend usa `LC_ALL=C` e `PYTHONUTF8=1`, sem alterar o idioma da interface.
+Isso evita mapear `/usr/lib/locale/locale-archive` (223 MiB neste computador),
+que, somado às demais regiões e à thread leitora, excedia 256 MiB. A checagem
+agora importa os módulos reais do backend e cria uma thread antes de bloquear
+memória, sem abrir UDP nem construir a placa. A falha foi reproduzida com o
+auxiliar antigo; após a correção, cerca de 100 MiB foram bloqueados.
+
+Neste computador, a verificação real via sudoers confirmou **SCHED_FIFO 10**, CPU 5,
 memória atual bloqueada, UID 1000, capabilities efetivas zeradas e
 `NO_NEW_PRIVS=1`, sem avisos. Isso funciona neste kernel comum; a qualidade da
 temporização de 2 ms ainda será medida na bancada.

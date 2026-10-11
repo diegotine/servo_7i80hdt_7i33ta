@@ -2,6 +2,10 @@
 
 ## 0.2.3 — em desenvolvimento
 
+- Corrigido bloqueio de memória: ambiente neutro UTF-8 no backend evita o arquivo de idiomas de 223 MiB.
+- Checagem de permissões carrega módulos reais e uma thread; reproduziu a falha anterior e confirmou o bloqueio após a correção.
+- Regra restrita no sudoers para o auxiliar, que abandona root antes de executar o driver.
+
 - Ciclo nominal reduzido de 5 ms para 2 ms (500 Hz), mantendo limite de falha de 20 ms e watchdog de 100 ms.
 - Diagnóstico conta execuções de leitura/cálculo/escrita acima do período nominal.
 - Indicadores e exportação JSON usam o período real configurado.

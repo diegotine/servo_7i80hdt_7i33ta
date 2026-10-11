@@ -1,0 +1,32 @@
+{
+  "scheduler": "SCHED_FIFO",
+  "priority": 10,
+  "cpus": [
+    5
+  ],
+  "memory_current_locked": true,
+  "warnings": [],
+  "timer": "CLOCK_MONOTONIC / TIMER_ABSTIME",
+  "native_servo": false,
+  "uid": 1000,
+  "limits": {
+    "rtprio": [
+      20,
+      20
+    ],
+    "memlock_bytes": [
+      268435456,
+      268435456
+    ]
+  },
+  "capabilities": {
+    "CapPrm": "0000000000000000",
+    "CapEff": "0000000000000000",
+    "NoNewPrivs": "1"
+  },
+  "memory": {
+    "VmSize": "102724 kB",
+    "VmLck": "102528 kB",
+    "Threads": "2"
+  }
+}

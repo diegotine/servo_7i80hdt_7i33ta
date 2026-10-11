@@ -203,7 +203,16 @@ void MainWindow::startConnection()
     m_link->setText("Conectando à 7i80HDT…");
     const QString runtimeLauncher = QString("/usr/local/libexec/t3d-analog-runtime-%1").arg(getuid());
     if (QFileInfo(runtimeLauncher).isExecutable()) {
-        m_backend.start(runtimeLauncher, {"--config", runtimePath()});
+        QProcess permissionCheck;
+        permissionCheck.start("/usr/bin/sudo", {"-n", "-l", "--", runtimeLauncher, "--config", runtimePath()});
+        const bool sudoAllowed = permissionCheck.waitForFinished(2000)
+            && permissionCheck.exitStatus() == QProcess::NormalExit
+            && permissionCheck.exitCode() == 0;
+        if (sudoAllowed) {
+            m_backend.start("/usr/bin/sudo", {"-n", "--", runtimeLauncher, "--config", runtimePath()});
+        } else {
+            m_backend.start(runtimeLauncher, {"--config", runtimePath()});
+        }
     } else {
         m_backend.start(QStringLiteral(T3D_PYTHON), {"-u", QCoreApplication::applicationDirPath() + "/driver/backend.py", "--config", runtimePath()});
     }

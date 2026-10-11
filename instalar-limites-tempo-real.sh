@@ -18,4 +18,16 @@ if [[ -x /usr/sbin/restorecon ]]; then
 fi
 /usr/bin/setcap cap_sys_resource=ep "$destination"
 /usr/bin/getcap "$destination"
+# Only the fixed helper runs with elevated privileges; it drops UID and all
+# capabilities before executing Python. Do not authorize Python or a user script.
+runtime_user="$(getent passwd "$runtime_uid" | cut -d: -f1)"
+if [[ ! "$runtime_user" =~ ^[a-zA-Z_][a-zA-Z0-9_-]*$ ]]; then
+    echo 'Nome de usuário incompatível com a regra restrita.' >&2
+    exit 1
+fi
+rule_temp="$(mktemp)"
+trap 'rm -f "$rule_temp"' EXIT
+printf '%s ALL=(root) NOPASSWD: %s\n' "$runtime_user" "$destination" > "$rule_temp"
+/usr/bin/visudo -cf "$rule_temp"
+/usr/bin/install -o root -g root -m 0440 "$rule_temp" "/etc/sudoers.d/t3d-analog-$runtime_uid"
 echo "Instalado para UID $runtime_uid; reabra o aplicativo para usar os limites."

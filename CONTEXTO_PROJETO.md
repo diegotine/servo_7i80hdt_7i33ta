@@ -86,3 +86,10 @@ Atalho novo Iniciar T3D v0.2.2.desktop criado; anteriores preservados.
 - Auxiliar de limites instalado via autenticação Polkit; checagem real sem placa confirmou SCHED_FIFO 10, CPU 5 e mlockall(MCL_CURRENT).
 - Backend mantém UID 1000, sem capabilities após o auxiliar. Interface não roda como root.
 - Sem execução de placa simulada por solicitação do operador; medição física de 2 ms pendente.
+
+### Correção posterior à primeira medição 0.2.3
+
+- Loopback físico: ON/OFF ~1,939 ms; 16.793 ciclos, nenhum horário pulado ou trabalho acima de 2 ms. FIFO 10 funcionou; mlock falhou nessa sessão.
+- Causa: locale-archive de 223 MiB + thread/módulos elevavam mapas acima do limite de 256 MiB.
+- Auxiliar atualizado força LC_ALL=C/PYTHONUTF8=1; checagem com módulos e thread confirmou ~100 MiB bloqueados, FIFO 10 e UID 1000.
+- Sudoers restrito instalado por pedido do operador; auxiliares abandonam root e capabilities antes do backend. Nova medição física pendente, sem interrupção do processo existente.
