@@ -209,3 +209,21 @@ Atalho novo Iniciar T3D v0.2.2.desktop criado; anteriores preservados.
   Enabled, pending_reboot 0. Driver ativo intel_idle, max_cstate=1, estados
   expostos POLL/C1_ACPI. processor.max_cstate=8 não governa o driver ativo.
   BIOS não alterada.
+
+## Turbo Boost desabilitado a pedido do operador
+
+- Em 11/10/2026, usuário autorizou desabilitar Turbo Boost na BIOS e usar
+  performance. Atributo Dell TurboMode alterado de Enabled para Disabled;
+  leitura confirmou Disabled, pending_reboot=1. Não foi executado reboot.
+- Perfil ativo anterior era mesa, que herda desktop. Preservado sem alterações.
+  Criado /etc/tuned/profiles/mesa-performance-sem-turbo/tuned.conf, baseado em
+  latency-performance, com governor/EPP/EPB performance, min_perf_pct=100,
+  boost=0. Perfil ativado, no_turbo=1 confirmado no Linux.
+- CPU 5 min=max 2500000 kHz, base_frequency=2500000; governador/EPP performance,
+  intel_idle.max_cstate=1 mantido. Leitura instantânea inicial 2500054 kHz,
+  posterior 2297798 kHz. Turbostat, 5 amostras de 1 segundo em baixa carga:
+  Bzy_MHz 1489/1484/1585/1466/1379, temperatura 48..49 C, pacote 50..51 C.
+  Não se confirmou clock físico constante. Medição sob a malha real pendente.
+- BIOS precisa do próximo reboot para aplicar a alteração. Com turbo desligado,
+  o alvo 4200 MHz do auxiliar da interface excede o teto sem turbo; o auxiliar
+  pode registrar que o kernel não confirmou esse alvo ao reabrir o app.
