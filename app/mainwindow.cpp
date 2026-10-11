@@ -103,10 +103,11 @@ void MainWindow::showIdentification(const QJsonObject &message)
     const auto runtime = message.value("runtime").toObject();
     QStringList cpus;
     for (const auto &cpu : runtime.value("cpus").toArray()) cpus << QString::number(cpu.toInt());
-    m_diagRuntime->setText(QString("Execução: %1 | Prioridade: %2 | CPU(s): %3 | Memória atual bloqueada: %4 | Temporizador absoluto | Controle Python")
+    m_diagRuntime->setText(QString("Execução: %1 | Prioridade: %2 | CPU(s): %3 | Memória atual bloqueada: %4 | Temporizador absoluto | Controle %5")
         .arg(runtime.value("scheduler").toString("—"))
         .arg(runtime.value("priority").toInt()).arg(cpus.join(", "))
-        .arg(runtime.value("memory_current_locked").toBool() ? "sim" : "não"));
+        .arg(runtime.value("memory_current_locked").toBool() ? "sim" : "não")
+        .arg(runtime.value("native_servo").toBool() ? "Cython" : "Python"));
     for (const auto &warning : runtime.value("warnings").toArray()) logDiagnostic(warning.toString());
     const auto info = message.value("identification").toObject();
     const auto channels = message.value("encoder_channels").toArray();
@@ -214,7 +215,7 @@ void MainWindow::startConnection()
             m_backend.start(runtimeLauncher, {"--config", runtimePath()});
         }
     } else {
-        m_backend.start(QStringLiteral(T3D_PYTHON), {"-u", QCoreApplication::applicationDirPath() + "/driver/backend.py", "--config", runtimePath()});
+        m_backend.start(QStringLiteral(T3D_PYTHON), {"-u", QCoreApplication::applicationDirPath() + "/driver/run_backend.py", "--config", runtimePath()});
     }
     m_heartbeat.start();
 }

@@ -4,6 +4,10 @@
 
 - Versão incrementada antes da conversão; período de 2 ms preservado.
 - Referência física 0.2.3 com FIFO e memória bloqueada salva para comparação.
+- Backend, servo, driver Ethernet, loopback e temporização compilados em extensões Cython.
+- Estado numérico de Axis/Trajectory em campos C; encoder mantém contador inteiro sem limite de 64 bits.
+- Inicialização verifica que os cinco módulos carregados são extensões; diagnóstico e JSON identificam Cython.
+- Equivalência matemática e permissões verificadas sem placa; medição física desta versão pendente.
 
 ## 0.2.3 — em desenvolvimento
 

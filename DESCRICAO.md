@@ -63,3 +63,7 @@ o comando enviado à Mesa, sem confirmação elétrica do estado do drive.
 Controle de até quatro servomotores T3D via Mesa 7i80HDT e 7i33TA, com interface
 Qt, driver Ethernet próprio e uso da placa sem LinuxCNC ou HAL. Inclui JOG,
 trajetórias de posição, teste de saída e diagnóstico.
+
+Na 0.2.4, backend, driver Ethernet, controlador, loopback e temporização são
+compilados com Cython. Estado numérico do controlador em campos C; ciclo de
+2 ms mantido. Desvio físico será comparado com a referência 0.2.3.

@@ -5,6 +5,7 @@ import errno
 import math
 import os
 import time
+from importlib.machinery import EXTENSION_SUFFIXES
 
 
 NOMINAL_PERIOD_NS = 2_000_000
@@ -148,4 +149,4 @@ def configure_runtime(environ=None):
                 priority=os.sched_getparam(0).sched_priority,
                 cpus=sorted(os.sched_getaffinity(0)), memory_current_locked=memory_locked,
                 warnings=errors, timer='CLOCK_MONOTONIC / TIMER_ABSTIME',
-                native_servo=False)
+                native_servo=__import__('servo').__file__.endswith(tuple(EXTENSION_SUFFIXES)))

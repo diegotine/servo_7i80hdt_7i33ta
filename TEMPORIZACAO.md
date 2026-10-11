@@ -1,4 +1,4 @@
-# Temporização — 0.2.3
+# Temporização — 0.2.4
 
 O período nominal da 0.2.3 é **2 ms (500 Hz)**; na referência 0.2.2 era 5 ms. O PID usa o intervalo real
 entre inícios de ciclos, não uma constante de 2 ms nem a média do loopback.
@@ -123,9 +123,10 @@ do operador. Os novos testes de regressão estão disponíveis para execução
 posterior; não foram executados nessa entrega. A abertura Qt sem placa e a
 verificação de sintaxe não validam temporização ou movimento físico.
 
-O controlador de trajetória/PID continua em Python. Esta versão não reproduz
-integralmente RTAPI e não garante tempo real rígido em kernel comum. A espera
-é nativa, mas não houve migração da malha de controle para C/C++.
+Na 0.2.4, os cinco módulos de controle/comunicação são extensões Cython;
+o estado numérico do controlador usa campos C. A malha ainda utiliza CPython,
+GIL e objetos Python nas configurações, filas, telemetria e sockets. Não reproduz
+integralmente RTAPI nem garante tempo real rígido. Consulte CYTHON.md.
 
 Referências: [clock_nanosleep](https://man7.org/linux/man-pages/man2/clock_nanosleep.2.html),
 [mlockall](https://man7.org/linux/man-pages/man2/mlockall.2.html),

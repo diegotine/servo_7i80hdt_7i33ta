@@ -413,6 +413,8 @@ def main():
             board.configure_generic_io(connector)
         session = Session(board, axes, commands)
         runtime = configure_runtime()
+        from run_backend import native_modules
+        runtime['native_modules'] = native_modules()
         session.runtime = runtime
         emit('ready', model=board.model, connector=config['connector'],
              identification=board.inspect(), encoder_channels=board.encoder_channels,
@@ -437,4 +439,9 @@ def main():
 
 
 if __name__ == '__main__':
-    sys.exit(main())
+    # Compatibility with the already installed privileged helper: its fixed
+    # backend.py entry delegates to the compiled module before any board I/O.
+    from run_backend import native_modules
+    native_modules()
+    import backend as native_backend
+    sys.exit(native_backend.main())

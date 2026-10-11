@@ -16,14 +16,16 @@ def reader():
     ready.set()
     stop.wait()
 
-thread = threading.Thread(target=reader)
+thread = threading.Thread(target=reader, daemon=True)
 thread.start()
 ready.wait()
 tempfile.gettempdir()
 
 from timing import configure_runtime
 
+from run_backend import native_modules
 result = configure_runtime()
+result['native_modules'] = native_modules()
 result['uid'] = os.getuid()
 result['limits'] = dict(rtprio=resource.getrlimit(resource.RLIMIT_RTPRIO),
                         memlock_bytes=resource.getrlimit(resource.RLIMIT_MEMLOCK))

@@ -23,7 +23,7 @@ e TESTE_LOOPBACK.md para os detalhes técnicos.
 - Controlador de trajetória/PID em driver/servo.py; backend.py é o único
   proprietário da comunicação da sessão. Ciclo nominal 2 ms, prazo 20 ms,
   watchdog 100 ms; sem garantia de tempo real rígido ou infraestrutura RTAPI.
-- Versão local 0.2.3 em desenvolvimento, conforme CMakeLists.txt e CHANGELOG.md.
+- Versão local 0.2.4 em desenvolvimento, conforme CMakeLists.txt e CHANGELOG.md.
   Há alterações locais ainda não publicadas; não confundir com release público.
 - Recursos locais: ajustes com placa conectada, limite padrão 3000 RPM,
   saída ±10 V, JOG com retenção, STOP mantendo ENABLE, modo teste com
@@ -93,3 +93,13 @@ Atalho novo Iniciar T3D v0.2.2.desktop criado; anteriores preservados.
 - Causa: locale-archive de 223 MiB + thread/módulos elevavam mapas acima do limite de 256 MiB.
 - Auxiliar atualizado força LC_ALL=C/PYTHONUTF8=1; checagem com módulos e thread confirmou ~100 MiB bloqueados, FIFO 10 e UID 1000.
 - Sudoers restrito instalado por pedido do operador; auxiliares abandonam root e capabilities antes do backend. Nova medição física pendente, sem interrupção do processo existente.
+
+## Atualização 0.2.4 — Cython
+
+- Antes da conversão: referência física 0.2.3 com mlock/FIFO confirmados, 10.399 ciclos sem estouros; intervalo médio 2,000002 ms, desvio 3,807 µs.
+- Cinco módulos compilados pelo CMake: backend, servo, mesa7i80hdt, loopback, timing.
+- driver/servo.py é fonte oficial; servo.pxd declara campos numéricos C, mantendo contagem de encoder como inteiro Python ilimitado.
+- Aplicativo exige extensões carregadas, registra native_servo=true e caminhos dos .so. Mantém 2 ms, watchdog, escala, pinagem e ganhos.
+- Pacotes oficiais Fedora python3-cython e python3-devel instalados; Python atualizado pela dependência para 3.14.8, Cython 3.2.4.
+- Auxiliar/sudoers existente compatível: backend.py delega ao backend compilado antes de qualquer I/O.
+- Qt .ui permanece editável. Atalho 0.2.4 criado; anteriores preservados. Comparação física Cython pendente.

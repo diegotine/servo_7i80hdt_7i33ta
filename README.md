@@ -23,7 +23,10 @@ Execute `./iniciar.sh` nesta pasta. O iniciador compila e abre `build/t3d_analog
 Requisitos: Linux, CMake ≥3.21, compilador C++20, Qt6 Widgets ≥6.4 e Python ≥3.10.
 Para ativar FIFO e bloqueio de memória, consulte a instalação opcional em
 [TEMPORIZACAO.md](TEMPORIZACAO.md).
-Python usa apenas a biblioteca padrão. Não requer LinuxCNC, HAL ou Qt SerialPort.
+A compilação requer Cython ≥3.2 e os cabeçalhos do Python utilizado.
+No Fedora: `sudo dnf install python3-cython python3-devel`.
+Os módulos compilados usam a API do CPython e a biblioteca padrão; Cython é
+uma ferramenta de compilação, sem serviço adicional durante a execução. Não requer LinuxCNC, HAL ou Qt SerialPort.
 O projeto inclui um driver Ethernet próprio, que se comunica diretamente com
 a Mesa 7i80HDT e permite usar a placa sem instalar ou executar LinuxCNC.
 
@@ -308,7 +311,7 @@ ciclos e dos tempos de leitura, cálculo e escrita. O backend tenta prioridade
 SCHED_FIFO, afinidade de CPU e bloqueio da memória atual, e informa no diagnóstico
 o que o sistema permitiu. Ganhos PID e limites de falha permanecem os mesmos.
 Consulte [TEMPORIZACAO.md](TEMPORIZACAO.md) para funcionamento, opções e comparação
-com a referência real da 0.2.0. A malha continua em Python, sem garantia de tempo real rígido.
+com a referência real da 0.2.0. A malha é compilada em extensões C com Cython; ainda usa CPython/GIL e não garante tempo real rígido. Consulte [CYTHON.md](CYTHON.md).
 
 ## Firmware, ciclos e desligamento
 

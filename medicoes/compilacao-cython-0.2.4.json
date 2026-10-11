@@ -1,0 +1,26 @@
+{
+  "version": "0.2.4",
+  "python": "3.14.8 (main, Oct  1 2026, 00:00:00) [GCC 16.2.1 20260819 (Red Hat 16.2.1-2)]",
+  "abi": "cpython-314-x86_64-linux-gnu",
+  "cython": "3.2.4",
+  "architecture": "x86_64",
+  "build_type": "Release",
+  "compiler": "gcc (GCC) 16.2.1 20260819 (Red Hat 16.2.1-2)",
+  "artifacts": {
+    "build/driver/backend.cpython-314-x86_64-linux-gnu.so": "621e7befaef5b3b636e8c7bf7a9158481a1a9f2fecd43d07f17e27f4e47cc1a1",
+    "build/driver/loopback.cpython-314-x86_64-linux-gnu.so": "0c2929a5f3b82488d5c17d5d7474552dceb85ded624970c01c8e9c042047fb2d",
+    "build/driver/mesa7i80hdt.cpython-314-x86_64-linux-gnu.so": "5742c99de5feb633d9dc87f046f92154e2441a046786f1095db2547fd0ee7ae8",
+    "build/driver/servo.cpython-314-x86_64-linux-gnu.so": "a5390eafcdf3cd96868b4529dac166f08a7caa4ebf401d0cf17cd795461b7607",
+    "build/driver/timing.cpython-314-x86_64-linux-gnu.so": "720eb58caaa3614e7c02e1d3addc7330dba398cf1c5f6515a39b7594c15e7304"
+  },
+  "sources": {
+    "driver/backend.py": "427770daaa3f1d617baaddb13de346557a7d4ab00a25fb8090c3238de95ea63d",
+    "driver/check_runtime.py": "fe1032dd8c738c4fec7e43ac69b21245ec02163dd55de7ea02e71a6af1a549b9",
+    "driver/loopback.py": "de2594732a7bb5e32df05926b0d2c77b0cc896148bd89ae0dd17ee115874a7ea",
+    "driver/mesa7i80hdt.py": "5645659bb10d68228391706dfd8a438d27da3f0a5d1ca5a941efdbd0a7c60df7",
+    "driver/run_backend.py": "80c4632f7f238cea2b99d6d7c6351c96ef0e7617a92a33b5277403048b1d6a5f",
+    "driver/servo.pxd": "4e39deb77bff7bf006197af6aecf61c8e5a1afb953c13d53608a3786e24bcfe5",
+    "driver/servo.py": "7a15b18e3d50471ff05767b55958ff7ec96c9271e2fbca0a91f5a951e4331436",
+    "driver/timing.py": "55f03a41b310bcf56b233eac0827dd5fb0ab419d09174b3739feaef37d9ac524"
+  }
+}
