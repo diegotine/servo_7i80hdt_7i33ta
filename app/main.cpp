@@ -17,7 +17,11 @@ int main(int argc, char *argv[])
     application.setOrganizationName("HL-T3D-RABN");
 
     MainWindow window;
+    window.setWindowTitle(window.windowTitle() + QString(" • v%1").arg(application.applicationVersion()));
     window.show();
+    if (application.arguments().contains("--preview-diagnostics")) {
+        window.findChild<QTabWidget *>("tabs")->setCurrentWidget(window.findChild<QWidget *>("hdtDiagnostics"));
+    }
     if (application.arguments().contains("--preview-tests")) {
         auto *tabs = window.findChild<QTabWidget *>("tabs");
         tabs->setCurrentIndex(tabs->count() - 1);

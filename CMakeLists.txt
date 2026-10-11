@@ -19,6 +19,7 @@ add_custom_target(runtime_files ALL
         ${CMAKE_CURRENT_SOURCE_DIR}/driver/servo.py
         ${CMAKE_CURRENT_SOURCE_DIR}/driver/backend.py
         ${CMAKE_CURRENT_SOURCE_DIR}/driver/loopback.py
+        ${CMAKE_CURRENT_SOURCE_DIR}/driver/timing.py
         $<TARGET_FILE_DIR:t3d_analog>/driver
     COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_CURRENT_SOURCE_DIR}/config.example.json $<TARGET_FILE_DIR:t3d_analog>/config.example.json
     COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_CURRENT_SOURCE_DIR}/TESTE_LOOPBACK.md $<TARGET_FILE_DIR:t3d_analog>/TESTE_LOOPBACK.md)

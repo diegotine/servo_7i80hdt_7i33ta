@@ -98,6 +98,14 @@ void MainWindow::logDiagnostic(const QString &message)
 
 void MainWindow::showIdentification(const QJsonObject &message)
 {
+    const auto runtime = message.value("runtime").toObject();
+    QStringList cpus;
+    for (const auto &cpu : runtime.value("cpus").toArray()) cpus << QString::number(cpu.toInt());
+    m_diagRuntime->setText(QString("Execução: %1 | Prioridade: %2 | CPU(s): %3 | Memória atual bloqueada: %4 | Temporizador absoluto | Controle Python")
+        .arg(runtime.value("scheduler").toString("—"))
+        .arg(runtime.value("priority").toInt()).arg(cpus.join(", "))
+        .arg(runtime.value("memory_current_locked").toBool() ? "sim" : "não"));
+    for (const auto &warning : runtime.value("warnings").toArray()) logDiagnostic(warning.toString());
     const auto info = message.value("identification").toObject();
     const auto channels = message.value("encoder_channels").toArray();
     m_diagIdentity->setText(QString("Modelo: %1 | IP: %2 | IDROM: %3\n%4 portas × %5 sinais = %6 I/Os | Servo em P3 | P1/P2: 12 entradas + 12 saídas cada\nPDM configurado: %7 MHz | Watchdog configurado: %8 ms")
@@ -373,6 +381,25 @@ void MainWindow::updateStatus(const QJsonObject &message)
         .arg(message.value("cycle_ms").toDouble(), 0, 'f', 2)
         .arg(diagnostic.value("max_cycle_ms").toDouble(), 0, 'f', 2)
         .arg(diagnostic.value("cycles").toDouble(), 0, 'f', 0));
+    const auto timing = diagnostic.value("timing").toObject();
+    if (!timing.isEmpty()) {
+        const auto interval = timing.value("interval").toObject();
+        const auto wake = timing.value("wake_lateness").toObject();
+        const auto read = timing.value("read").toObject();
+        const auto control = timing.value("control").toObject();
+        const auto write = timing.value("write").toObject();
+        m_diagTiming->setText(m_diagTiming->text()
+            + QString("\nCiclo médio: %1 ms | Desvio: %2 ms | P95 recente: %3 ms | Horários pulados: %4")
+                .arg(interval.value("mean_ms").toDouble(), 0, 'f', 3)
+                .arg(interval.value("stddev_ms").toDouble(), 0, 'f', 3)
+                .arg(interval.value("p95_recent_ms").toDouble(), 0, 'f', 3)
+                .arg(timing.value("skipped_slots").toDouble(), 0, 'f', 0)
+            + QString("\nDespertar (máx.): %1 ms | Leitura (média): %2 ms | Cálculo/comandos (média): %3 ms | Escrita (média): %4 ms")
+                .arg(wake.value("max_ms").toDouble(), 0, 'f', 3)
+                .arg(read.value("mean_ms").toDouble(), 0, 'f', 3)
+                .arg(control.value("mean_ms").toDouble(), 0, 'f', 3)
+                .arg(write.value("mean_ms").toDouble(), 0, 'f', 3));
+    }
     m_diagWatchdog->setText(diagnostic.value("watchdog_ok").toBool()
         ? "Watchdog: sem expiração na última leitura e confirmação das saídas | Quadratura: sem erro detectado"
         : "Watchdog: sem confirmação atual");
@@ -490,6 +517,7 @@ void MainWindow::setDisconnected()
     updateLoopbackControls();
     m_statusAge.invalidate();
     m_diagState->setText("Desconectado • sem leitura atual");
+    m_diagRuntime->setText("Execução: sem sessão ativa.");
     m_diagTiming->setText("Ciclo: — | Maior ciclo: — | Ciclos concluídos: —");
     m_diagWatchdog->setText("Watchdog e quadratura: sem leitura atual");
     m_diagEncoders->clearContents();

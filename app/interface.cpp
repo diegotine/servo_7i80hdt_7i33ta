@@ -95,6 +95,7 @@ void MainWindow::setupInterface()
     m_diagState = ui.diagState;
     m_diagIdentity = ui.diagIdentity;
     m_diagTiming = ui.diagTiming;
+    m_diagRuntime = ui.diagRuntime;
     m_diagWatchdog = ui.diagWatchdog;
     m_diagModules = ui.diagModules;
     m_diagEncoders = ui.diagEncoders;

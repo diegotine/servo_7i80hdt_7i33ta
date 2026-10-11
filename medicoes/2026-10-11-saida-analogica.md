@@ -23,7 +23,7 @@ Nenhuma compensação de ganho ou offset foi aplicada no aplicativo.
 ## Pulso automático de 40% / 500 ms
 
 Operador confirmou funcionamento do botão e informou pico de **4,46 V** no
-osciloscópio para comando de +4 V nominal. Tensão de patamar, configuração
-da ponta, impedância de entrada, largura de banda e forma da transição ainda
-não registradas. Não classificar o pico isolado como erro estático de ganho
+osciloscópio para comando de +4 V nominal. Patamar informado em seguida:
+**4,0960 V**. Configuração da ponta, impedância de entrada, largura de banda
+e forma da transição ainda não registradas. Não classificar o pico isolado como erro estático de ganho
 ou não linearidade, nem atribuir sua causa a uma impedância sem medições.

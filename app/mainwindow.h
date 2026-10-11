@@ -57,7 +57,7 @@ private:
     void updateLoopbackControls();
     void showMessage(const QString &message, bool error = false);
     QLabel *m_diagState = nullptr, *m_diagIdentity = nullptr, *m_diagTiming = nullptr;
-    QLabel *m_diagWatchdog = nullptr;
+    QLabel *m_diagWatchdog = nullptr, *m_diagRuntime = nullptr;
     QTableWidget *m_diagModules = nullptr, *m_diagEncoders = nullptr;
     QPlainTextEdit *m_diagLog = nullptr;
     QElapsedTimer m_statusAge, m_plotClock;

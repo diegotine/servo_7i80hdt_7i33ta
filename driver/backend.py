@@ -5,6 +5,7 @@ only a complete feedback -> control -> acknowledged output cycle does that.
 """
 import argparse
 import fcntl
+import gc
 import hashlib
 import json
 import math
@@ -19,6 +20,7 @@ from dataclasses import asdict
 from mesa7i80hdt import Mesa7i80hdt, MesaError
 from servo import Axis, AxisConfig, ServoFault
 from loopback import Loopback
+from timing import CycleTimer, CycleMetrics, configure_runtime
 
 
 def emit(kind, **data):
@@ -45,13 +47,16 @@ class Session:
     deadline = 0.020
     client_timeout = 0.5
 
-    def __init__(self, board, axes, commands, output=emit, clock=time.monotonic):
+    def __init__(self, board, axes, commands, output=emit, clock=time.monotonic, runtime=None):
         self.board, self.axes, self.commands = board, axes, commands
         self.output, self.clock = output, clock
         self.previous = self.last_client = clock()
         self.last_status = 0.0
         self.cycles = 0
         self.max_cycle_ms = 0.0
+        self.runtime = runtime or {}
+        self.metrics = CycleMetrics()
+        self.wake_lateness_ns = 0
         self.running = True
         self.generic_outputs = {'P1': 0, 'P2': 0}
         self.loopback = None
@@ -96,7 +101,7 @@ class Session:
                 raise ValueError('Desabilite os quatro motores antes do loopback')
             self.loopback = Loopback(message.get('axis'), time.monotonic_ns(), message.get('mode', 'digital'))
             self.loopback_progress = None
-            self.output('loopback', **self.loopback.report())
+            self.output('loopback', **self.loopback.report(), timing=self.metrics.report(), runtime=self.runtime)
             return
         if operation == 'loopback_stop':
             if self.loopback is not None and self.loopback.active:
@@ -165,6 +170,7 @@ class Session:
         if start - self.last_client > self.client_timeout:
             raise ServoFault('Interface heartbeat missing; session latched off')
         counts = self.board.read_encoders()
+        read_finished = self.clock()
         loopback = self.loopback
         if loopback is not None and loopback.active:
             loopback.observe(self.board.encoder_a_levels[loopback.axis], self.board.last_feedback_received_ns)
@@ -210,11 +216,18 @@ class Session:
             index, percent = self.pwm_test
             volts, enabled = [0.0] * 4, [False] * 4
             volts[index], enabled[index] = percent / 10.0, True
+        write_started = self.clock()
         self.board.write_servo(volts, enabled, generic_outputs=self.generic_outputs)
+        write_finished = self.clock()
         if loopback is not None:
             loopback.written(self.board.last_output_sent_ns)
         if self.clock() - start >= self.deadline:
             raise ServoFault('Output acknowledgement exceeded deadline')
+        self.metrics.add(interval=round(dt * 1e9), wake_lateness=self.wake_lateness_ns,
+                         read=round((read_finished - start) * 1e9),
+                         control=round((write_started - read_finished) * 1e9),
+                         write=round((write_finished - write_started) * 1e9),
+                         work=round((write_finished - start) * 1e9))
         if self.pwm_test != self.pwm_report:
             self.output('pwm_test', active=self.pwm_test is not None,
                         axis=self.pwm_test[0] if self.pwm_test else None,
@@ -224,7 +237,7 @@ class Session:
         if loopback is not None:
             progress = (loopback.active, loopback.phase, len(loopback.off_ns), loopback.error)
             if progress != self.loopback_progress:
-                self.output('loopback', **loopback.report())
+                self.output('loopback', **loopback.report(), timing=self.metrics.report(), runtime=self.runtime)
                 self.loopback_progress = progress if loopback.active else None
                 if not loopback.active:
                     self.loopback = None
@@ -235,7 +248,7 @@ class Session:
             self.output('status', axes=[axis.telemetry() for axis in self.axes], cycle_ms=dt * 1000,
                         diagnostics=dict(raw_counts=counts, cycles=self.cycles,
                                          max_cycle_ms=self.max_cycle_ms,
-                                         watchdog_ok=True),
+                                         watchdog_ok=True, timing=self.metrics.report()),
                         io={connector: dict(inputs=self.board.generic_inputs.get(connector, 0), outputs=value)
                             for connector, value in self.generic_outputs.items()})
             self.last_status = start
@@ -279,7 +292,7 @@ class Session:
         if self.loopback is not None:
             self.loopback.cancel('Teste interrompido por falha: ' + str(fault))
             self.loopback.active = False
-            self.output('loopback', **self.loopback.report())
+            self.output('loopback', **self.loopback.report(), timing=self.metrics.report(), runtime=self.runtime)
             self.loopback = self.loopback_progress = None
         for axis in self.axes:
             axis.disable()
@@ -291,6 +304,7 @@ class Session:
             shutdown_error = str(exc)
         self.output('fault', message=str(fault), diagnostic_mode=True, shutdown_error=shutdown_error)
         self.last_client = self.clock()
+        gc.collect()
         last_error = None
         while self.running:
             for _ in range(128):
@@ -332,21 +346,28 @@ class Session:
             time.sleep(0.1)
 
     def run(self):
-        while self.running:
-            try:
-                self.step()
-            except (MesaError, ServoFault) as exc:
-                # With no live client, terminate as before. Otherwise preserve
-                # the board owner and switch permanently to read-only diagnosis.
-                if self.clock() - self.last_client > self.client_timeout:
-                    raise
-                if self.diagnose_fault(exc):
-                    continue
-                return
-            # Absolute next start: never run catch-up cycles using old feedback.
-            delay = self.previous + self.period - self.clock()
-            if delay > 0:
-                time.sleep(delay)
+        collect_automatically = gc.isenabled()
+        gc.disable()  # Refcounting remains active; no cyclic collection in the servo loop.
+        try:
+            timer = CycleTimer(round(self.period * 1e9))
+            self.previous = self.clock()
+            while self.running:
+                self.wake_lateness_ns = timer.wait()
+                self.metrics.skipped = timer.skipped
+                try:
+                    self.step()
+                except (MesaError, ServoFault) as exc:
+                    if self.clock() - self.last_client > self.client_timeout:
+                        raise
+                    # Collect outside cyclic control, after shutdown, in diagnosis.
+                    if self.diagnose_fault(exc):
+                        timer = CycleTimer(round(self.period * 1e9))
+                        self.metrics = CycleMetrics()
+                        continue
+                    return
+        finally:
+            if collect_automatically:
+                gc.enable()
 
 
 def read_commands(commands):
@@ -391,11 +412,12 @@ def main():
         for connector in ('P1', 'P2'):
             board.configure_generic_io(connector)
         session = Session(board, axes, commands)
+        runtime = configure_runtime()
+        session.runtime = runtime
         emit('ready', model=board.model, connector=config['connector'],
              identification=board.inspect(), encoder_channels=board.encoder_channels,
-             watchdog_ms=100, pdm_hz=board.pdm_frequency)
-        # First feedback needs a nonzero interval; no output has been enabled.
-        time.sleep(session.period)
+             watchdog_ms=100, pdm_hz=board.pdm_frequency, runtime=runtime)
+        # Absolute timer waits for the first period; all outputs are still disabled.
         session.run()
     except (MesaError, ServoFault, ValueError, OSError, KeyError, TypeError) as exc:
         emit('fault', message=str(exc))

@@ -299,6 +299,15 @@ aceleração limita a **trajetória**, enquanto a correção PID mantém autorid
 corrigir o seguimento. O drive continua fechando suas malhas internas de velocidade
 e corrente. Não se envia alvo de posição ao T3D.
 
+## Temporização da versão 0.2.1
+
+A execução usa uma grade absoluta de 5 ms, com diagnóstico da variação entre
+ciclos e dos tempos de leitura, cálculo e escrita. O backend tenta prioridade
+SCHED_FIFO, afinidade de CPU e bloqueio da memória atual, e informa no diagnóstico
+o que o sistema permitiu. Ganhos PID e limites de falha permanecem os mesmos.
+Consulte [TEMPORIZACAO.md](TEMPORIZACAO.md) para funcionamento, opções e comparação
+com a referência real da 0.2.0. A malha continua em Python, sem garantia de tempo real rígido.
+
 ## Firmware, ciclos e desligamento
 
 O firmware precisa oferecer GPIO, PWMGen v0/v1, watchdog e quatro encoders

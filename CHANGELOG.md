@@ -2,7 +2,12 @@
 
 ## 0.2.1 — em desenvolvimento
 
-- Otimizações de temporização e diagnóstico de latência em implementação.
+- Temporização absoluta nativa, sem acumular atrasos ou executar ciclos de compensação.
+- Afinidade de CPU, tentativa SCHED_FIFO e bloqueio de memória atual, com resultado visível no diagnóstico.
+- Coleta automática de referências cíclicas Python suspensa no ciclo de controle.
+- Métricas de ciclo, despertar, leitura, cálculo e escrita; inclusão nos JSONs de loopback.
+- Referência 0.2.0 preservada para comparação real; limite de 20 ms, watchdog e PID mantidos.
+- Compilação e conferência sem placa simulada; medição física da 0.2.1 pendente.
 
 ## 0.2.0 — referência de bancada, 11/10/2026
 
@@ -14,7 +19,7 @@
 - Loopback analógico 0/+4 V com retorno pela entrada A e resultados identificados por modo.
 - Campo de teste manual de magnitude PWM/PDM (0–100%), aplicar e zerar/desligar.
 - Pulso automático de 40% por 500 ms para osciloscópio, independente do retorno A.
-- Validação física de bancada pendente.
+- Loopbacks digital e analógico medidos em bancada; validação com motor ainda pendente.
 
 ## 0.1.0 — 2026-10-11
 

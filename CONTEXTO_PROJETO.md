@@ -23,7 +23,7 @@ e TESTE_LOOPBACK.md para os detalhes técnicos.
 - Controlador de trajetória/PID em driver/servo.py; backend.py é o único
   proprietário da comunicação da sessão. Ciclo nominal 5 ms, prazo 20 ms,
   watchdog 100 ms; sem garantia de tempo real rígido ou infraestrutura RTAPI.
-- Versão local 0.2.0 em desenvolvimento, conforme CMakeLists.txt e CHANGELOG.md.
+- Versão local 0.2.1 em desenvolvimento, conforme CMakeLists.txt e CHANGELOG.md.
   Há alterações locais ainda não publicadas; não confundir com release público.
 - Recursos locais: ajustes com placa conectada, limite padrão 3000 RPM,
   saída ±10 V, JOG com retenção, STOP mantendo ENABLE, modo teste com
@@ -56,7 +56,14 @@ para comando de 40%. Tensão de patamar e condições da ponta ainda pendentes.
    0,050/0,048 ms. Prioridade atual: teste manual de magnitude PWM/PDM para
    medir relação com tensão, sem retorno conectado ao encoder. Depois medir
    o loopback analógico.
-2. Depois subir para 0.2.1 e implementar otimizações orientadas pelas medições.
+2. Versão 0.2.1 implementada: temporizador absoluto nativo, horários vencidos
+   pulados, métricas de ciclo/fases, afinidade de CPU, tentativa SCHED_FIFO 10
+   e MCL_CURRENT; resultado real aparece em HDT • Diagnóstico. Coleta cíclica
+   automática Python suspensa durante controle. Sem migração do PID para C/C++.
+   Operador pediu não executar simulação nesta etapa; medição real pendente.
+   Limite RTPRIO observado no ambiente: 0; MEMLOCK: 16 MiB. Permissões não alteradas.
+   Referência anterior preservada em commit f70f067; versão subida em 604bcb6.
+   Detalhes em TEMPORIZACAO.md.
 3. Calibração de offset será executada pelo próprio drive, eventualmente
    acionada por Modbus ou painel; não adicionar compensação no software.
 

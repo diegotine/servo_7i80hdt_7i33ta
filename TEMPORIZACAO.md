@@ -1,0 +1,89 @@
+# Temporização — 0.2.1
+
+O período nominal continua em **5 ms (200 Hz)**. O PID usa o intervalo real
+entre inícios de ciclos, não uma constante de 5 ms nem a média do loopback.
+Limite de ciclo/processamento: 20 ms; watchdog da HDT: 100 ms;
+heartbeat da interface: 500 ms. Esses limites não foram relaxados.
+
+## Alterações
+
+- Espera nativa com `clock_nanosleep(CLOCK_MONOTONIC, TIMER_ABSTIME)` via
+  biblioteca C do Linux. Cada início pertence à mesma grade temporal, em vez
+  de somar 5 ms ao instante efetivo do último ciclo. Interrupção por sinal
+  retoma a espera pelo mesmo instante absoluto.
+- Horários já vencidos são descartados; não há uma sequência de ciclos
+  imediatos para compensar atrasos. O intervalo real continua sujeito ao
+  limite de 20 ms e é usado pelo controlador.
+- Coleta automática de referências cíclicas Python suspensa durante a sessão
+  de controle. A liberação normal por contagem de referências continua ativa.
+  Coleta explícita ocorre fora do ciclo, após solicitar desligamento na falha;
+  o estado anterior da coleta automática é restaurado ao sair.
+- Afinidade do thread de controle com uma CPU permitida e tentativa de
+  prioridade SCHED_FIFO 10. O leitor de comandos é criado antes desses ajustes,
+  mantendo seu próprio escalonamento e afinidade; a interface é outro processo.
+- Tentativa de `mlockall(MCL_CURRENT)` para as regiões de memória existentes.
+  Novas alocações Python não são garantidas como bloqueadas. Não se usa
+  MCL_FUTURE nem se alteram limites do sistema.
+
+Erros de permissão ficam no histórico, e a aba **HDT • Diagnóstico** mostra
+o escalonador, prioridade, CPUs e bloqueio de memória efetivamente obtidos.
+SCHED_OTHER / prioridade 0 significa execução normal; a presença do código
+de otimização não significa que o sistema concedeu prioridade de tempo real.
+
+## Métricas
+
+O diagnóstico mostra média, desvio padrão e P95 recente do intervalo entre
+ciclos, maior atraso ao despertar, horários pulados e médias de leitura,
+cálculo/comandos e escrita com confirmação. A exportação JSON do loopback
+inclui `timing` e `runtime` com detalhes adicionais e os ajustes efetivos.
+
+Mínimos, máximos, médias e desvios são acumulados na sessão; P95 usa somente
+as últimas 256 amostras de cada grandeza. As métricas reiniciam ao rearmar.
+O tempo de trabalho inclui leitura, cálculo e escrita; não inclui a montagem
+e transmissão da própria telemetria. Esse custo aparece no intervalo real
+do ciclo seguinte. A medição de leitura inclui a ida e volta UDP; não é
+uma medição isolada do encoder ou da FPGA.
+
+Os tempos ON/OFF do loopback seguem o mesmo critério da 0.2.0. Não subtrair
+automaticamente um ciclo, nem somar a média ON/OFF como atraso adicional no
+PID. Não foram alterados os ganhos PID, a escala analógica ou a pinagem.
+
+## Opções de execução
+
+Os padrões são aplicados pelo backend, incluindo quando aberto pela interface.
+Para comparar ajustes, variáveis de ambiente podem ser passadas ao iniciador:
+
+```sh
+# Temporizador absoluto e métricas, com escalonamento/afinidade normais:
+T3D_RT_PRIORITY=0 T3D_CPU=none T3D_MLOCK=0 ./iniciar.sh
+
+# Padrões da 0.2.1: tentativa FIFO 10, última CPU permitida, memória atual:
+./iniciar.sh
+```
+
+`T3D_RT_PRIORITY`: 0 ou 1–50. `T3D_CPU`: `auto`, `none` ou índice de CPU
+permitida. `T3D_MLOCK`: `1` para tentar ou `0` para não tentar.
+A afinidade não reserva nem isola a CPU de outros processos ou interrupções.
+O programa não eleva privilégios, não instala kernel, não usa sudo e não
+modifica arquivos de permissões. A interface não deve ser executada como root
+para contornar permissões de tempo real.
+
+## Comparação na bancada
+
+Referência da 0.2.0 em `medicoes/2026-10-11-loopback-referencia.md`, com JSONs
+originais e screenshots. Repetir o mesmo canal, ligação, amplitude e condições
+de carga/rede. Comparar a dispersão, P95, máximos e horários pulados, além das
+médias ON/OFF. Melhoria de latência ainda depende das medições reais.
+
+A 0.2.1 foi compilada e conferida sem executar a placa simulada, por solicitação
+do operador. Os novos testes de regressão estão disponíveis para execução
+posterior; não foram executados nessa entrega. A abertura Qt sem placa e a
+verificação de sintaxe não validam temporização ou movimento físico.
+
+O controlador de trajetória/PID continua em Python. Esta versão não reproduz
+integralmente RTAPI e não garante tempo real rígido em kernel comum. A espera
+é nativa, mas não houve migração da malha de controle para C/C++.
+
+Referências: [clock_nanosleep](https://man7.org/linux/man-pages/man2/clock_nanosleep.2.html),
+[mlockall](https://man7.org/linux/man-pages/man2/mlockall.2.html),
+[escalonamento e afinidade em Python](https://docs.python.org/3/library/os.html#interface-to-the-scheduler).

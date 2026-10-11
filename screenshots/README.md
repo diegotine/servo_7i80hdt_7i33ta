@@ -1,5 +1,8 @@
 # Capturas da interface
 
+- [Diagnóstico 0.2.1](diagnostico-temporizacao-v0.2.1.png): interface sem conexão;
+  as métricas e ajustes de execução aparecem ao conectar à placa.
+
 - [Loopback digital — bancada, 11/10/2026](loopback-digital-bancada-2026-10-11.png):
   captura fornecida pelo operador após 100 ciclos; médias ON 4,933 ms e OFF 4,940 ms.
 - [Loopback analógico — bancada, 11/10/2026](loopback-analogico-bancada-2026-10-11.png):
