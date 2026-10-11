@@ -15,6 +15,8 @@
 #include <QDoubleSpinBox>
 #include <QFile>
 #include <QFileDialog>
+#include <QFileInfo>
+#include <unistd.h>
 #include <QFormLayout>
 #include <QGridLayout>
 #include <QGroupBox>
@@ -199,7 +201,12 @@ void MainWindow::startConnection()
         p.accelerationControl->setEnabled(false);
     }
     m_link->setText("Conectando à 7i80HDT…");
-    m_backend.start(QStringLiteral(T3D_PYTHON), {"-u", QCoreApplication::applicationDirPath() + "/driver/backend.py", "--config", runtimePath()});
+    const QString runtimeLauncher = QString("/usr/local/libexec/t3d-analog-runtime-%1").arg(getuid());
+    if (QFileInfo(runtimeLauncher).isExecutable()) {
+        m_backend.start(runtimeLauncher, {"--config", runtimePath()});
+    } else {
+        m_backend.start(QStringLiteral(T3D_PYTHON), {"-u", QCoreApplication::applicationDirPath() + "/driver/backend.py", "--config", runtimePath()});
+    }
     m_heartbeat.start();
 }
 
@@ -377,10 +384,11 @@ void MainWindow::updateStatus(const QJsonObject &message)
     const auto rawCounts = diagnostic.value("raw_counts").toArray();
     m_statusAge.restart();
     m_diagState->setText("Conectado • leituras atuais");
-    m_diagTiming->setText(QString("Ciclo: %1 ms | Maior ciclo: %2 ms | Ciclos concluídos: %3 | Alvo: 5 ms | Limite: 20 ms")
+    m_diagTiming->setText(QString("Ciclo: %1 ms | Maior ciclo: %2 ms | Ciclos concluídos: %3 | Alvo: %4 ms | Limite: 20 ms")
         .arg(message.value("cycle_ms").toDouble(), 0, 'f', 2)
         .arg(diagnostic.value("max_cycle_ms").toDouble(), 0, 'f', 2)
-        .arg(diagnostic.value("cycles").toDouble(), 0, 'f', 0));
+        .arg(diagnostic.value("cycles").toDouble(), 0, 'f', 0)
+        .arg(diagnostic.value("timing").toObject().value("nominal_ms").toDouble(2), 0, 'f', 0));
     const auto timing = diagnostic.value("timing").toObject();
     if (!timing.isEmpty()) {
         const auto interval = timing.value("interval").toObject();
@@ -388,6 +396,7 @@ void MainWindow::updateStatus(const QJsonObject &message)
         const auto read = timing.value("read").toObject();
         const auto control = timing.value("control").toObject();
         const auto write = timing.value("write").toObject();
+        const auto work = timing.value("work").toObject();
         m_diagTiming->setText(m_diagTiming->text()
             + QString("\nCiclo médio: %1 ms | Desvio: %2 ms | P95 recente: %3 ms | Horários pulados: %4")
                 .arg(interval.value("mean_ms").toDouble(), 0, 'f', 3)
@@ -398,7 +407,11 @@ void MainWindow::updateStatus(const QJsonObject &message)
                 .arg(wake.value("max_ms").toDouble(), 0, 'f', 3)
                 .arg(read.value("mean_ms").toDouble(), 0, 'f', 3)
                 .arg(control.value("mean_ms").toDouble(), 0, 'f', 3)
-                .arg(write.value("mean_ms").toDouble(), 0, 'f', 3));
+                .arg(write.value("mean_ms").toDouble(), 0, 'f', 3)
+            + QString("\nTrabalho máximo: %1 ms | Execuções acima de %2 ms: %3")
+                .arg(work.value("max_ms").toDouble(), 0, 'f', 3)
+                .arg(timing.value("nominal_ms").toDouble(2), 0, 'f', 0)
+                .arg(timing.value("work_overruns").toDouble(), 0, 'f', 0));
     }
     m_diagWatchdog->setText(diagnostic.value("watchdog_ok").toBool()
         ? "Watchdog: sem expiração na última leitura e confirmação das saídas | Quadratura: sem erro detectado"
@@ -679,7 +692,8 @@ void MainWindow::updateLoopback(const QJsonObject &message)
                 .arg(value.value("stddev_ms").toDouble(), 0, 'f', 3);
         };
         m_loopbackDetails->setText(describe("ON", on) + "\n" + describe("OFF", off)
-            + "\nTempos observados pelo computador, incluindo a espera pela leitura de 5 ms. PID permanece inalterado.");
+            + QString("\nTempos observados pelo computador, incluindo a espera pela leitura de %1 ms. PID permanece inalterado.")
+                .arg(message.value("timing").toObject().value("nominal_ms").toDouble(2), 0, 'f', 0));
         logDiagnostic("Loopback concluído: ON " + m_loopbackOn->text() + " ms; OFF " + m_loopbackOff->text() + " ms.");
         const QString directory = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/loopback";
         QDir().mkpath(directory);
@@ -690,7 +704,7 @@ void MainWindow::updateLoopback(const QJsonObject &message)
         record["measurement"] = message.value("mode").toString() == "analog"
             ? "analog_0_4v_to_encoder_a_ttl_host_observed"
             : "digital_ena_to_encoder_a_ttl_host_observed";
-        record["nominal_poll_ms"] = 5;
+        record["nominal_poll_ms"] = message.value("timing").toObject().value("nominal_ms").toDouble(2);
         if (writeJson(path, record)) {
             m_loopbackDetails->setText(m_loopbackDetails->text() + "\nResultado salvo: " + path);
             logDiagnostic("Amostras do loopback salvas em " + path);

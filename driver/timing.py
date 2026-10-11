@@ -7,6 +7,9 @@ import os
 import time
 
 
+NOMINAL_PERIOD_NS = 2_000_000
+
+
 class Timespec(ctypes.Structure):
     _fields_ = [('tv_sec', ctypes.c_long), ('tv_nsec', ctypes.c_long)]
 
@@ -31,7 +34,7 @@ class AbsoluteSleeper:
 
 
 class CycleTimer:
-    def __init__(self, period_ns=5_000_000, clock=time.monotonic_ns, sleeper=None):
+    def __init__(self, period_ns=NOMINAL_PERIOD_NS, clock=time.monotonic_ns, sleeper=None):
         if type(period_ns) is not int or period_ns <= 0:
             raise ValueError('Período deve ser um número positivo de nanossegundos')
         self.period_ns = period_ns
@@ -83,17 +86,22 @@ class Samples:
 
 
 class CycleMetrics:
-    def __init__(self):
+    def __init__(self, period_ns=NOMINAL_PERIOD_NS):
+        self.period_ns = period_ns
+        self.work_overruns = 0
         self.values = {name: Samples() for name in
                        ('interval', 'wake_lateness', 'read', 'control', 'write', 'work')}
         self.skipped = 0
 
     def add(self, **values):
+        if values.get("work", 0) > self.period_ns:
+            self.work_overruns += 1
         for name, value in values.items():
             self.values[name].add(value)
 
     def report(self):
-        return dict(nominal_ms=5, skipped_slots=self.skipped, recent_window=256,
+        return dict(nominal_ms=self.period_ns / 1e6, work_overruns=self.work_overruns,
+                    skipped_slots=self.skipped, recent_window=256,
                     **{name: samples.report() for name, samples in self.values.items()})
 
 

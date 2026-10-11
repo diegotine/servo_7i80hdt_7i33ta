@@ -21,6 +21,8 @@ manuais pertinentes. Não depende do projeto superior para compilar ou executar.
 
 Execute `./iniciar.sh` nesta pasta. O iniciador compila e abre `build/t3d_analog`.
 Requisitos: Linux, CMake ≥3.21, compilador C++20, Qt6 Widgets ≥6.4 e Python ≥3.10.
+Para ativar FIFO e bloqueio de memória, consulte a instalação opcional em
+[TEMPORIZACAO.md](TEMPORIZACAO.md).
 Python usa apenas a biblioteca padrão. Não requer LinuxCNC, HAL ou Qt SerialPort.
 O projeto inclui um driver Ethernet próprio, que se comunica diretamente com
 a Mesa 7i80HDT e permite usar a placa sem instalar ou executar LinuxCNC.
@@ -301,7 +303,7 @@ e corrente. Não se envia alvo de posição ao T3D.
 
 ## Temporização da versão 0.2.3
 
-A execução usa uma grade absoluta de 5 ms, com diagnóstico da variação entre
+A execução usa uma grade absoluta de 2 ms, com diagnóstico da variação entre
 ciclos e dos tempos de leitura, cálculo e escrita. O backend tenta prioridade
 SCHED_FIFO, afinidade de CPU e bloqueio da memória atual, e informa no diagnóstico
 o que o sistema permitiu. Ganhos PID e limites de falha permanecem os mesmos.
@@ -325,7 +327,7 @@ Pinagem esperada no J1 da 7i33TA, numeração física do flat de 50 vias:
 | 2 | 31 | 29 | 35 | 39 | 43 | 47 |
 | 3 | 27 | 25 | 33 | 37 | 41 | 45 |
 
-O processo solicita ciclo de **5 ms** e rejeita intervalos/processamento acima de
+O processo solicita ciclo de **2 ms** e rejeita intervalos/processamento acima de
 **20 ms**. Um heartbeat da interface deve chegar em até **500 ms**. Só o ciclo
 que lê feedback e atualiza saídas alimenta o watchdog da Mesa de **100 ms**.
 Timeout, erro de quadratura, salto impossível de contagem, erro de seguimento

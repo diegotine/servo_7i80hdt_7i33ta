@@ -29,7 +29,7 @@ os encoders e envia referências analógicas de velocidade ao drive.
 - Aba de diagnóstico da HDT, com identificação, contadores, estados e histórico
   de falhas; após uma falha, mantém a comunicação disponível para diagnóstico
   quando a placa responde.
-- Temporização absoluta de 5 ms, métricas do ciclo e ajustes de prioridade/CPU com diagnóstico do resultado efetivo.
+- Temporização absoluta de 2 ms, métricas do ciclo e ajustes de prioridade/CPU com diagnóstico do resultado efetivo.
 - Configurações por motor que podem ser salvas e carregadas.
 - Interface separada em arquivos `.ui`, editáveis no Qt Designer.
 

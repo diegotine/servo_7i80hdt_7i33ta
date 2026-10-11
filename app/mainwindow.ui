@@ -6781,7 +6781,7 @@ Tensão exibida é o comando enviado; a HDT não mede a tensão analógica nem a
         <item>
          <widget class="QLabel" name="loopbackDetails">
           <property name="text">
-           <string>Mede saída → entrada → computador. Inclui rede e espera pelo ciclo de leitura de 5 ms. Não altera o PID automaticamente.</string>
+           <string>Mede saída → entrada → computador. Inclui rede e espera pelo ciclo de leitura de 2 ms. Não altera o PID automaticamente.</string>
           </property>
           <property name="wordWrap">
            <bool>true</bool>

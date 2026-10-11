@@ -21,9 +21,9 @@ e TESTE_LOOPBACK.md para os detalhes técnicos.
 - Interface C++20/Qt6 Widgets em app/; arquivos .ui editáveis no Qt Designer.
 - Driver Ethernet LBP16 próprio em driver/mesa7i80hdt.py, sem LinuxCNC/HAL.
 - Controlador de trajetória/PID em driver/servo.py; backend.py é o único
-  proprietário da comunicação da sessão. Ciclo nominal 5 ms, prazo 20 ms,
+  proprietário da comunicação da sessão. Ciclo nominal 2 ms, prazo 20 ms,
   watchdog 100 ms; sem garantia de tempo real rígido ou infraestrutura RTAPI.
-- Versão local 0.2.2 em desenvolvimento, conforme CMakeLists.txt e CHANGELOG.md.
+- Versão local 0.2.3 em desenvolvimento, conforme CMakeLists.txt e CHANGELOG.md.
   Há alterações locais ainda não publicadas; não confundir com release público.
 - Recursos locais: ajustes com placa conectada, limite padrão 3000 RPM,
   saída ±10 V, JOG com retenção, STOP mantendo ENABLE, modo teste com
@@ -79,3 +79,10 @@ Captura e JSON da medição original preservados sem alterar o rótulo 0.2.1.
 MCL_CURRENT falhou com Cannot allocate memory; FIFO negado por permissão.
 Ciclo médio real 5,000008561 ms; zero horários pulados nessa sessão.
 Atalho novo Iniciar T3D v0.2.2.desktop criado; anteriores preservados.
+
+## Atualização 0.2.3
+
+- Ciclo de 2 ms; contagem de trabalho acima do período e horários pulados no diagnóstico.
+- Auxiliar de limites instalado via autenticação Polkit; checagem real sem placa confirmou SCHED_FIFO 10, CPU 5 e mlockall(MCL_CURRENT).
+- Backend mantém UID 1000, sem capabilities após o auxiliar. Interface não roda como root.
+- Sem execução de placa simulada por solicitação do operador; medição física de 2 ms pendente.

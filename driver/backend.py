@@ -20,7 +20,7 @@ from dataclasses import asdict
 from mesa7i80hdt import Mesa7i80hdt, MesaError
 from servo import Axis, AxisConfig, ServoFault
 from loopback import Loopback
-from timing import CycleTimer, CycleMetrics, configure_runtime
+from timing import CycleTimer, CycleMetrics, configure_runtime, NOMINAL_PERIOD_NS
 
 
 def emit(kind, **data):
@@ -43,7 +43,7 @@ def load_config(path):
 
 
 class Session:
-    period = 0.005
+    period = NOMINAL_PERIOD_NS / 1e9
     deadline = 0.020
     client_timeout = 0.5
 
@@ -55,7 +55,7 @@ class Session:
         self.cycles = 0
         self.max_cycle_ms = 0.0
         self.runtime = runtime or {}
-        self.metrics = CycleMetrics()
+        self.metrics = CycleMetrics(round(self.period * 1e9))
         self.wake_lateness_ns = 0
         self.running = True
         self.generic_outputs = {'P1': 0, 'P2': 0}
@@ -362,7 +362,7 @@ class Session:
                     # Collect outside cyclic control, after shutdown, in diagnosis.
                     if self.diagnose_fault(exc):
                         timer = CycleTimer(round(self.period * 1e9))
-                        self.metrics = CycleMetrics()
+                        self.metrics = CycleMetrics(round(self.period * 1e9))
                         continue
                     return
         finally:

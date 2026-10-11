@@ -5,6 +5,8 @@
 - Ciclo nominal reduzido de 5 ms para 2 ms (500 Hz), mantendo limite de falha de 20 ms e watchdog de 100 ms.
 - Diagnóstico conta execuções de leitura/cálculo/escrita acima do período nominal.
 - Indicadores e exportação JSON usam o período real configurado.
+- Auxiliar opcional concede limites ao backend; verificação real confirmou FIFO 10 e bloqueio da memória atual, sem executar a placa.
+- Novo atalho v0.2.3 preserva os anteriores.
 - Medição física pendente; sem execução de placa simulada nesta etapa.
 
 ## 0.2.2 — referência com otimizações
