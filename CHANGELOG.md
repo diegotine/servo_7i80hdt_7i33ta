@@ -1,5 +1,10 @@
 # Histórico de versões
 
+## 0.2.4 — conversão Cython
+
+- Versão incrementada antes da conversão; período de 2 ms preservado.
+- Referência física 0.2.3 com FIFO e memória bloqueada salva para comparação.
+
 ## 0.2.3 — em desenvolvimento
 
 - Corrigido bloqueio de memória: ambiente neutro UTF-8 no backend evita o arquivo de idiomas de 223 MiB.
