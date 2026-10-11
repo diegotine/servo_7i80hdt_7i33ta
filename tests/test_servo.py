@@ -10,7 +10,7 @@ import time
 import unittest
 from dataclasses import asdict
 
-from backend import Session
+from backend import Session, load_config
 from mesa7i80hdt import Mesa7i80hdt, FirmwareError, CommunicationError
 from servo import Axis, AxisConfig, Encoder, ServoFault, Trajectory
 from test_driver import Simulator
@@ -119,7 +119,7 @@ class EncoderDriverTests(unittest.TestCase):
 
 class ControlTests(unittest.TestCase):
     def test_encoder_wrap_both_directions_and_sign(self):
-        encoder = Encoder(AxisConfig())
+        encoder = Encoder(AxisConfig(max_rpm=60))
         self.assertEqual(encoder.update(65530, 0.005), (0, 0))
         self.assertAlmostEqual(encoder.update(4, 0.005)[0], 0.001)
         self.assertAlmostEqual(encoder.update(65530, 0.005)[0], 0)
@@ -128,7 +128,7 @@ class ControlTests(unittest.TestCase):
         self.assertAlmostEqual(inverse.update(65530, 0.005)[0], 0.001)
 
     def test_encoder_rejects_ambiguous_wrap_and_jump(self):
-        encoder = Encoder(AxisConfig())
+        encoder = Encoder(AxisConfig(max_rpm=60))
         encoder.update(0, 0.005)
         with self.assertRaises(ServoFault): encoder.update(32000, 0.005)
         with self.assertRaises(ServoFault): encoder.update(0, 0.1)
@@ -149,7 +149,7 @@ class ControlTests(unittest.TestCase):
             self.assertEqual(trajectory.sample(trajectory.duration + 1), (target, 0, True))
 
     def test_no_implicit_enable_and_optional_calibration_record(self):
-        axis = Axis(AxisConfig())
+        axis = Axis(AxisConfig(max_rpm=60))
         axis.feedback(0, 0.005)
         self.assertEqual(axis.calculate(0.005), 0)
         with self.assertRaises(ValueError): axis.move(0.1)
@@ -158,7 +158,7 @@ class ControlTests(unittest.TestCase):
         self.assertFalse(axis.c.verified)
 
     def exercise_move(self, target):
-        axis = Axis(AxisConfig(verified=True))
+        axis = Axis(AxisConfig(max_rpm=60, verified=True))
         position = velocity = 0.0
         axis.feedback(0, 0.005)
         axis.enable()
@@ -249,7 +249,7 @@ class ControlTests(unittest.TestCase):
         self.assertAlmostEqual(axis.reference_velocity - velocity, 0.005)
 
     def test_virtual_feedback_keeps_real_encoder_and_manual_error(self):
-        axis = Axis(AxisConfig())
+        axis = Axis(AxisConfig(max_rpm=60))
         axis.feedback(0, 0.005)
         axis.set_output_test(True)
         axis.enable()
@@ -286,7 +286,7 @@ class ControlTests(unittest.TestCase):
         self.assertAlmostEqual(axis.error, simulated)
 
     def test_output_test_holds_voltage_without_encoder_and_stops_with_enable(self):
-        axis = Axis(AxisConfig())
+        axis = Axis(AxisConfig(max_rpm=60))
         axis.feedback(0, 0.005)
         axis.set_output_test(True)
         axis.enable()
@@ -314,7 +314,12 @@ class ControlTests(unittest.TestCase):
         for _ in range(1000): axis.calculate(0.005)
         self.assertAlmostEqual(axis.virtual_position, 0.1)
         self.assertTrue(axis.enabled)
-        with self.assertRaises(ValueError): axis.set_output_test(False)
+        saved_virtual = axis.virtual_position
+        axis.set_output_test(False)
+        self.assertTrue(axis.enabled)
+        self.assertEqual(axis.virtual_position, saved_virtual)
+        axis.set_output_test(True)
+        self.assertEqual(axis.virtual_position, saved_virtual)
         axis.jog(-60)
         for _ in range(240): axis.calculate(0.005)
         self.assertAlmostEqual(axis.volts, -0.2)
@@ -323,12 +328,38 @@ class ControlTests(unittest.TestCase):
         axis.set_output_test(False)
         self.assertFalse(axis.output_test)
 
+    def test_test_mode_toggle_during_jog_preserves_enable_encoder_and_simulation(self):
+        axis = Axis(AxisConfig(max_rpm=60))
+        axis.feedback(100, 0.005)
+        axis.set_output_test(True)
+        axis.enable()
+        for _ in range(60): axis.calculate(0.005)
+        axis.jog(30)
+        for _ in range(100): axis.calculate(0.005)
+        simulated, voltage, origin = axis.virtual_position, axis.volts, axis.offset
+        raw = axis.encoder.previous
+        axis.set_output_test(False)
+        self.assertTrue(axis.enabled)
+        self.assertEqual(axis.mode, 'jog')
+        self.assertEqual(axis.virtual_position, simulated)
+        self.assertEqual(axis.encoder.previous, raw)
+        self.assertEqual(axis.offset, origin)
+        axis.feedback(raw + 25, 0.005)
+        axis.calculate(0.005)
+        self.assertAlmostEqual(axis.volts, voltage)
+        axis.set_output_test(True)
+        self.assertEqual(axis.virtual_position, simulated)
+        axis.calculate(0.005)
+        self.assertGreater(axis.virtual_position, simulated)
+        axis.set_output_test(True)  # Repeated requests must not reset anything.
+        self.assertTrue(axis.enabled)
+
     def test_position_converges_clockwise_and_counterclockwise(self):
         self.exercise_move(0.3)
         self.exercise_move(-0.3)
 
     def test_following_error_stalled_motor_and_travel(self):
-        axis = Axis(AxisConfig(verified=True))
+        axis = Axis(AxisConfig(max_rpm=60, verified=True))
         axis.feedback(0, 0.005)
         axis.enable()
         for _ in range(60): axis.calculate(0.005)
@@ -339,7 +370,7 @@ class ControlTests(unittest.TestCase):
         with self.assertRaises(ValueError): axis.move(11)
 
     def test_saturation_does_not_integrate_windup(self):
-        axis = Axis(AxisConfig(verified=True, ki=20, kp=100, no_response_timeout_s=10))
+        axis = Axis(AxisConfig(max_rpm=60, verified=True, ki=20, kp=100, no_response_timeout_s=10))
         axis.feedback(0, 0.005)
         axis.enable()
         for _ in range(60): axis.calculate(0.005)
@@ -349,7 +380,7 @@ class ControlTests(unittest.TestCase):
         self.assertLessEqual(abs(axis.volts), 0.2)
 
     def ready_axis(self, **config):
-        axis = Axis(AxisConfig(verified=True, **config))
+        axis = Axis(AxisConfig(max_rpm=60, verified=True, **config))
         axis.feedback(0, 0.005)
         axis.enable()
         for _ in range(60):
@@ -410,7 +441,7 @@ class ControlTests(unittest.TestCase):
                 axis.calculate(0.005)
 
     def test_jog_brakes_and_holds_within_soft_limits(self):
-        axis = Axis(AxisConfig(verified=True, min_rev=-0.15, max_rev=0.15))
+        axis = Axis(AxisConfig(max_rpm=60, verified=True, min_rev=-0.15, max_rev=0.15))
         axis.feedback(0, 0.005)
         axis.enable()
         for _ in range(60): axis.calculate(0.005)
@@ -428,9 +459,61 @@ class ControlTests(unittest.TestCase):
 
     def test_invalid_config_values(self):
         for changes in (dict(counts_per_rev=0), dict(kp=float('nan')), dict(verified='yes'),
-                        dict(max_rpm=4000), dict(voltage_limit=11), dict(min_rev=10, max_rev=0),
+                        dict(max_rpm=4000), dict(min_rev=10, max_rev=0),
                         dict(no_response_timeout_s=0), dict(no_response_timeout_s=11)):
             with self.assertRaises(ValueError): AxisConfig(**changes)
+
+    def test_default_speed_limit_is_3000_rpm(self):
+        self.assertEqual(AxisConfig().max_rpm, 3000)
+        example = json.loads((Path(__file__).resolve().parents[1] / 'config.example.json').read_text())
+        self.assertTrue(all(axis['max_rpm'] == 3000 for axis in example['axes']))
+
+    def test_live_settings_preserve_jog_and_reject_invalid_changes(self):
+        axis = Axis(AxisConfig(max_rpm=3000, acceleration_rpm_s=100000))
+        axis.feedback(0, 0.005)
+        axis.set_output_test(True)
+        axis.enable()
+        for _ in range(60): axis.calculate(0.005)
+        axis.jog(500)
+        axis.calculate(0.005)
+        updated = dict(asdict(axis.c), max_rpm=400, kp=30)
+        self.assertFalse(axis.configure(updated))
+        axis.calculate(0.005)
+        self.assertTrue(axis.enabled)
+        self.assertEqual(axis.telemetry()['rpm'], 400)
+        with self.assertRaises(ValueError):
+            axis.configure(dict(updated, max_rpm=4000))
+        self.assertEqual(axis.c.max_rpm, 400)
+        axis.encoder.count = 10000
+        axis.feedback(0, 0.005)
+        previous_position = axis.position
+        self.assertTrue(axis.configure(dict(updated, counts_per_rev=20000)))
+        self.assertFalse(axis.enabled)
+        self.assertEqual(axis.volts, 0)
+        axis.feedback(0, 0.005)
+        self.assertEqual(axis.position, previous_position)
+
+    def test_legacy_voltage_cap_is_removed_and_full_scale_is_available(self):
+        config = dict(schema=1, connector='P3', axes=[
+            dict(asdict(AxisConfig(max_rpm=3000, acceleration_rpm_s=100000)), voltage_limit=1)
+            for _ in range(4)])
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / 'legacy.json'
+            path.write_text(json.dumps(config))
+            migrated, axes = load_config(path)
+        self.assertTrue(all('voltage_limit' not in value for value in migrated['axes']))
+        axis = axes[0]
+        axis.feedback(0, 0.005)
+        axis.set_output_test(True)
+        axis.enable()
+        for _ in range(60):
+            axis.calculate(0.005)
+        for rpm, volts in ((500, 500 / 300), (3000, 10), (-3000, -10), (9999.9, 10)):
+            axis.jog(rpm)
+            for _ in range(20):
+                axis.calculate(0.005)
+            self.assertAlmostEqual(axis.telemetry()['rpm'], max(-3000, min(3000, rpm)))
+            self.assertAlmostEqual(axis.volts, volts)
 
     def test_deadline_and_gui_heartbeat_fail_before_output(self):
         class FakeBoard:
@@ -439,7 +522,7 @@ class ControlTests(unittest.TestCase):
             def write_servo(self, *_): self.writes += 1
         now = [10.0]
         board = FakeBoard()
-        session = Session(board, [Axis(AxisConfig()) for _ in range(4)], queue.Queue(),
+        session = Session(board, [Axis(AxisConfig(max_rpm=60)) for _ in range(4)], queue.Queue(),
                           output=lambda *a, **kw: None, clock=lambda: now[0])
         now[0] += 0.03
         with self.assertRaises(ServoFault): session.step()
@@ -458,7 +541,7 @@ class BackendTests(unittest.TestCase):
         self.temp = tempfile.TemporaryDirectory()
         self.addCleanup(self.temp.cleanup)
         config = dict(schema=1, ip='127.0.0.1', connector='P3',
-                      axes=[asdict(AxisConfig()) for _ in range(4)])
+                      axes=[asdict(AxisConfig(max_rpm=60)) for _ in range(4)])
         path = Path(self.temp.name) / 'config.json'
         path.write_text(json.dumps(config))
         backend = Path(__file__).resolve().parents[1] / 'driver/backend.py'
@@ -574,6 +657,47 @@ class BackendTests(unittest.TestCase):
             self.assertAlmostEqual(volts, effective / 300, delta=10 / 4095)
         self.send('quit')
         self.assertEqual(self.process.wait(timeout=2), 0)
+
+    def test_connected_settings_apply_without_restarting_session(self):
+        self.sim.plant = False
+        self.send('output_test', axis=0, value=True)
+        self.send('enable', axis=0)
+        self.wait_for(lambda m: m['type'] == 'status' and m['axes'][0]['in_position'], heartbeat=True)
+        config = dict(asdict(AxisConfig()), acceleration_rpm_s=100000)
+        self.send('configure', axis=0, config=config)
+        accepted = self.wait_for(lambda m: m['type'] == 'axis_config', heartbeat=True)
+        self.assertEqual(accepted['config']['max_rpm'], 3000)
+        self.assertFalse(accepted['motor_disabled'])
+        self.send('jog', axis=0, value=500)
+        self.wait_for(lambda m: m['type'] == 'status' and abs(m['axes'][0]['rpm'] - 500) < 0.01,
+                      heartbeat=True)
+        self.assertIsNone(self.process.poll())
+        config['output_sign'] = -1
+        self.send('configure', axis=0, config=config)
+        accepted = self.wait_for(lambda m: m['type'] == 'axis_config', heartbeat=True)
+        self.assertTrue(accepted['motor_disabled'])
+        self.wait_for(lambda m: m['type'] == 'status' and not m['axes'][0]['enabled'], heartbeat=True)
+        self.assertEqual(self.sim.memory[self.sim.PWM], 0)
+        self.assertIsNone(self.process.poll())
+
+    def test_mode_switch_with_hardware_enabled_keeps_session_and_simulated_position(self):
+        self.send('output_test', axis=0, value=True)
+        self.send('enable', axis=0)
+        self.wait_for(lambda m: m['type'] == 'status' and m['axes'][0]['in_position'], heartbeat=True)
+        self.send('jog', axis=0, value=10)
+        self.wait_for(lambda m: m['type'] == 'status' and m['axes'][0]['position'] > 0.01, heartbeat=True)
+        self.send('output_test', axis=0, value=False)
+        normal = self.wait_for(lambda m: m['type'] == 'status' and not m['axes'][0]['output_test'], heartbeat=True)
+        self.assertTrue(normal['axes'][0]['enabled'])
+        self.assertEqual(normal['axes'][0]['mode'], 'jog')
+        saved = normal['axes'][0]['virtual_position']
+        self.assertGreater(saved, 0)
+        self.send('output_test', axis=0, value=True)
+        test = self.wait_for(lambda m: m['type'] == 'status' and m['axes'][0]['output_test'], heartbeat=True)
+        self.assertTrue(test['axes'][0]['enabled'])
+        self.assertGreaterEqual(test['axes'][0]['virtual_position'], saved)
+        self.assertGreater(test['axes'][0]['encoder_position'], 0)
+        self.assertEqual(self.sim.memory[self.sim.PWM + 4 * self.sim.STRIDE], 1)
 
     def test_instrument_test_keeps_output_with_frozen_encoder_then_disables(self):
         self.sim.plant = False

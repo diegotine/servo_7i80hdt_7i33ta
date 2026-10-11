@@ -63,8 +63,10 @@ class Lbp16:
             sock.settimeout(self.timeout if timeout is None else timeout)
             sock.connect(self.peer)
             try:
+                self.last_send_ns = time.monotonic_ns()
                 sock.send(packet)
                 reply = sock.recv(2048)
+                self.last_receive_ns = time.monotonic_ns()
             except OSError as exc:
                 raise CommunicationError(f'UDP {self.peer}: {exc}; outcome unknown') from exc
         if len(reply) != reply_bytes:
@@ -265,7 +267,7 @@ class Mesa7i80hdt:
             packet = b''.join(command(self.encoder.address(0, c), 1)
                               + command(self.encoder.address(1, c), 1)
                               for c in self.encoder_channels)
-            ports = sorted(self.generic_ports)
+            ports = sorted(self.generic_ports | {self.connector_port})
             packet += b''.join(command(self.gpio.address(0, p), 1) for p in ports)
             packet += command(self.watchdog.address(1), 1) + command(0x100, 1)
             try:
@@ -275,7 +277,12 @@ class Mesa7i80hdt:
                     raise CommunicationError('Watchdog expired or invalid encoder response')
                 if any(data[i] & 0x8000 for i in (1, 3, 5, 7)):
                     raise CommunicationError('Encoder quadrature sequence error')
-                self.generic_inputs = {f'P{p + 1}': data[8 + i] & 0xFFF for i, p in enumerate(ports)}
+                self.generic_inputs = {f'P{p + 1}': data[8 + i] & 0xFFF for i, p in enumerate(ports)
+                                       if p in self.generic_ports}
+                servo_levels = data[8 + ports.index(self.connector_port)]
+                # 7i33TA TTL input conditioning inverts A before it reaches HM2.
+                self.encoder_a_levels = [not bool(servo_levels & (1 << bit)) for bit in (3, 1, 15, 13)]
+                self.last_feedback_received_ns = self.bus.last_receive_ns
                 return [data[i] & 0xFFFF for i in (0, 2, 4, 6)]
             except CommunicationError:
                 self.faulted = True
@@ -415,6 +422,7 @@ class Mesa7i80hdt:
             if cookie != 0x55AACAFE or status & 1:
                 raise CommunicationError('Invalid cookie or hardware watchdog expired')
             self.last_update = sent_at
+            self.last_output_sent_ns = self.bus.last_send_ns
         except CommunicationError:
             self.faulted = True
             raise

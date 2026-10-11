@@ -1,6 +1,14 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include "telemetryplot.h"
+#include <QStackedWidget>
+#include <QDialog>
+#include <QDialogButtonBox>
+#include <QFile>
+#include <QTextBrowser>
+#include <QVBoxLayout>
 #include <QCheckBox>
+#include <algorithm>
 #include <QComboBox>
 #include <QDoubleSpinBox>
 #include <QGridLayout>
@@ -26,6 +34,64 @@ void MainWindow::setupInterface()
     m_disconnect = ui.disconnect;
     m_load = ui.load;
     m_save = ui.save;
+    m_loopbackButton = ui.loopbackButton;
+    m_loopbackChannel = ui.loopbackChannel;
+    m_loopbackMode = ui.loopbackMode;
+    m_pwmPercent = ui.pwmPercent;
+    m_pwmApply = ui.pwmApply;
+    m_pwmStop = ui.pwmStop;
+    m_pwmPulse = ui.pwmPulse;
+    connect(m_pwmPulse, &QPushButton::clicked, this, [this] {
+        if (m_ready && !m_stopping && !m_loopbackRunning)
+            send({{"op", "pwm_test_pulse"}, {"axis", m_loopbackChannel->currentIndex()}});
+    });
+    m_pwmStatus = ui.pwmStatus;
+    connect(m_pwmApply, &QPushButton::clicked, this, [this] {
+        if (m_ready && !m_stopping && !m_loopbackRunning)
+            send({{"op", "pwm_test_set"}, {"axis", m_loopbackChannel->currentIndex()}, {"percent", m_pwmPercent->value()}});
+    });
+    connect(m_pwmStop, &QPushButton::clicked, this, [this] {
+        if (m_ready) send({{"op", "pwm_test_stop"}});
+    });
+    m_loopbackOn = ui.loopbackOn;
+    m_loopbackOff = ui.loopbackOff;
+    m_loopbackStatus = ui.loopbackStatus;
+    m_loopbackDetails = ui.loopbackDetails;
+    connect(m_loopbackButton, &QPushButton::clicked, this, [this] {
+        if (!m_ready || m_stopping) return;
+        if (m_loopbackRunning) {
+            send({{"op", "loopback_stop"}});
+            m_loopbackStatus->setText("Cancelando; aguardando confirmação da saída desligada…");
+        } else {
+            m_loopbackOn->setText("—");
+            m_loopbackOff->setText("—");
+            m_loopbackDetails->setText("Aguardando retorno real da entrada A em modo TTL.");
+            m_loopbackStatus->setText("Iniciando loopback…");
+            send({{"op", "loopback_start"}, {"axis", m_loopbackChannel->currentIndex()},
+                  {"mode", m_loopbackMode->currentIndex() == 1 ? "analog" : "digital"}});
+        }
+        m_loopbackButton->setEnabled(false);
+    });
+    connect(ui.loopbackHelp, &QPushButton::clicked, this, [this] {
+        QDialog dialog(this);
+        dialog.setWindowTitle("Loopback — ligação e medição de latência");
+        dialog.resize(820, 650);
+        auto *layout = new QVBoxLayout(&dialog);
+        auto *text = new QTextBrowser(&dialog);
+        QFile help(QCoreApplication::applicationDirPath() + "/TESTE_LOOPBACK.md");
+        if (help.open(QIODevice::ReadOnly)) text->setMarkdown(QString::fromUtf8(help.readAll()));
+        else text->setPlainText("Instruções não encontradas. Confira TESTE_LOOPBACK.md na pasta do projeto antes de ligar o fio.");
+        layout->addWidget(text);
+        auto *buttons = new QDialogButtonBox(QDialogButtonBox::Close, &dialog);
+        connect(buttons, &QDialogButtonBox::rejected, &dialog, &QDialog::reject);
+        layout->addWidget(buttons);
+        dialog.exec();
+    });
+    m_plotClock.start();
+    connect(ui.tabs, &QTabWidget::currentChanged, ui.motorTools, [tools = ui.motorTools](int index) {
+        tools->setCurrentIndex(std::clamp(index, 0, 3));
+        tools->setEnabled(index < 4);
+    });
     m_diagState = ui.diagState;
     m_diagIdentity = ui.diagIdentity;
     m_diagTiming = ui.diagTiming;
@@ -44,6 +110,7 @@ void MainWindow::setupInterface()
     m_panels[0].acceleration = ui.acceleration0;
     m_panels[0].accelerationControl = ui.accelerationControl0;
     m_panels[0].outputTest = ui.outputTest0;
+    m_panels[0].plot = ui.plot0;
     m_panels[0].enable = ui.enable0;
     m_panels[0].move = ui.move0;
     m_panels[0].zero = ui.zero0;
@@ -69,6 +136,7 @@ void MainWindow::setupInterface()
     m_panels[1].acceleration = ui.acceleration1;
     m_panels[1].accelerationControl = ui.accelerationControl1;
     m_panels[1].outputTest = ui.outputTest1;
+    m_panels[1].plot = ui.plot1;
     m_panels[1].enable = ui.enable1;
     m_panels[1].move = ui.move1;
     m_panels[1].zero = ui.zero1;
@@ -94,6 +162,7 @@ void MainWindow::setupInterface()
     m_panels[2].acceleration = ui.acceleration2;
     m_panels[2].accelerationControl = ui.accelerationControl2;
     m_panels[2].outputTest = ui.outputTest2;
+    m_panels[2].plot = ui.plot2;
     m_panels[2].enable = ui.enable2;
     m_panels[2].move = ui.move2;
     m_panels[2].zero = ui.zero2;
@@ -119,6 +188,7 @@ void MainWindow::setupInterface()
     m_panels[3].acceleration = ui.acceleration3;
     m_panels[3].accelerationControl = ui.accelerationControl3;
     m_panels[3].outputTest = ui.outputTest3;
+    m_panels[3].plot = ui.plot3;
     m_panels[3].enable = ui.enable3;
     m_panels[3].move = ui.move3;
     m_panels[3].zero = ui.zero3;
@@ -188,7 +258,7 @@ void MainWindow::setupInterface()
             for (int column = 0; column < 5; ++column) grid->setColumnStretch(column, 1);
         connect(p.acceleration, qOverload<double>(&QDoubleSpinBox::valueChanged), this,
                 [this, index](double value) { applyAcceleration(index, value); });
-        connect(p.outputTest, &QCheckBox::toggled, this, [this, index](bool checked) {
+        connect(p.outputTest, &QPushButton::toggled, this, [this, index](bool checked) {
             for (auto *label : m_panels[index].testLabels) label->setText(checked ? "MODO TESTE" : "");
             if ((m_ready || m_diagnosticMode) && !m_stopping)
                 send({{"op", "output_test"}, {"axis", index}, {"value", checked}});
@@ -249,6 +319,7 @@ void MainWindow::setupInterface()
         table->verticalHeader()->hide();
     }
     if (QCoreApplication::arguments().contains("--diagnostics")) ui.tabs->setCurrentWidget(ui.hdtDiagnostics);
+    if (QCoreApplication::arguments().contains("--preview-tests")) ui.tabs->setCurrentWidget(ui.testsTab);
     connect(m_connect, &QPushButton::clicked, this, &MainWindow::startConnection);
     connect(m_disconnect, &QPushButton::clicked, this, &MainWindow::disconnectBoard);
     connect(m_load, &QPushButton::clicked, this, &MainWindow::loadConfig);

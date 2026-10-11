@@ -21,9 +21,8 @@ class AxisConfig:
     rpm_at_10v: float = 3000
     encoder_sign: int = 1
     output_sign: int = 1
-    max_rpm: float = 60
+    max_rpm: float = 3000
     acceleration_rpm_s: float = 120
-    voltage_limit: float = 1
     kp: float = 50
     ki: float = 0
     kd: float = 0
@@ -49,8 +48,8 @@ class AxisConfig:
             raise ValueError('Invalid encoder/analog scale')
         if not 0 < self.max_rpm <= self.rpm_at_10v or self.acceleration_rpm_s <= 0:
             raise ValueError('Invalid velocity/acceleration')
-        if not 0 < self.voltage_limit <= 10 or self.kp <= 0 or min(self.ki, self.kd, self.ff1) < 0:
-            raise ValueError('Invalid voltage/PID limits')
+        if self.kp <= 0 or min(self.ki, self.kd, self.ff1) < 0:
+            raise ValueError('Invalid PID limits')
         if self.following_error_rev <= 0 or self.tolerance_counts < 0.5 or self.min_rev >= self.max_rev:
             raise ValueError('Invalid following error/tolerance/travel')
         if not 0.05 <= self.no_response_timeout_s <= 10:
@@ -58,7 +57,7 @@ class AxisConfig:
 
     @property
     def vmax(self):
-        return min(self.max_rpm / 60, self.rpm_at_10v * self.voltage_limit / 600)
+        return self.max_rpm / 60
 
     @property
     def accel(self):
@@ -217,11 +216,24 @@ class Axis:
     def set_output_test(self, active):
         if type(active) is not bool:
             raise ValueError('Expected boolean output test mode')
+        if self.output_test == active:
+            return
+        # Preserve the simulated position and real encoder origin across toggles.
+        # Rebase the closed-loop trajectory on the real measurement to avoid
+        # commanding a catch-up to a simulated position when leaving test mode.
         if self.enabled:
-            raise ValueError('Retire ENABLE antes de trocar o modo de teste')
+            if self.mode == 'move':
+                self.mode = 'stopping'
+                self.trajectory = None
+                self.jog_velocity = 0.0
+            self.reference = self.virtual_position if active else self.position
+            self.reference_velocity = self.output_velocity if self.mode in ('jog', 'stopping') else 0.0
+            if not active:
+                self.jog_velocity = clamp(self.jog_velocity, self.c.vmax)
+            self.integral = 0.0
+            self.in_position, self.settled_time = False, 0.0
         self.output_test = active
-        self.virtual_position = self.position
-        self.error = 0.0
+        self.error = self.virtual_position - self.position if active else self.reference - self.position
         self._reset_response_monitor()
 
     def stop_motion(self):
@@ -244,6 +256,33 @@ class Axis:
             self.elapsed = 0.0
         self.c = updated
         self.encoder.config = self.c
+
+    def configure(self, values):
+        updated = AxisConfig(**values)
+        if not updated.min_rev <= self.position <= updated.max_rev:
+            raise ValueError('Posição atual fora dos novos limites')
+        geometry_changed = any(getattr(updated, name) != getattr(self.c, name)
+                               for name in ('counts_per_rev', 'encoder_sign', 'output_sign', 'rpm_at_10v'))
+        trajectory = None
+        if self.mode == 'move' and not geometry_changed:
+            trajectory = Trajectory(self.reference, self.trajectory.target, updated.vmax,
+                                    updated.accel, self.reference_velocity)
+            if trajectory.minimum < updated.min_rev or trajectory.maximum > updated.max_rev:
+                raise ValueError('Trajetória fora dos novos limites de posição')
+        if geometry_changed:
+            self.disable()
+            self.encoder.count *= updated.encoder_sign * self.c.encoder_sign
+            self.offset = self.encoder.count / updated.counts_per_rev - self.position
+            self.velocity *= (updated.encoder_sign * self.c.encoder_sign
+                              * self.c.counts_per_rev / updated.counts_per_rev)
+        self.c = self.encoder.config = updated
+        if not self.output_test:
+            self.jog_velocity = clamp(self.jog_velocity, updated.vmax)
+        self.integral = 0.0
+        self._reset_response_monitor()
+        if trajectory is not None:
+            self.trajectory, self.elapsed = trajectory, 0.0
+        return geometry_changed
 
     def zero(self):
         if self.enabled:
@@ -365,4 +404,5 @@ class Axis:
                     target=self.virtual_position if self.output_test else self.reference,
                     error=self.error, volts=self.volts, enabled=self.enabled,
                     in_position=self.in_position, mode=self.mode,
+                    virtual_position=self.virtual_position,
                     jog_rpm=self.jog_velocity * 60, output_test=self.output_test)

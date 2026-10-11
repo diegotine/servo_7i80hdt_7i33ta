@@ -1,0 +1,64 @@
+# Contexto de continuidade — 11/10/2026
+
+Resumo conferido nos arquivos locais do projeto; consultar README.md, PINOUT.md
+e TESTE_LOOPBACK.md para os detalhes técnicos.
+
+## Hardware e identificação dos conectores
+
+- Mesa 7i80HDT, IP inicial 192.168.1.121, firmware 7i80hdt_sv12d.bin.
+- O código, config.example.json, PINOUT.md e o registro de firmware usam P3
+  da HDT para a única 7i33TA, com canais HostMot2 8–11; P1/P2 são GPIO.
+- Operador confirmou em 11/10/2026: a placa está no **conector P3 da HDT**.
+  A indicação anterior “TB3” se referia a P3, não a outro borne.
+- O manual local da 7i33TA identifica seus bornes de sinais como TB1 e TB2,
+  e o conector do cabo de 50 vias como J1. A ligação de loopback documentada
+  se refere a esses bornes, não ao flat da HDT.
+- Drive T3D em modo velocidade, comando ±10 V; escala inicial 3000 RPM
+  a 10 V e encoder inicial 10000 contagens/volta, sujeitos à conferência real.
+
+## Aplicativo e estado local
+
+- Interface C++20/Qt6 Widgets em app/; arquivos .ui editáveis no Qt Designer.
+- Driver Ethernet LBP16 próprio em driver/mesa7i80hdt.py, sem LinuxCNC/HAL.
+- Controlador de trajetória/PID em driver/servo.py; backend.py é o único
+  proprietário da comunicação da sessão. Ciclo nominal 5 ms, prazo 20 ms,
+  watchdog 100 ms; sem garantia de tempo real rígido ou infraestrutura RTAPI.
+- Versão local 0.2.0 em desenvolvimento, conforme CMakeLists.txt e CHANGELOG.md.
+  Há alterações locais ainda não publicadas; não confundir com release público.
+- Recursos locais: ajustes com placa conectada, limite padrão 3000 RPM,
+  saída ±10 V, JOG com retenção, STOP mantendo ENABLE, modo teste com
+  posição virtual e encoder real, gráfico de comando/feedback e diagnóstico.
+- Aba TESTES implementa loopback digital ENA → A, 100 ciclos, médias ON/OFF,
+  dispersão e exportação de amostras JSON. Validação física está pendente.
+- Loopback analógico 0/+4 V implementado; validação física pendente. Operador
+  pretende ligação direta. Documentação distingue o comando limitado da
+  proteção elétrica: entrada TTL não é especificada para a faixa ±10 V.
+
+## Próximos passos acordados
+
+Medição manual de saída informada pelo operador: 0% = −0,0022 V; 25% = 2,5330 V;
+50% = 5,0671 V; 75% = 7,563 V; 100% = 10,064 V. Registro em
+medicoes/2026-10-11-saida-analogica.md. Offset observado em zero: −2,2 mV.
+Isso confirma a relação de magnitude positiva, sem validar ligação direta
+de DRV ao encoder ou implementar compensação de offset no aplicativo.
+Osciloscópio: operador informou 5,12 V e rise time 162,40 µs, trigger 2,5 V.
+Revisão do código: loopback analógico tem amplitude fixa +4 V (40%), independente
+do campo PWM/PDM manual. Exige A em zero estável por 50 ms antes do pulso;
+sem retorno conectado, A flutuante pode impedir a aplicação. Interface e ajuda
+agora explicitam essa espera. Amplitude reduzida de +5 V para +4 V por solicitação do operador.
+Botão Pulso 40% / 500 ms acrescentado para captura com osciloscópio sem
+retorno conectado: aplica +4 V, depois zero e ENABLE desligado. Não depende
+da confirmação inicial de A e não calcula latência.
+Operador confirmou funcionamento do botão de pulso; pico informado de 4,46 V
+para comando de 40%. Tensão de patamar e condições da ponta ainda pendentes.
+
+1. Loopback digital medido: ON 4,933 ms, OFF 4,940 ms, 100 ciclos; desvios
+   0,050/0,048 ms. Prioridade atual: teste manual de magnitude PWM/PDM para
+   medir relação com tensão, sem retorno conectado ao encoder. Depois medir
+   o loopback analógico.
+2. Depois subir para 0.2.1 e implementar otimizações orientadas pelas medições.
+3. Calibração de offset será executada pelo próprio drive, eventualmente
+   acionada por Modbus ou painel; não adicionar compensação no software.
+
+Não acionar hardware durante manutenção de documentação. Testes simulados
+não comprovam a latência, a ligação elétrica ou a sintonia do conjunto real.

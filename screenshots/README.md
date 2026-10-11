@@ -1,5 +1,17 @@
 # Capturas da interface
 
+- [Loopback digital — bancada, 11/10/2026](loopback-digital-bancada-2026-10-11.png):
+  captura fornecida pelo operador após 100 ciclos; médias ON 4,933 ms e OFF 4,940 ms.
+- [Loopback analógico — bancada, 11/10/2026](loopback-analogico-bancada-2026-10-11.png):
+  captura fornecida pelo operador após 100 ciclos em 0/+4 V (40%);
+  médias ON 4,971 ms e OFF 4,969 ms.
+
+- [Aba TESTES](testes-loopback.png): controles de loopback e teste manual PWM/PDM na versão 0.2.0 em
+  desenvolvimento, sem conexão à placa.
+
+- [Interface com gráfico](interface-grafico.png): layout em desenvolvimento com
+  curvas artificiais de demonstração, geradas sem conectar à placa.
+
 - [Interface da versão 0.1](interface-v0.1.png): aba do motor, campos de destino,
   RPM e aceleração, botões ENABLE/STOP e seleção do modo teste. Captura atual,
   sem conexão à placa; os traços indicam ausência de leituras.

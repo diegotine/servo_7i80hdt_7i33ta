@@ -6,8 +6,9 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTOUIC ON)
 find_package(Qt6 6.4 REQUIRED COMPONENTS Widgets)
 find_package(Python3 3.10 REQUIRED COMPONENTS Interpreter)
-qt_add_executable(t3d_analog app/main.cpp app/mainwindow.cpp app/mainwindow.h app/mainwindow.ui app/interface.cpp app/axissettingsdialog.ui)
+qt_add_executable(t3d_analog app/main.cpp app/mainwindow.cpp app/mainwindow.h app/mainwindow.ui app/interface.cpp app/axissettingsdialog.ui app/telemetryplot.cpp app/telemetryplot.h)
 target_link_libraries(t3d_analog PRIVATE Qt6::Widgets)
+target_include_directories(t3d_analog PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/app)
 target_compile_options(t3d_analog PRIVATE -Wall -Wextra -Wpedantic)
 target_compile_definitions(t3d_analog PRIVATE T3D_PYTHON="${Python3_EXECUTABLE}")
 target_compile_definitions(t3d_analog PRIVATE T3D_VERSION="${PROJECT_VERSION}")
@@ -17,8 +18,10 @@ add_custom_target(runtime_files ALL
         ${CMAKE_CURRENT_SOURCE_DIR}/driver/mesa7i80hdt.py
         ${CMAKE_CURRENT_SOURCE_DIR}/driver/servo.py
         ${CMAKE_CURRENT_SOURCE_DIR}/driver/backend.py
+        ${CMAKE_CURRENT_SOURCE_DIR}/driver/loopback.py
         $<TARGET_FILE_DIR:t3d_analog>/driver
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_CURRENT_SOURCE_DIR}/config.example.json $<TARGET_FILE_DIR:t3d_analog>/config.example.json)
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_CURRENT_SOURCE_DIR}/config.example.json $<TARGET_FILE_DIR:t3d_analog>/config.example.json
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_CURRENT_SOURCE_DIR}/TESTE_LOOPBACK.md $<TARGET_FILE_DIR:t3d_analog>/TESTE_LOOPBACK.md)
 add_dependencies(t3d_analog runtime_files)
 enable_testing()
 add_test(NAME driver_and_servo

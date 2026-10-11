@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='utf-8'?>
+<?xml version="1.0" encoding="utf-8"?>
 <ui version="4.0">
  <class>MainWindow</class>
  <widget class="QMainWindow" name="MainWindow">
@@ -103,7 +103,7 @@
         </property>
         <property name="maximumSize">
          <size>
-          <width>180</width>
+          <width>150</width>
           <height>16777215</height>
          </size>
         </property>
@@ -183,7 +183,7 @@
          <string />
         </property>
         <property name="text">
-         <string>Carregar configuração</string>
+         <string>Carregar config.</string>
         </property>
        </widget>
       </item>
@@ -199,8 +199,240 @@
          <string />
         </property>
         <property name="text">
-         <string>Salvar configuração</string>
+         <string>Salvar config.</string>
         </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QStackedWidget" name="motorTools">
+        <widget class="QWidget" name="motorToolsPage0">
+         <layout class="QHBoxLayout" name="motorToolsLayout0">
+          <property name="leftMargin">
+           <number>0</number>
+          </property>
+          <property name="rightMargin">
+           <number>0</number>
+          </property>
+          <property name="topMargin">
+           <number>0</number>
+          </property>
+          <property name="bottomMargin">
+           <number>0</number>
+          </property>
+          <item>
+           <widget class="QPushButton" name="settings0">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="windowTitle">
+             <string />
+            </property>
+            <property name="text">
+             <string>Ajustes do motor</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="outputTest0">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="windowTitle">
+             <string />
+            </property>
+            <property name="text">
+             <string>Modo teste</string>
+            </property>
+            <property name="checkable">
+             <bool>true</bool>
+            </property>
+            <property name="toolTip">
+             <string>Alternar teste de saída do motor selecionado. O encoder real continua sendo lido.</string>
+            </property>
+            <property name="styleSheet">
+             <string>QPushButton { background:#60451f; color:#fff0bd; border:2px solid #c99b3b; font-weight:600; } QPushButton:checked { background:#20583e; border-color:#2bd17d; color:white; }</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+        <widget class="QWidget" name="motorToolsPage1">
+         <layout class="QHBoxLayout" name="motorToolsLayout1">
+          <property name="leftMargin">
+           <number>0</number>
+          </property>
+          <property name="rightMargin">
+           <number>0</number>
+          </property>
+          <property name="topMargin">
+           <number>0</number>
+          </property>
+          <property name="bottomMargin">
+           <number>0</number>
+          </property>
+          <item>
+           <widget class="QPushButton" name="settings1">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="windowTitle">
+             <string />
+            </property>
+            <property name="text">
+             <string>Ajustes do motor</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="outputTest1">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="windowTitle">
+             <string />
+            </property>
+            <property name="text">
+             <string>Modo teste</string>
+            </property>
+            <property name="checkable">
+             <bool>true</bool>
+            </property>
+            <property name="toolTip">
+             <string>Alternar teste de saída do motor selecionado. O encoder real continua sendo lido.</string>
+            </property>
+            <property name="styleSheet">
+             <string>QPushButton { background:#60451f; color:#fff0bd; border:2px solid #c99b3b; font-weight:600; } QPushButton:checked { background:#20583e; border-color:#2bd17d; color:white; }</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+        <widget class="QWidget" name="motorToolsPage2">
+         <layout class="QHBoxLayout" name="motorToolsLayout2">
+          <property name="leftMargin">
+           <number>0</number>
+          </property>
+          <property name="rightMargin">
+           <number>0</number>
+          </property>
+          <property name="topMargin">
+           <number>0</number>
+          </property>
+          <property name="bottomMargin">
+           <number>0</number>
+          </property>
+          <item>
+           <widget class="QPushButton" name="settings2">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="windowTitle">
+             <string />
+            </property>
+            <property name="text">
+             <string>Ajustes do motor</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="outputTest2">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="windowTitle">
+             <string />
+            </property>
+            <property name="text">
+             <string>Modo teste</string>
+            </property>
+            <property name="checkable">
+             <bool>true</bool>
+            </property>
+            <property name="toolTip">
+             <string>Alternar teste de saída do motor selecionado. O encoder real continua sendo lido.</string>
+            </property>
+            <property name="styleSheet">
+             <string>QPushButton { background:#60451f; color:#fff0bd; border:2px solid #c99b3b; font-weight:600; } QPushButton:checked { background:#20583e; border-color:#2bd17d; color:white; }</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+        <widget class="QWidget" name="motorToolsPage3">
+         <layout class="QHBoxLayout" name="motorToolsLayout3">
+          <property name="leftMargin">
+           <number>0</number>
+          </property>
+          <property name="rightMargin">
+           <number>0</number>
+          </property>
+          <property name="topMargin">
+           <number>0</number>
+          </property>
+          <property name="bottomMargin">
+           <number>0</number>
+          </property>
+          <item>
+           <widget class="QPushButton" name="settings3">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="windowTitle">
+             <string />
+            </property>
+            <property name="text">
+             <string>Ajustes do motor</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="outputTest3">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="windowTitle">
+             <string />
+            </property>
+            <property name="text">
+             <string>Modo teste</string>
+            </property>
+            <property name="checkable">
+             <bool>true</bool>
+            </property>
+            <property name="toolTip">
+             <string>Alternar teste de saída do motor selecionado. O encoder real continua sendo lido.</string>
+            </property>
+            <property name="styleSheet">
+             <string>QPushButton { background:#60451f; color:#fff0bd; border:2px solid #c99b3b; font-weight:600; } QPushButton:checked { background:#20583e; border-color:#2bd17d; color:white; }</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
        </widget>
       </item>
       <item>
@@ -1349,32 +1581,9 @@
          </widget>
         </item>
         <item>
-         <widget class="QCheckBox" name="outputTest0">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="windowTitle">
-           <string />
-          </property>
-          <property name="styleSheet">
-           <string notr="true">
-            QCheckBox { color:#fff0d4; background:#483421; border:1px solid #d3a64e;
-                border-radius:5px; padding:10px; font-weight:600; }
-            QCheckBox::indicator { width:24px; height:24px; border:2px solid #fff0d4;
-                border-radius:4px; background:#211b16; }
-            QCheckBox::indicator:checked { background:#36c879; border:3px solid white; }
-            QCheckBox:checked { background:#21553c; color:white; border:2px solid #36c879; }
-            QCheckBox:disabled { color:#b8aa93; border-color:#827665; }
-        </string>
-          </property>
-          <property name="text">
-           <string>Teste de saída sem encoder • medir tensão com multímetro / osciloscópio</string>
-          </property>
-          <property name="checkable">
-           <bool>true</bool>
+         <widget class="TelemetryPlot" name="plot0">
+          <property name="toolTip">
+           <string>Posição comandada e posição real do encoder nos últimos 20 segundos.</string>
           </property>
          </widget>
         </item>
@@ -1395,22 +1604,6 @@
              <enum>Qt::Horizontal</enum>
             </property>
            </spacer>
-          </item>
-          <item>
-           <widget class="QPushButton" name="settings0">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="windowTitle">
-             <string />
-            </property>
-            <property name="text">
-             <string>Ajustes do motor</string>
-            </property>
-           </widget>
           </item>
          </layout>
         </item>
@@ -2549,32 +2742,9 @@
          </widget>
         </item>
         <item>
-         <widget class="QCheckBox" name="outputTest1">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="windowTitle">
-           <string />
-          </property>
-          <property name="styleSheet">
-           <string notr="true">
-            QCheckBox { color:#fff0d4; background:#483421; border:1px solid #d3a64e;
-                border-radius:5px; padding:10px; font-weight:600; }
-            QCheckBox::indicator { width:24px; height:24px; border:2px solid #fff0d4;
-                border-radius:4px; background:#211b16; }
-            QCheckBox::indicator:checked { background:#36c879; border:3px solid white; }
-            QCheckBox:checked { background:#21553c; color:white; border:2px solid #36c879; }
-            QCheckBox:disabled { color:#b8aa93; border-color:#827665; }
-        </string>
-          </property>
-          <property name="text">
-           <string>Teste de saída sem encoder • medir tensão com multímetro / osciloscópio</string>
-          </property>
-          <property name="checkable">
-           <bool>true</bool>
+         <widget class="TelemetryPlot" name="plot1">
+          <property name="toolTip">
+           <string>Posição comandada e posição real do encoder nos últimos 20 segundos.</string>
           </property>
          </widget>
         </item>
@@ -2595,22 +2765,6 @@
              <enum>Qt::Horizontal</enum>
             </property>
            </spacer>
-          </item>
-          <item>
-           <widget class="QPushButton" name="settings1">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="windowTitle">
-             <string />
-            </property>
-            <property name="text">
-             <string>Ajustes do motor</string>
-            </property>
-           </widget>
           </item>
          </layout>
         </item>
@@ -3749,32 +3903,9 @@
          </widget>
         </item>
         <item>
-         <widget class="QCheckBox" name="outputTest2">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="windowTitle">
-           <string />
-          </property>
-          <property name="styleSheet">
-           <string notr="true">
-            QCheckBox { color:#fff0d4; background:#483421; border:1px solid #d3a64e;
-                border-radius:5px; padding:10px; font-weight:600; }
-            QCheckBox::indicator { width:24px; height:24px; border:2px solid #fff0d4;
-                border-radius:4px; background:#211b16; }
-            QCheckBox::indicator:checked { background:#36c879; border:3px solid white; }
-            QCheckBox:checked { background:#21553c; color:white; border:2px solid #36c879; }
-            QCheckBox:disabled { color:#b8aa93; border-color:#827665; }
-        </string>
-          </property>
-          <property name="text">
-           <string>Teste de saída sem encoder • medir tensão com multímetro / osciloscópio</string>
-          </property>
-          <property name="checkable">
-           <bool>true</bool>
+         <widget class="TelemetryPlot" name="plot2">
+          <property name="toolTip">
+           <string>Posição comandada e posição real do encoder nos últimos 20 segundos.</string>
           </property>
          </widget>
         </item>
@@ -3795,22 +3926,6 @@
              <enum>Qt::Horizontal</enum>
             </property>
            </spacer>
-          </item>
-          <item>
-           <widget class="QPushButton" name="settings2">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="windowTitle">
-             <string />
-            </property>
-            <property name="text">
-             <string>Ajustes do motor</string>
-            </property>
-           </widget>
           </item>
          </layout>
         </item>
@@ -4949,32 +5064,9 @@
          </widget>
         </item>
         <item>
-         <widget class="QCheckBox" name="outputTest3">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="windowTitle">
-           <string />
-          </property>
-          <property name="styleSheet">
-           <string notr="true">
-            QCheckBox { color:#fff0d4; background:#483421; border:1px solid #d3a64e;
-                border-radius:5px; padding:10px; font-weight:600; }
-            QCheckBox::indicator { width:24px; height:24px; border:2px solid #fff0d4;
-                border-radius:4px; background:#211b16; }
-            QCheckBox::indicator:checked { background:#36c879; border:3px solid white; }
-            QCheckBox:checked { background:#21553c; color:white; border:2px solid #36c879; }
-            QCheckBox:disabled { color:#b8aa93; border-color:#827665; }
-        </string>
-          </property>
-          <property name="text">
-           <string>Teste de saída sem encoder • medir tensão com multímetro / osciloscópio</string>
-          </property>
-          <property name="checkable">
-           <bool>true</bool>
+         <widget class="TelemetryPlot" name="plot3">
+          <property name="toolTip">
+           <string>Posição comandada e posição real do encoder nos últimos 20 segundos.</string>
           </property>
          </widget>
         </item>
@@ -4995,22 +5087,6 @@
              <enum>Qt::Horizontal</enum>
             </property>
            </spacer>
-          </item>
-          <item>
-           <widget class="QPushButton" name="settings3">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="windowTitle">
-             <string />
-            </property>
-            <property name="text">
-             <string>Ajustes do motor</string>
-            </property>
-           </widget>
           </item>
          </layout>
         </item>
@@ -6529,6 +6605,195 @@ Tensão exibida é o comando enviado; a HDT não mede a tensão analógica nem a
         <string>HDT • Diagnóstico</string>
        </attribute>
       </widget>
+      <widget class="QWidget" name="testsTab">
+       <attribute name="title">
+        <string>TESTES</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="testsLayout">
+        <item>
+         <layout class="QHBoxLayout" name="loopbackRow">
+          <item>
+           <widget class="QPushButton" name="loopbackButton">
+            <property name="text">
+             <string>Loopback</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="loopbackOnLabel">
+            <property name="text">
+             <string>Tempo ON</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLineEdit" name="loopbackOn">
+            <property name="text">
+             <string>—</string>
+            </property>
+            <property name="readOnly">
+             <bool>true</bool>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+            <property name="toolTip">
+             <string>Média de 100 bordas; tempo observado pelo computador.</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="loopbackOnUnit">
+            <property name="text">
+             <string>ms</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="loopbackOffLabel">
+            <property name="text">
+             <string>Tempo OFF</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLineEdit" name="loopbackOff">
+            <property name="text">
+             <string>—</string>
+            </property>
+            <property name="readOnly">
+             <bool>true</bool>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+            <property name="toolTip">
+             <string>Média de 100 bordas; tempo observado pelo computador.</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="loopbackOffUnit">
+            <property name="text">
+             <string>ms</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="loopbackHelp">
+            <property name="text">
+             <string>?</string>
+            </property>
+            <property name="toolTip">
+             <string>Ligação e funcionamento do teste de loopback</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="pwmManualRow">
+          <item><widget class="QLabel" name="pwmLabel"><property name="text"><string>Teste manual PWM/PDM:</string></property></widget></item>
+          <item><widget class="QDoubleSpinBox" name="pwmPercent"><property name="suffix"><string> %</string></property><property name="decimals"><number>1</number></property><property name="maximum"><double>100.000000000000000</double></property><property name="keyboardTracking"><bool>false</bool></property></widget></item>
+          <item><widget class="QPushButton" name="pwmApply"><property name="text"><string>Aplicar</string></property></widget></item>
+          <item><widget class="QPushButton" name="pwmPulse"><property name="text"><string>Pulso 40% / 500 ms</string></property><property name="toolTip"><string>Pulso automático de +4 V nominal para osciloscópio; não depende da entrada A</string></property></widget></item>
+          <item><widget class="QPushButton" name="pwmStop"><property name="text"><string>Zerar / desligar</string></property></widget></item>
+          <item><widget class="QLabel" name="pwmStatus"><property name="text"><string>Desligado • medir DRV com multímetro, sem fio no encoder</string></property><property name="wordWrap"><bool>true</bool></property></widget></item>
+         </layout>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="loopbackChannelRow">
+          <item>
+           <widget class="QComboBox" name="loopbackMode">
+            <item><property name="text"><string>Digital • ENABLE</string></property></item>
+            <item><property name="text"><string>Analógico • 0 / +4 V (40%)</string></property></item>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="loopbackChannelLabel">
+            <property name="text">
+             <string>Canal de saída e retorno:</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QComboBox" name="loopbackChannel">
+            <item>
+             <property name="text">
+              <string>Motor 1 • entrada A0</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Motor 2 • entrada A1</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Motor 3 • entrada A2</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Motor 4 • entrada A3</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="loopbackCountLabel">
+            <property name="text">
+             <string>100 ciclos • pausa de 50 ms após cada retorno</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <widget class="QLabel" name="loopbackStatus">
+          <property name="text">
+           <string>Conecte a placa e desabilite os quatro motores para iniciar.</string>
+          </property>
+          <property name="wordWrap">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="loopbackNotice">
+          <property name="text">
+           <string>Bancada: drive e encoder externo desconectados do canal; jumper do encoder em TTL. Consulte ? antes de ligar o fio.</string>
+          </property>
+          <property name="wordWrap">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="loopbackDetails">
+          <property name="text">
+           <string>Mede saída → entrada → computador. Inclui rede e espera pelo ciclo de leitura de 5 ms. Não altera o PID automaticamente.</string>
+          </property>
+          <property name="wordWrap">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="testsSpacer">
+          <property name="orientation">
+           <enum>Qt::Vertical</enum>
+          </property>
+          <property name="sizeHint">
+           <size>
+            <width>20</width>
+            <height>300</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+       </layout>
+      </widget>
      </widget>
     </item>
     <item>
@@ -6557,4 +6822,11 @@ Tensão exibida é o comando enviado; a HDT não mede a tensão analógica nem a
   </widget>
  </widget>
  <connections />
+ <customwidgets>
+  <customwidget>
+   <class>TelemetryPlot</class>
+   <extends>QWidget</extends>
+   <header>telemetryplot.h</header>
+  </customwidget>
+ </customwidgets>
 </ui>

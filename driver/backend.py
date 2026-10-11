@@ -7,15 +7,18 @@ import argparse
 import fcntl
 import hashlib
 import json
+import math
 import os
 import queue
 import sys
 import tempfile
 import threading
 import time
+from dataclasses import asdict
 
 from mesa7i80hdt import Mesa7i80hdt, MesaError
 from servo import Axis, AxisConfig, ServoFault
+from loopback import Loopback
 
 
 def emit(kind, **data):
@@ -29,6 +32,9 @@ def load_config(path):
         raise ValueError('Unsupported configuration or connector')
     if len(config.get('axes', [])) != 4:
         raise ValueError('Exactly four local axes are required')
+    # Ignore the removed voltage cap in configurations saved by version 0.1.
+    for value in config['axes']:
+        value.pop('voltage_limit', None)
     axes = [Axis(AxisConfig(**value)) for value in config['axes']]
     # Runtime timing is deliberately fixed; do not silently relax fault limits.
     return config, axes
@@ -48,11 +54,59 @@ class Session:
         self.max_cycle_ms = 0.0
         self.running = True
         self.generic_outputs = {'P1': 0, 'P2': 0}
+        self.loopback = None
+        self.loopback_progress = None
+        self.pwm_test = None
+        self.pwm_report = None
+        self.pwm_pulse_until = None
 
     def dispatch(self, message):
         operation = message.get('op')
         if operation == 'heartbeat':
             return
+        if operation == 'pwm_test_stop':
+            self.pwm_test = None
+            self.pwm_pulse_until = None
+            return
+        if operation in ('pwm_test_set', 'pwm_test_pulse'):
+            if self.loopback is not None and self.loopback.active:
+                raise ValueError('Cancele o loopback antes do teste PWM/PDM')
+            index = message.get('axis')
+            percent = 40.0 if operation == 'pwm_test_pulse' else message.get('percent')
+            if type(index) is not int or not 0 <= index < 4:
+                raise ValueError('Canal inválido')
+            if type(percent) not in (int, float) or not math.isfinite(percent) or not 0 <= percent <= 100:
+                raise ValueError('Magnitude deve estar entre 0 e 100%')
+            if any(axis.enabled for axis in self.axes):
+                raise ValueError('Desabilite os quatro motores antes do teste PWM/PDM')
+            if self.pwm_test is not None and self.pwm_test[0] != index:
+                raise ValueError('Desligue o teste antes de trocar o canal')
+            self.pwm_test = (index, percent)
+            self.pwm_pulse_until = self.clock() + .5 if operation == "pwm_test_pulse" else None
+            return
+        if self.pwm_test is not None:
+            if operation in ('quit', 'stop_all', 'disable', 'stop'):
+                self.pwm_test = None
+            else:
+                raise ValueError('Desligue o teste PWM/PDM antes de outros comandos')
+        if operation == 'loopback_start':
+            if self.loopback is not None and self.loopback.active:
+                raise ValueError('Loopback já está em andamento')
+            if any(axis.enabled for axis in self.axes):
+                raise ValueError('Desabilite os quatro motores antes do loopback')
+            self.loopback = Loopback(message.get('axis'), time.monotonic_ns(), message.get('mode', 'digital'))
+            self.loopback_progress = None
+            self.output('loopback', **self.loopback.report())
+            return
+        if operation == 'loopback_stop':
+            if self.loopback is not None and self.loopback.active:
+                self.loopback.cancel()
+            return
+        if self.loopback is not None and self.loopback.active:
+            if operation in ('quit', 'stop_all', 'disable', 'stop'):
+                self.loopback.cancel()
+            else:
+                raise ValueError('Aguarde ou cancele o loopback antes de alterar os comandos')
         if operation == 'io_output':
             connector, channel, value = message.get('connector'), message.get('channel'), message.get('value')
             if (connector not in self.generic_outputs or type(channel) is not int
@@ -84,6 +138,9 @@ class Session:
         elif operation == 'acceleration':
             axis.set_acceleration(message['value'])
             self.output('axis_config', axis=index, acceleration_rpm_s=axis.c.acceleration_rpm_s)
+        elif operation == 'configure':
+            disabled = axis.configure(message['config'])
+            self.output('axis_config', axis=index, config=asdict(axis.c), motor_disabled=disabled)
         elif operation == 'disable':
             axis.disable()
         elif operation == 'zero':
@@ -108,6 +165,9 @@ class Session:
         if start - self.last_client > self.client_timeout:
             raise ServoFault('Interface heartbeat missing; session latched off')
         counts = self.board.read_encoders()
+        loopback = self.loopback
+        if loopback is not None and loopback.active:
+            loopback.observe(self.board.encoder_a_levels[loopback.axis], self.board.last_feedback_received_ns)
         for axis, raw in zip(self.axes, counts):
             axis.feedback(raw, dt)
         for _ in range(32):
@@ -132,9 +192,42 @@ class Session:
                 raise ServoFault(f'Motor {index}: {exc}') from exc
         if self.clock() - start >= self.deadline:
             raise ServoFault('Feedback/control exceeded deadline; outputs not refreshed')
-        self.board.write_servo(volts, [axis.enabled for axis in self.axes], generic_outputs=self.generic_outputs)
+        enabled = [axis.enabled for axis in self.axes]
+        loopback = self.loopback
+        if loopback is not None and (loopback.active or self.loopback_progress is not None):
+            volts = [0.0] * 4
+            enabled = [False] * 4
+            if loopback.mode == "analog":
+                # Keep the analog gate enabled at zero throughout OFF detection.
+                enabled[loopback.axis] = loopback.active and loopback.phase != "cleanup"
+                volts[loopback.axis] = loopback.analog_high_volts if enabled[loopback.axis] and loopback.output else 0.0
+            else:
+                enabled[loopback.axis] = loopback.active and loopback.output
+        if self.pwm_pulse_until is not None and self.clock() >= self.pwm_pulse_until:
+            self.pwm_test = None
+            self.pwm_pulse_until = None
+        if self.pwm_test is not None:
+            index, percent = self.pwm_test
+            volts, enabled = [0.0] * 4, [False] * 4
+            volts[index], enabled[index] = percent / 10.0, True
+        self.board.write_servo(volts, enabled, generic_outputs=self.generic_outputs)
+        if loopback is not None:
+            loopback.written(self.board.last_output_sent_ns)
         if self.clock() - start >= self.deadline:
             raise ServoFault('Output acknowledgement exceeded deadline')
+        if self.pwm_test != self.pwm_report:
+            self.output('pwm_test', active=self.pwm_test is not None,
+                        axis=self.pwm_test[0] if self.pwm_test else None,
+                        percent=self.pwm_test[1] if self.pwm_test else 0,
+                        nominal_volts=self.pwm_test[1] / 10.0 if self.pwm_test else 0)
+            self.pwm_report = self.pwm_test
+        if loopback is not None:
+            progress = (loopback.active, loopback.phase, len(loopback.off_ns), loopback.error)
+            if progress != self.loopback_progress:
+                self.output('loopback', **loopback.report())
+                self.loopback_progress = progress if loopback.active else None
+                if not loopback.active:
+                    self.loopback = None
         self.previous = start
         self.cycles += 1
         self.max_cycle_ms = max(self.max_cycle_ms, dt * 1000)
@@ -180,6 +273,14 @@ class Session:
         self.output('rearmed', axis=index)
 
     def diagnose_fault(self, fault):
+        self.pwm_test = self.pwm_report = None
+        self.pwm_pulse_until = None
+        self.output("pwm_test", active=False, percent=0, nominal_volts=0)
+        if self.loopback is not None:
+            self.loopback.cancel('Teste interrompido por falha: ' + str(fault))
+            self.loopback.active = False
+            self.output('loopback', **self.loopback.report())
+            self.loopback = self.loopback_progress = None
         for axis in self.axes:
             axis.disable()
         self.generic_outputs = {'P1': 0, 'P2': 0}
@@ -204,7 +305,7 @@ class Session:
                 if self.clock() - received > self.client_timeout:
                     continue
                 self.last_client = received
-                if operation in ('enable', 'output_test', 'acceleration'):
+                if operation in ('enable', 'output_test', 'acceleration', 'configure'):
                     try:
                         index = message.get('axis')
                         if type(index) is not int or not 0 <= index < 4:

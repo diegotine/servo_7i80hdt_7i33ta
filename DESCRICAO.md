@@ -1,4 +1,4 @@
-# T3D Analog Velocity — versão 0.1
+# T3D Analog Velocity — versão 0.2.0 em desenvolvimento
 
 > **DRIVER ETHERNET PRÓPRIO — USE A PLACA MESA SEM LINUXCNC OU HAL.**
 >
@@ -21,6 +21,10 @@ os encoders e envia referências analógicas de velocidade ao drive.
   ou desabilitar cada motor.
 - Modo de teste de saída com posição virtual calculada e leitura real do
   encoder preservada, permitindo observar movimento manual e erro.
+- Gráfico por motor com posição comandada e feedback real do encoder.
+- Ajustes do motor com a placa conectada e troca de modo teste com ENABLE ligado.
+- Aba TESTES com loopback digital ENA → encoder A, 100 ciclos e médias de ON/OFF.
+- Faixa analógica fixa em ±10 V e limite de velocidade padrão de 3000 RPM.
 - Abas de entradas e saídas digitais das portas P1 e P2.
 - Aba de diagnóstico da HDT, com identificação, contadores, estados e histórico
   de falhas; após uma falha, mantém a comunicação disponível para diagnóstico
@@ -38,9 +42,9 @@ Qt 6.4 ou superior e Python 3.10 ou superior. Execute `./iniciar.sh` na pasta
 do projeto. As instruções detalhadas estão em [README.md](README.md), e a
 pinagem em [PINOUT.md](PINOUT.md).
 
-## Estado da versão 0.1
+## Estado da versão 0.2.0
 
-Primeira versão para testes de bancada. As funções principais e a organização
+Evolução da versão 0.1 para testes de bancada. As funções principais e a organização
 da interface foram implementadas; permanecem o polimento visual, a validação
 prática com o conjunto completo e eventuais funções adicionais.
 

@@ -1,4 +1,5 @@
 #include "mainwindow.h"
+#include "telemetryplot.h"
 #include "ui_axissettingsdialog.h"
 #include <QApplication>
 #include <QCloseEvent>
@@ -123,6 +124,13 @@ void MainWindow::showIdentification(const QJsonObject &message)
 
 void MainWindow::refreshConfig()
 {
+    auto normalizedAxes = m_config.value("axes").toArray();
+    for (int i = 0; i < normalizedAxes.size(); ++i) {
+        auto axis = normalizedAxes[i].toObject();
+        axis.remove("voltage_limit");
+        normalizedAxes[i] = axis;
+    }
+    m_config["axes"] = normalizedAxes;
     if (m_config.value("connector").toString() != "P3") {
         auto axes = m_config.value("axes").toArray();
         for (int i = 0; i < axes.size(); ++i) {
@@ -174,7 +182,7 @@ void MainWindow::startConnection()
     m_connect->setEnabled(false);
     m_disconnect->setEnabled(true);
     m_load->setEnabled(false);
-    m_save->setEnabled(false);
+    m_save->setEnabled(true);
     m_ip->setEnabled(false);
     m_connector->setEnabled(false);
     for (auto &p : m_panels) {
@@ -227,7 +235,7 @@ void MainWindow::receive()
             const double requested = message.value("requested_rpm").toDouble();
             const double effective = message.value("effective_rpm").toDouble();
             const QString result = std::abs(requested - effective) > 0.01
-                ? QString("JOG: pedido %1 RPM; limitado a %2 RPM pelos ajustes de velocidade/tensão.")
+                ? QString("JOG: pedido %1 RPM; limitado a %2 RPM pelo limite de RPM.")
                     .arg(requested, 0, 'f', 1).arg(effective, 0, 'f', 1)
                 : QString("JOG atualizado para %1 RPM, seguindo Max. Acell.").arg(effective, 0, 'f', 1);
             showMessage(QString("Motor %1 • ").arg(message.value("axis").toInt() + 1) + result);
@@ -241,12 +249,33 @@ void MainWindow::receive()
             if (index >= 0 && index < 4) {
                 auto axes = m_config.value("axes").toArray();
                 auto config = axes[index].toObject();
-                config["acceleration_rpm_s"] = message.value("acceleration_rpm_s");
+                const bool fullConfig = message.value("config").isObject();
+                if (fullConfig) config = message.value("config").toObject();
+                else config["acceleration_rpm_s"] = message.value("acceleration_rpm_s");
                 axes[index] = config;
                 m_config["axes"] = axes;
-                logDiagnostic(QString("Motor %1 • aceleração aplicada: %2 RPM/s").arg(index + 1)
+                if (fullConfig) {
+                    refreshConfig();
+                    const QString text = message.value("motor_disabled").toBool()
+                        ? "Ajustes aplicados. Escala/sentido alterados: motor desabilitado; use ENABLE para retomar."
+                        : "Ajustes aplicados ao motor conectado.";
+                    showMessage(text);
+                    logDiagnostic(QString("Motor %1 • ").arg(index + 1) + text);
+                }
+                else logDiagnostic(QString("Motor %1 • aceleração aplicada: %2 RPM/s").arg(index + 1)
                               .arg(config.value("acceleration_rpm_s").toDouble()));
             }
+        } else if (type == "pwm_test") {
+            m_pwmRunning = message.value("active").toBool();
+            m_pwmStatus->setText(m_pwmRunning
+                ? QString("Motor %1 • %2% • +%3 V nominal (sem medição)")
+                    .arg(message.value("axis").toInt() + 1)
+                    .arg(message.value("percent").toDouble(), 0, 'f', 1)
+                    .arg(message.value("nominal_volts").toDouble(), 0, 'f', 2)
+                : "Desligado • saída zerada; ENABLE retirado");
+            updateLoopbackControls();
+        } else if (type == "loopback") {
+            updateLoopback(message);
         } else if (type == "status") {
             updateStatus(message);
         } else if (type == "diagnostic_status") {
@@ -260,9 +289,13 @@ void MainWindow::receive()
             logDiagnostic("Leitura da HDT: " + message.value("message").toString());
         } else if (type == "fault" || type == "rejected") {
             showMessage(message.value("message").toString(), true);
-            if (type == "rejected") refreshConfig();
+            if (type == "rejected") {
+                refreshConfig();
+                updateLoopbackControls();
+            }
             if (type == "fault") {
                 m_ready = false;
+                updateLoopbackControls();
                 m_statusAge.invalidate();
                 m_diagState->setText("Falha • " + message.value("message").toString());
                 m_diagWatchdog->setText("Watchdog: sem confirmação atual após a falha");
@@ -274,6 +307,7 @@ void MainWindow::receive()
                     if (!message.value("shutdown_error").isNull())
                         logDiagnostic("Desligamento sem confirmação: " + message.value("shutdown_error").toString());
                     for (auto &panel : m_panels) {
+                        panel.plot->breakTrace();
                         panel.enabled = false;
                         for (auto *button : {panel.enable, panel.move, panel.zero, panel.cw, panel.ccw, panel.stop})
                             button->setEnabled(false);
@@ -286,6 +320,7 @@ void MainWindow::receive()
                         panel.accelerationControl->setEnabled(true);
                         panel.outputTest->setEnabled(true);
                         panel.enable->setEnabled(true);
+                        panel.settings->setEnabled(true);
                         panel.enable->setToolTip("Rearmar ENABLE após a falha");
                         for (auto *label : {panel.position, panel.rpm, panel.error, panel.volts, panel.reference}) label->setText("—");
                     }
@@ -367,7 +402,7 @@ void MainWindow::updateStatus(const QJsonObject &message)
             output->setText(QString("OUT%1 • pino %2\n%3").arg(channel + 1).arg(channel * 2 + 25)
                             .arg(!valid ? "—" : on ? "Ligada" : "Desligada"));
             output->setStyleSheet(on ? "background:#276445; color:white;" : "");
-            output->setEnabled(valid && m_ready && !m_stopping);
+            output->setEnabled(valid && m_ready && !m_stopping && !m_loopbackRunning && !m_pwmRunning);
         }
     }
     const QJsonArray axes = message.value("axes").toArray();
@@ -384,12 +419,15 @@ void MainWindow::updateStatus(const QJsonObject &message)
         p.error->setText(QString::number(a.value("error").toDouble() * c.value("counts_per_rev").toDouble(), 'f', 1));
         p.volts->setText(QString::number(a.value("volts").toDouble(), 'f', 3));
         p.reference->setText(QString::number(a.value("target").toDouble(), 'f', 5));
+        p.plot->append(m_plotClock.elapsed() / 1000.0, a.value("target").toDouble(),
+                       a.value("encoder_position").toDouble());
         p.enable->setStyleSheet(p.enabled ? "background:#276445; color:white; font-weight:700;"
                                            : "background:#842f26; color:white; font-weight:700;");
         p.enable->setToolTip(p.enabled ? "Retirar ENABLE" : "Ativar ENABLE e manter posição");
-        const bool accelerationEditable = m_ready && !m_stopping;
+        const bool accelerationEditable = m_ready && !m_stopping && !m_loopbackRunning && !m_pwmRunning;
         p.accelerationControl->setEnabled(accelerationEditable);
-        const bool live = m_ready && !m_stopping;
+        p.settings->setEnabled(accelerationEditable);
+        const bool live = m_ready && !m_stopping && !m_loopbackRunning && !m_pwmRunning;
         p.enable->setEnabled(live);
         const bool outputTest = a.value("output_test").toBool();
         for (auto *label : p.testLabels) label->setText(outputTest ? "MODO TESTE" : "");
@@ -399,7 +437,7 @@ void MainWindow::updateStatus(const QJsonObject &message)
             const QSignalBlocker blocker(p.outputTest);
             p.outputTest->setChecked(outputTest);
         }
-        p.outputTest->setEnabled(live && !p.enabled);
+        p.outputTest->setEnabled(live);
         p.move->setEnabled(live && p.enabled && hold && settled);
         const bool jog = a.value("mode").toString() == "jog";
         for (auto *button : {p.cw, p.ccw}) {
@@ -413,6 +451,7 @@ void MainWindow::updateStatus(const QJsonObject &message)
         p.zero->setEnabled(live && !p.enabled);
         p.stop->setEnabled(live);
     }
+    updateLoopbackControls();
 }
 
 void MainWindow::disconnectBoard()
@@ -431,6 +470,11 @@ void MainWindow::disconnectBoard()
 
 void MainWindow::setDisconnected()
 {
+    if (m_loopbackRunning)
+        m_loopbackStatus->setText("Loopback interrompido pela desconexão; resultado incompleto.");
+    m_loopbackRunning = false;
+    m_pwmRunning = false;
+    m_pwmStatus->setText("Desconectado • sem confirmação atual da saída");
     for (int port = 0; port < 2; ++port) {
         for (int channel = 0; channel < 12; ++channel) {
             m_inputs[port][channel]->setText(QString("IN%1 • pino %2\n—").arg(channel + 1).arg(channel * 2 + 1));
@@ -443,6 +487,7 @@ void MainWindow::setDisconnected()
     }
     m_diagnosticMode = false;
     m_ready = m_stopping = false;
+    updateLoopbackControls();
     m_statusAge.invalidate();
     m_diagState->setText("Desconectado • sem leitura atual");
     m_diagTiming->setText("Ciclo: — | Maior ciclo: — | Ciclos concluídos: —");
@@ -459,6 +504,7 @@ void MainWindow::setDisconnected()
     m_ip->setEnabled(true);
     m_connector->setEnabled(true);
     for (auto &p : m_panels) {
+        p.plot->breakTrace();
         p.enabled = false;
         for (auto *label : p.testLabels) label->setText("");
         p.outputTest->setEnabled(true);
@@ -492,7 +538,7 @@ void MainWindow::applyAcceleration(int index, double value)
 
 void MainWindow::configureAxis(int index)
 {
-    if (m_backend.state() != QProcess::NotRunning) return;
+    if (m_stopping || (m_backend.state() != QProcess::NotRunning && !m_ready && !m_diagnosticMode)) return;
     auto axes = m_config.value("axes").toArray();
     if (axes.size() != 4) return;
     auto config = axes[index].toObject();
@@ -500,8 +546,8 @@ void MainWindow::configureAxis(int index)
     dialog.setWindowTitle(QString("Motor %1 — calibração e malha de posição").arg(index + 1));
     Ui::AxisSettingsDialog ui;
     ui.setupUi(&dialog);
-    const QStringList fields{"counts_per_rev", "rpm_at_10v", "max_rpm", "acceleration_rpm_s", "voltage_limit", "kp", "ki", "kd", "ff1", "following_error_rev", "tolerance_counts", "no_response_timeout_s", "min_rev", "max_rev"};
-    const QVector<QDoubleSpinBox *> editors{ui.counts_per_rev, ui.rpm_at_10v, ui.max_rpm, ui.acceleration_rpm_s, ui.voltage_limit, ui.kp, ui.ki, ui.kd, ui.ff1, ui.following_error_rev, ui.tolerance_counts, ui.no_response_timeout_s, ui.min_rev, ui.max_rev};
+    const QStringList fields{"counts_per_rev", "rpm_at_10v", "max_rpm", "acceleration_rpm_s", "kp", "ki", "kd", "ff1", "following_error_rev", "tolerance_counts", "no_response_timeout_s", "min_rev", "max_rev"};
+    const QVector<QDoubleSpinBox *> editors{ui.counts_per_rev, ui.rpm_at_10v, ui.max_rpm, ui.acceleration_rpm_s, ui.kp, ui.ki, ui.kd, ui.ff1, ui.following_error_rev, ui.tolerance_counts, ui.no_response_timeout_s, ui.min_rev, ui.max_rev};
     for (int i = 0; i < editors.size(); ++i)
         editors[i]->setValue(config.value(fields[i]).toDouble(fields[i] == "no_response_timeout_s" ? 0.5 : 0.0));
     auto *encoderSign = ui.encoderSign;
@@ -515,10 +561,16 @@ void MainWindow::configureAxis(int index)
     config["encoder_sign"] = encoderSign->currentIndex() ? -1 : 1;
     config["output_sign"] = outputSign->currentIndex() ? -1 : 1;
     config["verified"] = verified->isChecked();
+    if (m_backend.state() != QProcess::NotRunning) {
+        if ((!m_ready && !m_diagnosticMode) || m_stopping) return;
+        send({{"op", "configure"}, {"axis", index}, {"config", config}});
+        showMessage("Aplicando ajustes ao motor conectado…");
+        return;
+    }
     axes[index] = config;
     m_config["axes"] = axes;
     refreshConfig();
-    showMessage("Ajustes aplicados à próxima conexão. Salve a configuração para reutilizar.");
+    showMessage("Ajustes aplicados. Salve a configuração para reutilizar.");
 }
 
 void MainWindow::loadConfig()
@@ -555,4 +607,73 @@ void MainWindow::closeEvent(QCloseEvent *event)
         return;
     }
     event->accept();
+}
+
+void MainWindow::updateLoopbackControls()
+{
+    const bool disabled = std::none_of(m_panels.begin(), m_panels.end(), [](const Panel &p) { return p.enabled; });
+    m_loopbackButton->setEnabled(m_ready && !m_stopping && (m_loopbackRunning || (disabled && !m_pwmRunning)));
+    m_loopbackButton->setText(m_loopbackRunning ? "Cancelar loopback" : "Loopback");
+    m_loopbackButton->setToolTip(disabled ? "Medir 100 ciclos da saída selecionada para encoder A" : "Desabilite os quatro motores antes de iniciar");
+    m_loopbackChannel->setEnabled(!m_loopbackRunning && !m_pwmRunning);
+    m_loopbackMode->setEnabled(!m_loopbackRunning && !m_pwmRunning);
+    m_pwmApply->setEnabled(m_ready && !m_stopping && !m_loopbackRunning && disabled);
+    m_pwmStop->setEnabled(m_ready && !m_stopping && m_pwmRunning);
+    m_pwmPulse->setEnabled(m_ready && !m_stopping && !m_loopbackRunning && !m_pwmRunning && disabled);
+    m_pwmPercent->setEnabled(!m_loopbackRunning);
+}
+
+void MainWindow::updateLoopback(const QJsonObject &message)
+{
+    m_loopbackRunning = message.value("active").toBool();
+    const int completed = message.value("completed").toInt();
+    const int total = message.value("repetitions").toInt();
+    const QString error = message.value("error").toString();
+    const bool valid = !m_loopbackRunning && !m_pwmRunning && error.isEmpty() && completed == total && total == 100;
+    m_loopbackStatus->setText(m_loopbackRunning && message.value("phase").toString() == "baseline"
+        ? QString("Motor %1 • aguardando entrada A em zero por 50 ms; saída ainda em zero.")
+            .arg(message.value("axis").toInt() + 1)
+        : m_loopbackRunning
+        ? QString("Motor %1 • %2/%3 ciclos • medindo ON e OFF…")
+            .arg(message.value("axis").toInt() + 1).arg(completed).arg(total)
+        : valid ? "Concluído: 100 ciclos; última borda OFF recebida; ENABLE desligado."
+                : "Teste incompleto: " + error);
+    if (valid) {
+        const auto on = message.value("on").toObject();
+        const auto off = message.value("off").toObject();
+        m_loopbackOn->setText(QString::number(on.value("mean_ms").toDouble(), 'f', 3));
+        m_loopbackOff->setText(QString::number(off.value("mean_ms").toDouble(), 'f', 3));
+        const auto describe = [](const QString &name, const QJsonObject &value) {
+            return QString("%1: mín. %2 ms | máx. %3 ms | P95 %4 ms | desvio padrão %5 ms")
+                .arg(name).arg(value.value("min_ms").toDouble(), 0, 'f', 3)
+                .arg(value.value("max_ms").toDouble(), 0, 'f', 3)
+                .arg(value.value("p95_ms").toDouble(), 0, 'f', 3)
+                .arg(value.value("stddev_ms").toDouble(), 0, 'f', 3);
+        };
+        m_loopbackDetails->setText(describe("ON", on) + "\n" + describe("OFF", off)
+            + "\nTempos observados pelo computador, incluindo a espera pela leitura de 5 ms. PID permanece inalterado.");
+        logDiagnostic("Loopback concluído: ON " + m_loopbackOn->text() + " ms; OFF " + m_loopbackOff->text() + " ms.");
+        const QString directory = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/loopback";
+        QDir().mkpath(directory);
+        const QString path = directory + "/loopback-" + QDateTime::currentDateTimeUtc().toString("yyyyMMdd-HHmmss-zzz") + ".json";
+        auto record = message;
+        record["application_version"] = QCoreApplication::applicationVersion();
+        record["recorded_at_utc"] = QDateTime::currentDateTimeUtc().toString(Qt::ISODateWithMs);
+        record["measurement"] = message.value("mode").toString() == "analog"
+            ? "analog_0_4v_to_encoder_a_ttl_host_observed"
+            : "digital_ena_to_encoder_a_ttl_host_observed";
+        record["nominal_poll_ms"] = 5;
+        if (writeJson(path, record)) {
+            m_loopbackDetails->setText(m_loopbackDetails->text() + "\nResultado salvo: " + path);
+            logDiagnostic("Amostras do loopback salvas em " + path);
+        } else {
+            logDiagnostic("Não foi possível salvar as amostras do loopback em " + path);
+        }
+    } else if (!m_loopbackRunning && !m_pwmRunning) {
+        m_loopbackOn->setText("—");
+        m_loopbackOff->setText("—");
+        m_loopbackDetails->setText("Sem média válida de 100 ciclos. Confira a ligação e o histórico de diagnóstico.");
+        logDiagnostic("Loopback interrompido: " + error);
+    }
+    updateLoopbackControls();
 }

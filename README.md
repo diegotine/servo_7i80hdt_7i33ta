@@ -4,7 +4,7 @@
 >
 > Comunicação direta com a Mesa 7i80HDT, sem instalar ou executar LinuxCNC.
 
-**Versão 0.1.0** — consulte [DESCRICAO.md](DESCRICAO.md) para a apresentação
+**Versão 0.2.0 em desenvolvimento** — consulte [DESCRICAO.md](DESCRICAO.md) para a apresentação
 do projeto e o estado desta versão.
 
 ![Interface do T3D Analog Velocity 0.1, com controles do motor e modo teste](screenshots/interface-v0.1.png)
@@ -27,7 +27,7 @@ a Mesa 7i80HDT e permite usar a placa sem instalar ou executar LinuxCNC.
 
 A tela tem quatro motores ligados à **mesma placa**, com uma única sessão de
 controle. Conectar identifica o firmware e configura saídas em zero, desabilitadas.
-Nenhum motor é habilitado automaticamente. Ajustes são feitos desconectado.
+Nenhum motor é habilitado automaticamente. Ajustes do motor podem ser aplicados com a placa conectada.
 Carregar/Salvar configuração permite reutilizar a calibração de cada canal.
 
 P1 e P2 ficam reservados para I/O genérico: em cada conector, os primeiros 12 sinais são
@@ -147,17 +147,17 @@ suas alterações. O Designer somente edita a interface; não conecta à placa.
 | Escala de velocidade | +10 V = 3000 RPM horário; −10 V = 3000 RPM anti-horário, informados pelo operador |
 | Encoder | 10.000 contagens/volta, derivadas do padrão P-172=2500 linhas ×4 |
 | Referência de posição | Voltas do motor; positivo = horário |
-| Limite inicial de velocidade | 60 RPM; JOG começa em 10 RPM |
+| Limite inicial de velocidade | 3000 RPM; JOG começa em 10 RPM |
 | Aceleração da trajetória | 120 RPM/s |
-| Limite de tensão | 1 V, adicional ao limite de velocidade |
+| Faixa de saída analógica | Fixa em ±10 V; velocidade limitada pelo ajuste de RPM |
 | PID inicial | P=50 s⁻¹, I=0, D=0; FF1=1 |
 | Erro de seguimento | 0,1 volta entre referência da trajetória e encoder |
 | Coincidência de posição | Erro ≤2 contagens, baixa velocidade e estabilidade por 100 ms |
 | Limites locais iniciais | −10 a +10 voltas; ajustar à mecânica |
 
 Esses ganhos e limites são valores de partida para bancada, **não uma sintonia
-validada no motor real**. O limite efetivo de saída é o menor entre o teto de RPM
-e o teto de tensão convertido em RPM. Com 60 RPM e 300 RPM/V, resulta em ±0,2 V.
+validada no motor real**. O limite de saída corresponde ao teto de RPM
+convertido em tensão, dentro da faixa física de ±10 V. Com 60 RPM e 300 RPM/V, resulta em ±0,2 V.
 O PDM de 12 bits quantiza a tensão em aproximadamente 2,44 mV; ganho e tolerância
 devem ser ajustados considerando essa resolução e o comportamento do drive.
 
@@ -214,7 +214,7 @@ conferidos para aquele motor, apenas como registro opcional. Essa marca não blo
    desligamento para todos os motores e saídas genéricas.
 
 Para medir a saída sem motor/drive conectado, selecione **Teste de saída sem
-encoder** na aba do motor, antes de ligar ENABLE. Nesse modo, JOG comanda
+encoder** no topo, para o motor selecionado. Pode ser alternado com ENABLE ligado. Nesse modo, JOG comanda
 velocidade diretamente, sem correção PID nem falha por ausência de resposta do
 encoder. A posição virtual integra a velocidade efetivamente comandada pela
 rampa. Posição e RPM exibidos são virtuais, identificados por “MODO TESTE” em
@@ -223,17 +223,22 @@ A leitura real do encoder continua ativa: girar o eixo à mão altera o erro.
 Posição e RPM reais também aparecem ao passar o mouse sobre os campos.
 A simulação segue os limites da saída; não pretende modelar a dinâmica do drive. RPM é a velocidade comandada pela escala analógica, não uma medida.
 Por exemplo, 10 RPM com 3000 RPM a 10 V corresponde a aproximadamente 0,033 V,
-com quantização PDM; o limite inicial de 60 RPM permite até 0,2 V.
+com quantização PDM; o limite padrão de 3000 RPM permite até ±10 V.
 STOP desacelera a saída até zero e mantém ENABLE; clicar em ENABLE retira a
-habilitação. Watchdog, limites de tensão/velocidade e verificações de comunicação
+habilitação. Watchdog, limite de velocidade e verificações de comunicação
 continuam ativos. Movimento para posição também funciona no modo teste: a trajetória comanda a
 saída e move a posição virtual até o destino, sem correção pelo erro real.
-A seleção do teste é temporária e é desfeita ao desconectar.
+A seleção do teste é temporária e é desfeita ao desconectar. Alternar o modo
+não zera o encoder nem a posição virtual acumulada. Ao sair do teste, os campos
+mostram novamente o encoder real; a posição virtual fica preservada para a
+próxima ativação. JOG continua com ENABLE ligado. Um movimento para posição
+em andamento é interrompido com desaceleração na troca, e a referência normal é ancorada na posição
+real para evitar tentar alcançar uma posição simulada.
 
 O campo JOG aceita de 0,1 até 9999,9 RPM. Durante JOG com retenção, editar
 o RPM aplica o novo valor após 250 ms sem alteração, ou imediatamente ao
 confirmar o campo. A saída segue a rampa Max. Acell.; a mensagem inferior
-confirma o RPM ou informa quando os ajustes de velocidade/tensão o limitam. No teste, a saída satura nos limites
+confirma o RPM ou informa quando os ajustes de velocidade o limitam. No teste, a saída satura nos limites
 configurados; no controle normal, comandos acima do limite de velocidade são
 rejeitados.
 
@@ -322,7 +327,7 @@ Ao perder o processo/rede, o watchdog deixa GPIO como entrada e os pull-ups de
 
 Python e o escalonador comum do sistema **não garantem tempo real rígido**. O
 comportamento sob carga, latência Ethernet e sintonia precisam ser medidos antes
-do uso físico. A configuração inicial limita a velocidade para comissionamento.
+do uso físico. O limite padrão é 3000 RPM, ajustável por motor.
 O watchdog não substitui a parada de emergência elétrica.
 
 A placa deve ter um único proprietário: não executar outro aplicativo, HAL ou
@@ -365,3 +370,48 @@ e o registro em `firmware/registro-2026-10-11/` identificam as fontes utilizadas
 - [Manual 7i33/7i33TA V1.9](https://www.mesanet.com/pdf/motion/7i33man.pdf),
   cópia `reference/7i33man.pdf`: impressas 5 (J1), 7–8 (TB1/TB2), 9–10
   (PDM/encoder/ENA e sinal analógico).
+
+## Ajustes com a placa conectada
+
+A janela **Ajustes do motor** permanece disponível durante a conexão, inclusive
+no diagnóstico após falha. Ao confirmar, a configuração é validada e aplicada
+ao motor na sessão atual. RPM, aceleração e ganhos podem ser alterados durante
+o movimento; trajetórias de posição são recalculadas. Ajustes inválidos são
+rejeitados sem substituir os valores aceitos anteriormente.
+
+Alterar contagens por volta, sentido do encoder, sentido da saída ou escala
+RPM a 10 V desabilita somente o motor afetado e cancela seu movimento. A
+referência local é preservada; use ENABLE para retomar. Os demais motores e
+a conexão permanecem ativos. **Salvar configuração** também funciona conectado.
+
+## Gráfico de comando e feedback
+
+Cada aba de motor tem, abaixo do JOG, um gráfico dos últimos 20 segundos.
+A linha amarela mostra a posição comandada pela trajetória, e a linha azul
+mostra a posição real do encoder, ambas em voltas. No modo teste, a linha
+de comando acompanha a posição virtual; o feedback continua sendo real.
+O histórico permanece ao alternar o modo e marca interrupções nas leituras.
+Os botões **Ajustes do motor** e **Modo teste** ficam ao lado de **Salvar config.**
+e acompanham a aba de motor selecionada.
+
+## TESTES • Loopback
+
+A aba **TESTES** mede 100 ciclos de saída ENA e retorno pela entrada A do
+encoder, com tempos médios separados de ON/OFF, mínimo, máximo, P95 e desvio
+padrão. Escolha o canal; o botão **?** abre a ligação e o procedimento completo.
+Consulte [TESTE_LOOPBACK.md](TESTE_LOOPBACK.md) antes de montar o fio.
+
+O ensaio usa o condicionador TTL da 7i33TA e a mesma conexão do controlador,
+com saídas analógicas em zero. Mede o tempo observado pelo computador, incluindo
+o ciclo de leitura, e não altera o PID automaticamente. Fio ausente, retorno
+instável e falhas interrompem o teste; não há média válida com amostra incompleta.
+
+Antes do loopback analógico, o campo **Teste manual PWM/PDM** permite aplicar
+magnitude positiva de 0 a 100% e medir DRV com multímetro, sem conexão ao
+encoder. Use **Zerar / desligar** para retirar ENABLE. A tensão exibida é
+nominal calculada; o aplicativo não mede a tensão de DRV.
+
+O seletor também oferece loopback analógico 0/+4 V, medindo o cruzamento do
+limiar da entrada A. A entrada TTL não é especificada para a faixa ±10 V de
+DRV: consulte as condições elétricas em TESTE_LOOPBACK.md antes da ligação.
+O ensaio não mede diretamente a estabilização da tensão.

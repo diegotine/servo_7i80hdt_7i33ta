@@ -1,10 +1,13 @@
 #include "mainwindow.h"
 
 #include <QApplication>
-#include <QCheckBox>
+#include <QPushButton>
+#include "telemetryplot.h"
+#include <cmath>
 #include <QDoubleSpinBox>
 #include <QLabel>
 #include <QTimer>
+#include <QTabWidget>
 
 int main(int argc, char *argv[])
 {
@@ -15,8 +18,21 @@ int main(int argc, char *argv[])
 
     MainWindow window;
     window.show();
+    if (application.arguments().contains("--preview-tests")) {
+        auto *tabs = window.findChild<QTabWidget *>("tabs");
+        tabs->setCurrentIndex(tabs->count() - 1);
+    }
     if (application.arguments().contains("--preview-test"))
-        window.findChild<QCheckBox *>("outputTest0")->setChecked(true);
+        window.findChild<QPushButton *>("outputTest0")->setChecked(true);
+    if (application.arguments().contains("--preview-graph")) {
+        for (int motor = 0; motor < 4; ++motor) {
+            auto *plot = window.findChild<TelemetryPlot *>(QString("plot%1").arg(motor));
+            for (int sample = 0; sample <= 400; ++sample) {
+                const double t = sample * 0.05;
+                plot->append(t, std::sin(t * 0.6), 0.98 * std::sin((t - 0.12) * 0.6));
+            }
+        }
+    }
     const int capture = application.arguments().indexOf("--screenshot");
     if (capture >= 0 && capture + 1 < application.arguments().size()) {
         const QString path = application.arguments().at(capture + 1);
@@ -27,7 +43,7 @@ int main(int argc, char *argv[])
             const auto size = window.size();
             const auto hint = window.sizeHint();
             const auto valuePosition = window.findChild<QLabel *>("position0")->mapTo(&window, QPoint());
-            auto *test = window.findChild<QCheckBox *>("outputTest0");
+            auto *test = window.findChild<QPushButton *>("outputTest0");
             test->setChecked(!test->isChecked());
             application.processEvents();
             const bool stable = size == window.size() && hint == window.sizeHint()

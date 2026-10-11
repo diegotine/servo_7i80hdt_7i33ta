@@ -1,5 +1,17 @@
 # Histórico de versões
 
+## 0.2.0 — em desenvolvimento
+
+- Gráfico de comando e feedback real do encoder por motor.
+- Modo teste alternável com ENABLE ligado, preservando a posição virtual.
+- Ajustes do motor aplicáveis com a placa conectada.
+- Faixa analógica fixa em ±10 V e limite padrão de 3000 RPM.
+- Aba TESTES com loopback digital ENA → encoder A, médias de ON/OFF e dispersão.
+- Loopback analógico 0/+4 V com retorno pela entrada A e resultados identificados por modo.
+- Campo de teste manual de magnitude PWM/PDM (0–100%), aplicar e zerar/desligar.
+- Pulso automático de 40% por 500 ms para osciloscópio, independente do retorno A.
+- Validação física de bancada pendente.
+
 ## 0.1.0 — 2026-10-11
 
 Primeira versão para testes de bancada do controle de quatro servomotores T3D
