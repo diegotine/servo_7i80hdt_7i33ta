@@ -1,5 +1,9 @@
 # Histórico de versões
 
+## 0.2.6 — política de CPU da interface
+
+- Versão incrementada antes da separação do auxiliar de clock da interface e do auxiliar de permissões do driver.
+
 ## 0.2.5 — otimização nativa
 
 - Com TuneD ativo, solicita mínimo/máximo de 4200 MHz na CPU dedicada e restaura ao fechar, preservando os demais ajustes do perfil.
