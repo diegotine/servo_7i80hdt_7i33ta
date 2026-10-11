@@ -1,6 +1,13 @@
 # Histórico de versões
 
-## 0.2.2 — em desenvolvimento
+## 0.2.3 — em desenvolvimento
+
+- Ciclo nominal reduzido de 5 ms para 2 ms (500 Hz), mantendo limite de falha de 20 ms e watchdog de 100 ms.
+- Diagnóstico conta execuções de leitura/cálculo/escrita acima do período nominal.
+- Indicadores e exportação JSON usam o período real configurado.
+- Medição física pendente; sem execução de placa simulada nesta etapa.
+
+## 0.2.2 — referência com otimizações
 
 - Temporização absoluta nativa, sem acumular atrasos ou executar ciclos de compensação.
 - Afinidade de CPU, tentativa SCHED_FIFO e bloqueio de memória atual, com resultado visível no diagnóstico.

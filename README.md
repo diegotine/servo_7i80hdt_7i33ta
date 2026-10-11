@@ -4,7 +4,7 @@
 >
 > Comunicação direta com a Mesa 7i80HDT, sem instalar ou executar LinuxCNC.
 
-**Versão 0.2.2 em desenvolvimento** — consulte [DESCRICAO.md](DESCRICAO.md) para a apresentação
+**Versão 0.2.3 em desenvolvimento** — consulte [DESCRICAO.md](DESCRICAO.md) para a apresentação
 do projeto e o estado desta versão.
 
 ![Interface do T3D Analog Velocity 0.1, com controles do motor e modo teste](screenshots/interface-v0.1.png)
@@ -299,7 +299,7 @@ aceleração limita a **trajetória**, enquanto a correção PID mantém autorid
 corrigir o seguimento. O drive continua fechando suas malhas internas de velocidade
 e corrente. Não se envia alvo de posição ao T3D.
 
-## Temporização da versão 0.2.2
+## Temporização da versão 0.2.3
 
 A execução usa uma grade absoluta de 5 ms, com diagnóstico da variação entre
 ciclos e dos tempos de leitura, cálculo e escrita. O backend tenta prioridade
