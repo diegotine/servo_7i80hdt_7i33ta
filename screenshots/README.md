@@ -34,4 +34,4 @@ movimento real dos motores.
 - [Interface 0.2.5](interface-v0.2.5.png): aceleração e desaceleração independentes,
   padrões 350/600 RPM/s e JOG 1000 RPM; captura sem conexão à placa.
 
-- [Pinout 0.2.5](pinout-v0.2.5.png): foto JPG da 7i33TA na nova aba, sem conexão à placa.
+- [Pinout 0.2.5](pinout-v0.2.5.png): foto da 7i33TA com fundo transparente na nova aba, sem conexão à placa.

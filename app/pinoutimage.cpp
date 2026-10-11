@@ -4,7 +4,7 @@
 #include <algorithm>
 
 PinoutImage::PinoutImage(QWidget *parent)
-    : QWidget(parent), m_photo(":/pinout/7i33ta-pinout.jpg")
+    : QWidget(parent), m_photo(":/pinout/7i33ta-pinout.png")
 {
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
 }

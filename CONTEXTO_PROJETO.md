@@ -150,3 +150,15 @@ Atalho novo Iniciar T3D v0.2.2.desktop criado; anteriores preservados.
   máximos ON/OFF 2,026775/2,048945 ms, mas histórico da sessão inclui intervalo
   máximo 8,006786 ms, duas execuções excedidas e seis slots pulados.
 - Operador vai reiniciar e conferir BIOS/HWP, depois medir 0.2.5.
+
+## Transparência e leitura direta da BIOS Dell
+
+- Usuário pediu fundo transparente na aba Pinout. JPG inicial preservado;
+  app usa agora assets/7i33ta-pinout.png com alpha, embutido no recurso Qt.
+- Dell Command Configure não estava instalado; consulta direta pelo driver Dell
+  dell-wmi-sysman confirmou SpeedShift Disabled, Speedstep Enabled, TurboMode
+  Enabled, CStatesCtrl Enabled. A ausência de HWP no kernel era coerente.
+- Usuário autorizou habilitar somente Speed Shift. Gravação concluída e leitura
+  de volta confirmou Enabled; pending_reboot=1. SpeedStep/Turbo/C-states não
+  foram alterados. Boot já preparado com intel_pstate=active.
+  Após reboot conferir HWP, driver efetivo e então medir 0.2.5.

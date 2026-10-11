@@ -2,7 +2,7 @@
 
 ## 0.2.5 — otimização nativa
 
-- Aba Pinout com a fotografia da 7i33TA convertida para JPG, centralizada horizontalmente.
+- Aba Pinout com a fotografia da 7i33TA centralizada horizontalmente; fundo externo transparente em PNG. A conversão JPG inicial também foi preservada.
 
 - Versão incrementada antes das otimizações; período de 2 ms mantido.
 - Referência física 0.2.4 salva antes das mudanças.
