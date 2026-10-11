@@ -1,4 +1,4 @@
-# T3D Analog Velocity — versão 0.2.5 em desenvolvimento
+# T3D Analog Velocity — versão 0.2.6 em desenvolvimento
 
 > **DRIVER ETHERNET PRÓPRIO — USE A PLACA MESA SEM LINUXCNC OU HAL.**
 >
@@ -46,9 +46,11 @@ do projeto. As instruções detalhadas estão em [README.md](README.md), e a
 pinagem em [PINOUT.md](PINOUT.md).
 
 Os padrões de aceleração e desaceleração são 350 e 600 RPM/s. O ciclo é de 2 ms.
-TuneD ativo assume os ajustes de CPU; o diagnóstico identifica a versão do núcleo.
+O auxiliar de CPU pertence à interface: solicita limites de 4200 MHz mesmo com
+TuneD ativo, preservando os demais ajustes do perfil. O diagnóstico identifica
+a versão do núcleo. O auxiliar do driver concede somente FIFO/memória.
 
-## Estado da versão 0.2.5
+## Estado da versão 0.2.6
 
 Evolução da versão 0.1 para testes de bancada. As funções principais e a organização
 da interface foram implementadas; permanecem o polimento visual, a validação

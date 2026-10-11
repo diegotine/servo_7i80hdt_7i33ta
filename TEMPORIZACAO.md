@@ -1,4 +1,4 @@
-# Temporização — 0.2.4
+# Temporização — 0.2.6
 
 O período nominal da 0.2.3 é **2 ms (500 Hz)**; na referência 0.2.2 era 5 ms. O PID usa o intervalo real
 entre inícios de ciclos, não uma constante de 2 ms nem a média do loopback.
@@ -75,13 +75,13 @@ pkexec /usr/bin/bash "$PWD/instalar-limites-tempo-real.sh"
 ```
 
 O instalador pede autenticação do Linux e cria um executável pertencente a root
-em `/usr/local/libexec/t3d-analog-runtime-<UID>`, com `cap_sys_resource=ep`.
+em `/usr/local/libexec/t3d-analog-runtime-v0.2.6-<UID>`, com `cap_sys_resource=ep`.
 Esse auxiliar concede prioridade máxima 20, memória bloqueada até 256 MiB e
 limite de 200 ms de CPU RT sem bloqueio. Depois remove todas as capabilities e
 ativa `NO_NEW_PRIVS` antes de executar o backend, com o UID do usuário.
 Não atribui capabilities ao Python nem altera limites globais ou o kernel.
-O instalador também cria `/etc/sudoers.d/t3d-analog-<UID>`, validado com
-`visudo`, autorizando sem senha somente esse auxiliar fixo. A interface verifica
+O instalador também cria `/etc/sudoers.d/t3d-analog-v0_2_6-<UID>`, validado com
+`visudo`, autorizando somente os dois auxiliares fixos desta versão. A interface verifica
 a autorização com `sudo -n -l` e usa `sudo -n` na próxima conexão. O auxiliar
 concede os limites e abandona root antes de executar Python. Sem a regra,
 continua disponível a execução direta com a capability restrita.
@@ -92,7 +92,7 @@ na compilação. O auxiliar só aceita o UID usado na compilação.
 Verificação sem comunicação com a placa:
 
 ```sh
-/usr/local/libexec/t3d-analog-runtime-$(id -u) --check
+sudo -n -- /usr/local/libexec/t3d-analog-runtime-v0.2.6-$(id -u) --check
 ```
 
 O backend usa `LC_ALL=C` e `PYTHONUTF8=1`, sem alterar o idioma da interface.
@@ -152,3 +152,15 @@ boost e PM QoS do perfil. Ao fechar, restaura os limites anteriores se ainda
 forem os aplicados pela sessão. Mudanças posteriores de perfil podem substituir
 os limites. FIFO 10 e bloqueio de memória do backend continuam independentes.
 Detalhes em OTIMIZACAO_0.2.5.md.
+
+## 0.2.6: clock separado do runtime
+
+O controle de clock é iniciado pela interface Qt por meio de
+`/usr/local/libexec/t3d-analog-cpu-v0.2.6-<UID>`, compilado de código C++ em
+`app/`. O auxiliar de runtime não contém esse código. Fechar a interface encerra
+a sessão de CPU e restaura os valores anteriores, independentemente da conexão
+com a placa. `--cpu-check <CPU>` no auxiliar de CPU permite consulta sem root;
+as sessões de escrita exigem sudo e o UID autorizado na compilação.
+
+Binários em `build/v0.2.6` e auxiliares com versão no nome preservam o runtime
+da 0.2.5 aberta. Consulte VALIDACAO_0.2.6.md para verificações e limites atuais.

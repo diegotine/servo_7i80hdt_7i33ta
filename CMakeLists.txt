@@ -8,7 +8,7 @@ set(CMAKE_AUTORCC ON)
 find_package(Qt6 6.4 REQUIRED COMPONENTS Widgets)
 find_package(Python3 3.10 REQUIRED COMPONENTS Interpreter Development.Module)
 execute_process(COMMAND id -u OUTPUT_VARIABLE T3D_LOCAL_UID OUTPUT_STRIP_TRAILING_WHITESPACE COMMAND_ERROR_IS_FATAL ANY)
-add_executable(t3d_runtime_limiter app/runtime_limiter.cpp app/cpu_clock.cpp)
+add_executable(t3d_runtime_limiter app/runtime_limiter.cpp)
 target_compile_options(t3d_runtime_limiter PRIVATE -Wall -Wextra -Wpedantic)
 target_compile_definitions(t3d_runtime_limiter PRIVATE
     T3D_ALLOWED_UID=${T3D_LOCAL_UID}
@@ -16,6 +16,9 @@ target_compile_definitions(t3d_runtime_limiter PRIVATE
     T3D_PYTHON="${Python3_EXECUTABLE}"
     T3D_BACKEND="${CMAKE_CURRENT_BINARY_DIR}/driver/backend.py"
     T3D_RUNTIME_CHECK="${CMAKE_CURRENT_BINARY_DIR}/driver/check_runtime.py")
+add_executable(t3d_cpu_policy app/cpu_policy_main.cpp app/cpu_clock.cpp)
+target_compile_options(t3d_cpu_policy PRIVATE -Wall -Wextra -Wpedantic)
+target_compile_definitions(t3d_cpu_policy PRIVATE T3D_ALLOWED_UID_TEXT="${T3D_LOCAL_UID}")
 qt_add_executable(t3d_analog app/main.cpp app/mainwindow.cpp app/mainwindow.h app/mainwindow.ui app/interface.cpp app/axissettingsdialog.ui app/telemetryplot.cpp app/telemetryplot.h app/pinoutimage.cpp app/pinoutimage.h app/resources.qrc)
 target_link_libraries(t3d_analog PRIVATE Qt6::Widgets)
 target_include_directories(t3d_analog PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/app)

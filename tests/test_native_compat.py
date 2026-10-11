@@ -31,7 +31,9 @@ class NativeCompatibilityTests(unittest.TestCase):
         paths = native_modules()
         self.assertEqual(len(paths), 6)
         import _rtcore
-        self.assertEqual(_rtcore.__version__, "0.2.5")
+        cmake = source.parents[1] / 'CMakeLists.txt'
+        expected_version = cmake.read_text().split('project(T3DAnalogVelocity VERSION ', 1)[1].split()[0]
+        self.assertEqual(_rtcore.__version__, expected_version)
         self.assertTrue(all(path.endswith(tuple(EXTENSION_SUFFIXES)) for path in paths.values()))
 
     def test_lbp16_packet_bytes_and_validation_match(self):

@@ -185,3 +185,27 @@ Atalho novo Iniciar T3D v0.2.2.desktop criado; anteriores preservados.
   confirmada para 2501000/2501000, demais valores preservados. Não acionou placa.
 - Instância do usuário mantida aberta; reabrir 0.2.5 para o novo ajuste automático.
   Ainda falta medir clock físico e loopback com esses limites.
+
+## 0.2.6 / separação solicitada pelo operador
+
+- Controle de clock em `app/cpu_policy_main.cpp` + `app/cpu_clock.cpp`, compilado
+  como `t3d_cpu_policy`, iniciado e encerrado exclusivamente pela interface Qt.
+  `t3d_runtime_limiter` não compila nem chama código de clock; concede recursos
+  e inicia o backend sem privilégios.
+- Binários em `build/v0.2.6`, auxiliares root com versão no nome. Atalho 0.2.6
+  criado; atalho 0.2.5 aponta diretamente para o binário anterior preservado.
+  Instância 0.2.5 aberta não foi reiniciada, backend antigo não foi sobrescrito.
+- GUI smoke, compatibilidade e cálculos nativos passaram. Preflight: núcleo
+  0.2.6, FIFO 10, CPU 5, mlock true, capacidades zero, sem acesso à placa.
+  Sessão do novo auxiliar testada na CPU 4 (CPU 5 ocupada pelo auxiliar 0.2.5):
+  4200 MHz confirmados, demais parâmetros preservados, restauração confirmada.
+- Queda mostrada no htop: limites CPU 5 continuam 4200000/4200000; leitura do
+  HWP_REQUEST confirmou min=max 54, EPP 128. Turbostat em baixa carga mostrou
+  Bzy_MHz 1579..1857, sem eventos térmicos. Teste temporário performance/EPP 0
+  também mostrou valores menores; perfil original restaurado. Não há evidência
+  de sobrescrita dos limites. Causa da frequência física ainda não fechada.
+- Consulta BIOS Dell somente leitura: CStatesCtrl Enabled (opções apenas
+  Disabled/Enabled), DeepSleepCtrl Disabled, BlockSleep Disabled, SpeedShift
+  Enabled, pending_reboot 0. Driver ativo intel_idle, max_cstate=1, estados
+  expostos POLL/C1_ACPI. processor.max_cstate=8 não governa o driver ativo.
+  BIOS não alterada.

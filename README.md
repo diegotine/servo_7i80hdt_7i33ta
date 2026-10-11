@@ -4,7 +4,7 @@
 >
 > Comunicação direta com a Mesa 7i80HDT, sem instalar ou executar LinuxCNC.
 
-**Versão 0.2.5 em desenvolvimento** — consulte [DESCRICAO.md](DESCRICAO.md) para a apresentação
+**Versão 0.2.6 em desenvolvimento** — consulte [DESCRICAO.md](DESCRICAO.md) para a apresentação
 do projeto e o estado desta versão.
 
 ![Interface do T3D Analog Velocity 0.2.5, aceleração e desaceleração independentes](screenshots/interface-v0.2.5.png)
@@ -19,7 +19,10 @@ manuais pertinentes. Não depende do projeto superior para compilar ou executar.
 
 ## Abrir
 
-Execute `./iniciar.sh` nesta pasta. O iniciador compila e abre `build/t3d_analog`.
+Execute `./iniciar.sh` nesta pasta. O iniciador compila e abre `build/v0.2.6/t3d_analog`.
+Na 0.2.6, o auxiliar de clock pertence à interface e é separado do auxiliar de
+permissões FIFO/memória do driver. Binários e auxiliares têm caminhos próprios
+por versão para preservar a 0.2.5 durante os testes.
 Requisitos: Linux, CMake ≥3.21, compilador C++20, Qt6 Widgets ≥6.4 e Python ≥3.10.
 Para ativar FIFO e bloqueio de memória, consulte a instalação opcional em
 [TEMPORIZACAO.md](TEMPORIZACAO.md).
@@ -352,9 +355,9 @@ backend, além da recusa de assumir uma placa com saídas PWM já habilitadas.
 ## Validação sem placa
 
 ```sh
-cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
-cmake --build build --parallel 4
-ctest --test-dir build --output-on-failure
+cmake -S . -B build/v0.2.6 -DCMAKE_BUILD_TYPE=Release
+cmake --build build/v0.2.6 --parallel 4
+ctest --test-dir build/v0.2.6 --output-on-failure
 ```
 
 Os testes exercitam datagramas UDP contra FPGA simulada, pinagem, polaridade,

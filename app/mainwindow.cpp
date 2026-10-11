@@ -126,9 +126,9 @@ void MainWindow::startCpuClock()
             return;
         }
     }
-    const QString helper = QString("/usr/local/libexec/t3d-analog-runtime-%1").arg(getuid());
+    const QString helper = QString("/usr/local/libexec/t3d-analog-cpu-v%1-%2").arg(T3D_VERSION).arg(getuid());
     if (!QFileInfo(helper).isExecutable()) {
-        logDiagnostic("Clock: instale o helper de tempo real para ajustar o governador.");
+        logDiagnostic("Clock: instale o auxiliar de CPU da interface para ajustar a frequência.");
         return;
     }
     m_cpuClock.setProcessChannelMode(QProcess::MergedChannels);
@@ -266,7 +266,7 @@ void MainWindow::startConnection()
         p.decelerationControl->setEnabled(false);
     }
     m_link->setText("Conectando à 7i80HDT…");
-    const QString runtimeLauncher = QString("/usr/local/libexec/t3d-analog-runtime-%1").arg(getuid());
+    const QString runtimeLauncher = QString("/usr/local/libexec/t3d-analog-runtime-v%1-%2").arg(T3D_VERSION).arg(getuid());
     if (QFileInfo(runtimeLauncher).isExecutable()) {
         QProcess permissionCheck;
         permissionCheck.start("/usr/bin/sudo", {"-n", "-l", "--", runtimeLauncher, "--config", runtimePath()});
