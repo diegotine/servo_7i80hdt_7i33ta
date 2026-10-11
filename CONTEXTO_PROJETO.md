@@ -162,3 +162,13 @@ Atalho novo Iniciar T3D v0.2.2.desktop criado; anteriores preservados.
   de volta confirmou Enabled; pending_reboot=1. SpeedStep/Turbo/C-states não
   foram alterados. Boot já preparado com intel_pstate=active.
   Após reboot conferir HWP, driver efetivo e então medir 0.2.5.
+
+## Pós-reboot / primeiro loopback 0.2.5
+
+- Kernel confirmou HWP enabled, intel_pstate ativo e flags hwp/hwp_epp.
+- TuneD throughput-performance ativo; CPU 5 ainda com min=max 2501000 kHz
+  apesar de cpuinfo_max_freq 4800000. Solicitação original de 4200 MHz pendente.
+- JSON 182145-181 arquivado: GUI/núcleo 0.2.5; 100 ciclos; desvios ON/OFF
+  28,657/27,328 µs, menores que os 34,338/32,434 µs pré-reboot.
+  Zero work_overruns/skipped_slots; intervalo máximo 2,102399 ms em 16595 ciclos.
+  Máximos ON/OFF maiores nesta amostra; análise preserva essa distinção.
