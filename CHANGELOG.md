@@ -1,5 +1,10 @@
 # Histórico de versões
 
+## 0.2.5 — otimização nativa
+
+- Versão incrementada antes das otimizações; período de 2 ms mantido.
+- Referência física 0.2.4 salva antes das mudanças.
+
 ## 0.2.4 — conversão Cython
 
 - Versão incrementada antes da conversão; período de 2 ms preservado.

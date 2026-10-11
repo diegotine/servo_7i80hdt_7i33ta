@@ -1,4 +1,4 @@
-# T3D Analog Velocity — versão 0.2.4 em desenvolvimento
+# T3D Analog Velocity — versão 0.2.5 em desenvolvimento
 
 > **DRIVER ETHERNET PRÓPRIO — USE A PLACA MESA SEM LINUXCNC OU HAL.**
 >
@@ -43,7 +43,7 @@ Qt 6.4 ou superior e Python 3.10 ou superior. Execute `./iniciar.sh` na pasta
 do projeto. As instruções detalhadas estão em [README.md](README.md), e a
 pinagem em [PINOUT.md](PINOUT.md).
 
-## Estado da versão 0.2.4
+## Estado da versão 0.2.5
 
 Evolução da versão 0.1 para testes de bancada. As funções principais e a organização
 da interface foram implementadas; permanecem o polimento visual, a validação
@@ -64,6 +64,6 @@ Controle de até quatro servomotores T3D via Mesa 7i80HDT e 7i33TA, com interfac
 Qt, driver Ethernet próprio e uso da placa sem LinuxCNC ou HAL. Inclui JOG,
 trajetórias de posição, teste de saída e diagnóstico.
 
-Na 0.2.4, backend, driver Ethernet, controlador, loopback e temporização são
+Na 0.2.5, backend, driver Ethernet, controlador, loopback e temporização são
 compilados com Cython. Estado numérico do controlador em campos C; ciclo de
 2 ms mantido. Desvio físico será comparado com a referência 0.2.3.
